@@ -3,7 +3,7 @@ import "dotenv/config";
 import session from "express-session";
 import db from "../models";
 import morgan from "morgan";
-import rootRouter from "./routers/rootRouter";
+import userRouter from "./routers/userRouter";
 import { localsMiddleware } from "./middlewares";
 var MySQLStore = require("express-mysql-session")(session);
 
@@ -47,4 +47,4 @@ app.use(
   })
 );
 app.use(localsMiddleware);
-app.use("/", rootRouter);
+app.use("/", userRouter);

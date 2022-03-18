@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset = "UTF-8">
+    <link rel = "stylesheet"  href="/css/style.css" type="text/css">
+    <link rel = "stylesheet" href="/css/bootstrap.css" type="text/css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-md navbar-light">
+            <div class="collapse navbar-collapse" id="sidebar">
+                <div class="container-fluid">
+                    <div class = "row">
+                        <div class = 'col-lg-3 sidebar fixed-top'>
+                            <ul class="navbar-nav flex-column mt-4">
+                                <li class="nav-item" >
+                                    <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link" onclick="homeMenu()">
+                                        Home
+                                    </a>
+                                </li>
+                                <div style="display:none; margin-left: 15px; font-size: 12px;" id ="homeDiv">
+                                    <li class="nav-item" >
+                                        <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link">
+                                            - 실시간 매출현황
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" >
+                                        <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link">
+                                            - 주문내역
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" >
+                                        <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link">
+                                            - 결제내역
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" >
+                                        <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link">
+                                            - 영업시작 / 마감
+                                        </a>
+                                    </li>
+                                </div>
+                                <li class="nav-item">
+                                    <a href="/statistic" class = "nav-link text-white p-2 mb-2 sidebar-link" >
+                                        매장분석
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link">
+                                        제휴서비스
+                                    </a>
+                                </li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div> <!-- /container -->
+
+    <script type="text/javascript">
+        function homeMenu(){
+            var con = document.getElementById("homeDiv");
+            if(con.style.display=='none'){
+                con.style.display = 'block';
+            }else{
+                con.style.display = 'none';
+            }
+            if(window.location.pathname !='/home'){
+                window.location.href = 'http://localhost:4000/home'
+            }
+        }
+    </script>
+
+    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>
