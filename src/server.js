@@ -23,9 +23,11 @@ const logger = morgan("dev");
 
 const PORT = 4000;
 
-app.set("view engine", "pug");
+app.set("view engine", "html");
 app.engine("html", require("ejs").renderFile); // temporarily using html only
 app.set("views", process.cwd() + "/src/views");
+
+app.use("/static", express.static("assets"));
 
 app.use(logger);
 app.use(express.urlencoded({ extended: true })); // for post request encoding

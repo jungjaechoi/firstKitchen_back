@@ -1,0 +1,16 @@
+.sidebar {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,0.9));
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.sidebar-link{
+    transition: all .4s;
+}
+
+.sidebar-link:hover{
+    background-color: #444;
+    border-radius: 5px;
+}

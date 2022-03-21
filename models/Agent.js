@@ -1,5 +1,3 @@
-import bcrypt from "bcrypt";
-
 module.exports = (sequelize, DataTypes) => {
   const Agent = sequelize.define("Agent", {
     // id, createdAt, updatedAt 자동 생성
