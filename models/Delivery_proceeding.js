@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER(10),
         allowNull: false,
       },
+      user_nickname:{
+        type: DataTypes.STRING(20),
+        allowNull: false,
+      },
       deliveryApp: {
         type: DataTypes.STRING(20),
         comment: "배달앱종류",
@@ -84,6 +88,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0
       },
        // (0=대기, 1=접수, 2=완료(라이더한테 전달 or 포장)) 
+    },
+    {
+      charset: "utf8",
+      collate: "utf8_general_ci",
     });
     Delivery_proceeding.associate = (models) => {
       Delivery_proceeding.hasMany(models.Order_proceeding, {
@@ -91,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         constraints: false,
       });
-      Delivery_completed.belongsTo(models.Store, {
+      Delivery_proceeding.belongsTo(models.Store, {
         foreignKey: "store_id",
         allowNull: true,
         constraints: false,

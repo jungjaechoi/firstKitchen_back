@@ -7,15 +7,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     productUnit_id:{
       type: DataTypes.INTEGER(10),
-      allowNull: false,
     },
     productSet_id:{
       type: DataTypes.INTEGER(10),
-      allowNull: false,
     },
     productOption_id:{
       type: DataTypes.INTEGER(10),
-      allowNull: false,
     },
     quantity: {
       type: DataTypes.INTEGER(5),
@@ -23,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNULL:false
     },
     
+  },
+  {
+    charset: "utf8",
+    collate: "utf8_general_ci",
   });
     Order_completed.associate = (models) => {
         Order_completed.belongsTo(models.Delivery_completed, {
@@ -31,17 +32,17 @@ module.exports = (sequelize, DataTypes) => {
             constraints: false,
             onDelete: "cascade",
         });
-        Order_completed.belongsTo(models.productOption, {
+        Order_completed.belongsTo(models.ProductOption, {
             foreignKey: "productOption_id",
             allowNull: true,
             constraints: false,
         });
-        Order_completed.belongsTo(models.productUnit, {
+        Order_completed.belongsTo(models.ProductUnit, {
             foreignKey: "productUnit_id",
             allowNull: true,
             constraints: false,
         });
-        Order_completed.belongsTo(models.productSet, {
+        Order_completed.belongsTo(models.ProductSet, {
             foreignKey: "productSet_id",
             allowNull: true,
             constraints: false,

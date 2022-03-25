@@ -25,15 +25,19 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0
       }
       
+    },
+    {
+      charset: "utf8",
+      collate: "utf8_general_ci",
     });
     ProductSet.associate = (models) => {
         ProductSet.hasMany(models.Order_proceeding, {
-            foreignKey: "ProductSet_id",
+            foreignKey: "productSet_id",
             allowNull: true,
             constraints: false,
         });
         ProductSet.hasMany(models.Order_completed, {
-            foreignKey: "ProductSet_id",
+            foreignKey: "productSet_id",
             allowNull: true,
             constraints: false,
         });

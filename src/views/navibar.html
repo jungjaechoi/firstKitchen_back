@@ -3,8 +3,8 @@
 <head>
     <meta charset = "UTF-8">
     
-    <link rel = "stylesheet" href="static/css/bootstrap.css" type="text/css">
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel = "stylesheet" href="/static/css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
 </head>
 <body>
@@ -13,7 +13,7 @@
             <div class="collapse navbar-collapse" id="sidebar">
                 <div class="container-fluid">
                     <div class = "row">
-                        <div class = 'col-lg-3 sidebar fixed-top'>
+                        <div class = 'col-lg-2 sidebar fixed-top'>
                             <ul class="navbar-nav flex-column mt-4">
                                 <li class="nav-item" >
                                     <a href="#" class = "nav-link text-white p-2 mb-2 sidebar-link" onclick="homeMenu()">
@@ -68,8 +68,8 @@
             }else{
                 con.style.display = 'none';
             }
-            if(window.location.pathname !='/home'){
-                window.location.href = 'http://localhost:4000/home'
+            if(window.location.pathname !='/user/home'){
+                window.location.href = 'http://localhost:4000/user/home'
             }
         }
     </script>

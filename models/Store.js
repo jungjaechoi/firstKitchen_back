@@ -32,13 +32,20 @@ module.exports = (sequelize, DataTypes) => {
           allowNULL:false
         },
         isOpen: {
-          type: DataTypes.Boolean,
+          type: DataTypes.INTEGER(1),
           comment: "영업상태",
           allowNULL:false
         },
+        deliveryPrice:{
+          type: DataTypes.INTEGER(10),
+          comment: "배달료",
+          allowNULL:false
+        }
       },
+      
       {
-        timestamps: false,
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
     );
     Store.associate = (models) => {

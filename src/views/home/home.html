@@ -9,10 +9,29 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#navibar").load("/navibar", function () {
+        $("#navibar").load("/user/navibar", function () {
         });
     })
 </script>
+
+<div>
+    <h4 style = "margin-left: 330px;">실시간 매출 현황</h4>
+    <div style = "position: absolute;  margin-left:330px; margin-top:1px; font-size: 30px;" id="earning"></div>
+</div>
+        
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getEarning",
+            type: "post",
+            data: {token:localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+                $('#earning').append(result.earning+ " 원");
+            }
+        })
+    })  
+</script>  
 
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>

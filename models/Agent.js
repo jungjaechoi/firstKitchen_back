@@ -8,8 +8,13 @@ module.exports = (sequelize, DataTypes) => {
     storeAnalyzingPw: {
       type: DataTypes.STRING(60),
       comment: "비밀번호"
-    }
+    },
+    
     // 위치 정보 needs to be added
+  },
+  {
+    charset: "utf8",
+    collate: "utf8_general_ci",
   });
   Agent.associate = (models) => {
     Agent.hasMany(models.Store, {

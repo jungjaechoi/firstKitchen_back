@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
       end_time:{
         type: DataTypes.DATE
       }
+    },
+    {
+      charset: "utf8",
+      collate: "utf8_general_ci",
     });
     OpenRecord.associate = (models) => {
         OpenRecord.belongsTo(models.Store, {

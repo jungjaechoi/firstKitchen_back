@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0
       }
       
+    },
+    {
+      charset: "utf8",
+      collate: "utf8_general_ci",
     });
     ProductUnit.associate = (models) => {
         ProductUnit.hasMany(models.Order_proceeding, {
