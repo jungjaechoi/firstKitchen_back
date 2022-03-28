@@ -31,6 +31,18 @@
             }
         })
     })  
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getDeliveryStatus",
+            type: "post",
+            data: {token:localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+               console.log(result);
+            }
+        })
+    })  
 </script>  
 
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

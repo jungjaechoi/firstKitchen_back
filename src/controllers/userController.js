@@ -1,4 +1,4 @@
-import { Agent, Store, Delivery_completed } from "../../models";
+import { Agent, Store, Delivery_completed, Delivery_proceeding, Order_proceeding, ProductUnit, ProductSet, ProductOption } from "../../models";
 import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 
@@ -75,4 +75,81 @@ export const getEarning = async(req,res) => {
     return res.send("error")
   
   }
+}
+
+
+export const getDeliveryStatus = async(req,res) => {
+  
+  const store_id = res.locals.store_id;
+
+  try{
+    var delivery = await Delivery_proceeding.findAll({
+      where:{
+        store_id
+      }
+    })
+    
+    var wait = new Array();
+    var receipt = new Array();
+    var completed = new Array();
+
+
+    for (var i = 0; i<delivery.length ; i++){
+      
+      var temp_arr = new Array();
+
+      var orders = await Order_proceeding.findAll({
+        where:{
+          delivery_id: delivery[i].dataValues.id
+        }
+      });
+      
+      for (var j = 0; j<orders.length ; j++){
+        if (orders[j].dataValues.productUnit_id != null){
+          var product = await ProductUnit.findOne({
+            where:{
+              id: orders[j].dataValues.productUnit_id
+            }
+          });
+          temp_arr.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productSet_id != null){
+          var product = await ProductSet.findOne({
+            where:{
+              id: orders[j].dataValues.productSet_id
+            }
+          });
+          temp_arr.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productOption_id != null){
+          var product = await ProductOption.findOne({
+            where:{
+              id: orders[j].dataValues.productOption_id
+            }
+          });
+          temp_arr.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+      }
+      
+      if (delivery[i].dataValues.status == 0){
+        wait.push(temp_arr);
+      }
+      else if(delivery[i].dataValues.status == 1){
+        receipt.push(temp_arr);
+      }
+      else{
+        completed.push(temp_arr);
+      }
+    }
+
+    const result_arr = new Array(wait, receipt, completed);
+    console.log(result_arr);
+    const result = JSON.stringify(result_arr)
+    return res.json({result});
+
+  }catch(err){
+    console.log("Error on inquiring DeliveryStatus: " + err)
+    return res.send("error")
+  }
+
 }

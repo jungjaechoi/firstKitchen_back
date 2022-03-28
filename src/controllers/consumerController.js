@@ -29,7 +29,7 @@ export const postDeliveryInfo = async(req,res) => {
     }
 
     try{
-        const delivery = await Delivery_completed.create({
+        const delivery = await Delivery_proceeding.create({
             store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
             jibunAddress,roadAddress,addressDetail,memo,request,
             tel,payType,totalPaidPrice,totalPrice,
@@ -38,7 +38,7 @@ export const postDeliveryInfo = async(req,res) => {
 
         for (var i = 0; i<orders.length ; i++){
             if(orders[i].menu_type == 0){
-                const order = await Order_completed.create({
+                const order = await Order_proceeding.create({
                     delivery_id: delivery.id,
                     productUnit_id:orders[i].menu_id,
                     quantity: orders[i].quantity
