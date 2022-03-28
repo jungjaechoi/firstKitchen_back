@@ -143,7 +143,7 @@ export const getDeliveryStatus = async(req,res) => {
     }
 
     const result_arr = new Array(wait, receipt, completed);
-    console.log(result_arr);
+    
     const result = JSON.stringify(result_arr)
     return res.json({result});
 

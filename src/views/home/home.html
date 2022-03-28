@@ -14,9 +14,54 @@
     })
 </script>
 
-<div>
-    <h4 style = "margin-left: 330px;">실시간 매출 현황</h4>
-    <div style = "position: absolute;  margin-left:330px; margin-top:1px; font-size: 30px;" id="earning"></div>
+<div style = "margin-left: 330px;">
+    <p ><실시간 매출 현황></p>
+    <div style = "position: absolute;  margin-top:1px; font-size: 30px;" id="earning"></div>
+    
+    <p style="margin-top: 150px;"><주문내역></p>
+    <ul style=" list-style:none;">
+        <li style="float: left;">
+            <div id="table_wait" style="height: 340px;width: 150px">
+                <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+                  <thead>
+                      <tr>
+                          <th>대기</th>
+                      </tr>
+                  </thead>
+                  <tbody style = "height: 34px;" id="tblShow_wait">
+                  </tbody>
+                </table>
+            </div>
+        </li>
+        <li style="float: left;">
+            <div id="table_receipt" style="height: 340px;width: 150px">
+                <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+                  <thead>
+                      <tr>
+                          <th>접수</th>
+                      </tr>
+                  </thead>
+                  <tbody style = "height: 34px;" id="tblShow_receipt">
+                  </tbody>
+                </table>
+            </div>
+        </li>
+        <li style="float: left;">
+            <div id="table_completed" style="height: 340px; width: 150px">
+                <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+                  <thead>
+                      <tr>
+                          <th>완료</th>
+                      </tr>
+                  </thead>
+                  <tbody style = "height: 34px;" id="tblShow_completed">
+                  </tbody>
+                </table>
+            </div>
+        </li>
+    </ul>
+    
+   
 </div>
         
 <script type="text/javascript">
@@ -39,7 +84,38 @@
             data: {token:localStorage.getItem('token')},
             datatype: "json",
             success: function(result){
-               console.log(result);
+                var json = result.result;
+                var arr = JSON.parse(json);
+                var wait = arr[0]
+                var receipt = arr[1]
+                var completed = arr[2]
+                for(var i = 0 ; i < wait.length; i++){
+                    var objRow = document.all("tblShow_wait").insertRow();
+                    var temp_html = "";
+                    for( var j = 0 ; j<wait[i].length ; j++){
+                        temp_html += wait[i][j][0] + " " + wait[i][j][1] + "개\n";
+                    }
+                    var objCell = objRow.insertCell();
+                    objCell.innerHTML = temp_html
+                }
+                for(var i = 0 ; i < receipt.length; i++){
+                    var objRow = document.all("tblShow_receipt").insertRow();
+                    var temp_html = "";
+                    for( var j = 0 ; j<receipt[i].length ; j++){
+                        temp_html += receipt[i][j][0] + " " + receipt[i][j][1] + "개\n";
+                    }
+                    var objCell = objRow.insertCell();
+                    objCell.innerHTML = temp_html
+                }
+                for(var i = 0 ; i < completed.length; i++){
+                    var objRow = document.all("tblShow_completed").insertRow();
+                    var temp_html = "";
+                    for( var j = 0 ; j<completed[i].length ; j++){
+                        temp_html += completed[i][j][0] + " " + completed[i][j][1] + "개\n";
+                    }
+                    var objCell = objRow.insertCell();
+                    objCell.innerHTML = temp_html
+                }
             }
         })
     })  

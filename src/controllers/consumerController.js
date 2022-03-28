@@ -93,13 +93,63 @@ export const getDeliveryInfo = async(req,res) => {
     }
 }
 
-export const getStoreInfo = async(req,res) => {
+export const getAllStore = async(req,res) => {
     //나중에는 위치정보 받아서 가까운 가게 res해야함.
     try{
         const store = await Store.findAll({attributes: ['id','storeName','storeAddress','isOpen','deliveryPrice']})
         return res.json({store});
     } catch(err){
-        console.log("Error on inquiring storeInfo: " + err)
+        console.log("Error on inquiring AllStore: " + err)
         return res.send("error")
     }
 }
+
+export const getStoreInfo = async(req,res) => {
+    const {store_id} = req.body;
+    try{
+
+        const store = await Store.findOne({
+            where:{
+                id:store_id
+            },
+            attributes:['id','storeName','storeAddress','tel','isOpen']
+        });
+
+        const productUnit = await ProductUnit.findAll({
+            where:{
+                store_id
+            }
+        });
+
+        const productSet = await ProductSet.findAll({
+            where:{
+                store_id
+            }
+        });
+
+        const productOption = await ProductOption.findAll({
+            where:{
+                store_id
+            }
+        });
+
+        const result_arr = new Array(store,productUnit,productSet,productOption);
+        const result = JSON.stringify(result_arr)
+
+        return res.json({result});
+
+    }catch(err){
+        console.log("Error on inquiring StoreInfo: " + err)
+        return res.send("error")
+    }
+}
+
+export const getMenuInfo = async(req,res) => {
+    const {store_id, menu_id,menu_type} = req.body;
+
+    try{
+        
+    }catch{
+
+    }
+} 
