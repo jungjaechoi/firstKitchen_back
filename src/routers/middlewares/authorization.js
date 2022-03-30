@@ -15,6 +15,7 @@ export const verifyToken = (req, res, next) => {
             res.json({ error: 'unauthorized' });
         }
     } catch (err) {
+        console.log(err);
         res.json({ error: 'token expired' });
     }
 };

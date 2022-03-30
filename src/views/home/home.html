@@ -65,6 +65,26 @@
 </div>
         
 <script type="text/javascript">
+
+    function changeStatus_to_receipt(delivery_id) {
+        var result = confirm("해당 주문을 접수처리 하시겠습니까?");
+        if(result){
+            $(document).ready(function(){
+                $.ajax({
+                    url: "/user/changeStatus",
+                    type: "post",
+                    data: {delivery_id,
+                        token: localStorage.getItem('token')
+                    },
+                    datatype: "json",
+                    success: function(result){
+                        window.location.href = '/user/home';
+                    }
+                })
+            }) 
+        }
+    }
+
     $(document).ready(function(){
         $.ajax({
             url: "/user/getEarning",
@@ -89,32 +109,50 @@
                 var wait = arr[0]
                 var receipt = arr[1]
                 var completed = arr[2]
+
+
                 for(var i = 0 ; i < wait.length; i++){
                     var objRow = document.all("tblShow_wait").insertRow();
                     var temp_html = "";
-                    for( var j = 0 ; j<wait[i].length ; j++){
+                    temp_html += `<div onClick="changeStatus(${wait[i][0]})">`
+
+                    for( var j = 1 ; j<wait[i].length ; j++){
                         temp_html += wait[i][j][0] + " " + wait[i][j][1] + "개\n";
                     }
-                    var objCell = objRow.insertCell();
-                    objCell.innerHTML = temp_html
+                    temp_html += '</div>'
+                    
+                    var objCell_id = objRow.insertCell();
+                    objCell_id.innerHTML = wait[i][0];
+                    objCell_id.style = "display:none"
+
+                    var objCell_menu = objRow.insertCell();
+                    objCell_menu.innerHTML = temp_html
                 }
                 for(var i = 0 ; i < receipt.length; i++){
                     var objRow = document.all("tblShow_receipt").insertRow();
                     var temp_html = "";
-                    for( var j = 0 ; j<receipt[i].length ; j++){
+                    temp_html += `<div onClick="changeStatus(${receipt[i][0]})">`
+
+                    for( var j = 1 ; j<receipt[i].length ; j++){
                         temp_html += receipt[i][j][0] + " " + receipt[i][j][1] + "개\n";
                     }
-                    var objCell = objRow.insertCell();
-                    objCell.innerHTML = temp_html
+                    temp_html += '</div>'
+                    
+                    var objCell_id = objRow.insertCell();
+                    objCell_id.innerHTML = receipt[i][0];
+                    objCell_id.style = "display:none"
+
+                    var objCell_menu = objRow.insertCell();
+                    objCell_menu.innerHTML = temp_html
                 }
                 for(var i = 0 ; i < completed.length; i++){
                     var objRow = document.all("tblShow_completed").insertRow();
                     var temp_html = "";
-                    for( var j = 0 ; j<completed[i].length ; j++){
+                    for( var j = 1 ; j<completed[i].length ; j++){
                         temp_html += completed[i][j][0] + " " + completed[i][j][1] + "개\n";
                     }
-                    var objCell = objRow.insertCell();
-                    objCell.innerHTML = temp_html
+                    var objCell_menu = objRow.insertCell();
+                    objCell_menu.innerHTML = temp_html
                 }
             }
         })

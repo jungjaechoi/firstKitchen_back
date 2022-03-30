@@ -17,8 +17,6 @@ export const postDeliveryInfo = async(req,res) => {
         'addressDetail',
         'tel','payType','totalPaidPrice','totalPrice',
         'discountPrice','deliveryPrice','orders');
-    
-    console.log(req.body.data.jibunAddress);
 
     for (var i = 0; i<checkArr.length ; i++){
         if(checkArr[i] == null){
@@ -35,6 +33,8 @@ export const postDeliveryInfo = async(req,res) => {
             tel,payType,totalPaidPrice,totalPrice,
             discountPrice,deliveryPrice
         });
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        console.log(orders);
 
         for (var i = 0; i<orders.length ; i++){
             if(orders[i].menu_type == 0){
@@ -105,14 +105,14 @@ export const getAllStore = async(req,res) => {
 }
 
 export const getStoreInfo = async(req,res) => {
-    const {store_id} = req.body;
+    const {store_id} = req.body.data;
     try{
 
         const store = await Store.findOne({
             where:{
                 id:store_id
             },
-            attributes:['id','storeName','storeAddress','tel','isOpen']
+            attributes:['id','storeName','storeAddress','tel','isOpen','deliveryPrice']
         });
 
         const productUnit = await ProductUnit.findAll({
@@ -145,11 +145,41 @@ export const getStoreInfo = async(req,res) => {
 }
 
 export const getMenuInfo = async(req,res) => {
-    const {store_id, menu_id,menu_type} = req.body;
+    const {store_id, menu_id,menu_type} = req.body.data;
 
     try{
-        
-    }catch{
 
+        if(menu_type == 0){
+            const menu = await ProductUnit.findOne({
+                where:{
+                    id: menu_id
+                }
+            });
+            return res.json({menu});
+        }
+        else if(menu_type == 1){
+            const menu = await ProductSet.findOne({
+                where:{
+                    id: menu_id
+                }
+            });
+            return res.json({menu});
+        }
+        else{
+            const menu = await ProductOption.findOne({
+                where:{
+                    id: menu_id
+                }
+            });
+            return res.json({menu});
+        }
+
+    }catch(err){
+        console.log("Error on inquiring MenuInfo: " + err)
+        return res.send("error")
     }
 } 
+
+export const getCartMenu = async(req,res) => {
+
+}

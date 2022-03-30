@@ -97,6 +97,7 @@ export const getDeliveryStatus = async(req,res) => {
     for (var i = 0; i<delivery.length ; i++){
       
       var temp_arr = new Array();
+      temp_arr.push(delivery[i].dataValues.id);
 
       var orders = await Order_proceeding.findAll({
         where:{
@@ -145,11 +146,66 @@ export const getDeliveryStatus = async(req,res) => {
     const result_arr = new Array(wait, receipt, completed);
     
     const result = JSON.stringify(result_arr)
+    console.log(result)
     return res.json({result});
 
   }catch(err){
     console.log("Error on inquiring DeliveryStatus: " + err)
     return res.send("error")
   }
+}
+
+export const changeStatus = async(req,res) => {
+  
+  const {delivery_id} = req.body;
+  try{
+
+    const delivery = await Delivery_proceeding.findOne({
+      where:{
+        id:delivery_id
+      }
+    })
+    
+    var status = delivery.dataValues.status;
+
+    if(status == 0){
+      Delivery_proceeding.update(
+        {status: 1},
+        {where: {id: delivery_id}, returning: true}).then(function(result) {
+             res.send("success");
+        }).catch(function(err) {
+          console.log("Error on changing Status: " + err)
+            res.send("error");
+        });
+    }
+    else if(status == 1){
+      await Delivery_proceeding.destroy({where: {id:delivery_id}});
+      await Delivery_completed.create({
+        store_id : delivery.dataValues.store_id,
+        user_id: delivery.dataValues.user_id ,
+        user_nickname: delivery.dataValues.user_nickname,
+        deliveryApp: delivery.dataValues.deliveryApp,
+        receptionType: delivery.dataValues.receptionType,
+        orderTime: delivery.dataValues.orderTime,
+        jibunAddress: delivery.dataValues.jibunAddress,
+        roadAddress: delivery.dataValues.roadAddress,
+        addressDetail: delivery.dataValues.addressDetail,
+        memo: delivery.dataValues.memo,
+        request: delivery.dataValues.request,
+        tel: delivery.dataValues.tel,
+        payType: delivery.dataValues.payType,
+        totalPaidPrice: delivery.dataValues.totalPaidPrice,
+        totalPrice: delivery.dataValues.totalPrice,
+        discountPrice: delivery.dataValues.discountPrice,
+        deliveryPrice: delivery.dataValues.deliveryPrice
+    });
+    // 배달앱에 보내야함.
+    }
+  }
+  catch(err){
+    console.log("Error on changing Status: " + err)
+    res.send("error");
+  }
+  
 
 }
