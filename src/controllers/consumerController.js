@@ -33,8 +33,7 @@ export const postDeliveryInfo = async(req,res) => {
             tel,payType,totalPaidPrice,totalPrice,
             discountPrice,deliveryPrice
         });
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-        console.log(orders);
+        
 
         for (var i = 0; i<orders.length ; i++){
             if(orders[i].menu_type == 0){

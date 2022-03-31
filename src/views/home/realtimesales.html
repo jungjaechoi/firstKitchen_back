@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div style = "margin-left: 330px;">
+    <p ><실시간 매출 현황></p>
+    <div style = "position: absolute;  margin-top:1px; font-size: 30px;" id="earning"></div>
+    
+    <p style="margin-top: 150px;"><주문내역></p>
+    <div id="table_wait" style="height: 340px;width: 150px">
+        <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+            <thead style = "height: 0px;">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody style = "height: 34px;" id="tblShow_wait">
+            </tbody>
+        </table>
+    </div>
+    
+   
+</div>
+        
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getEarning",
+            type: "post",
+            data: {token:localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+                $('#earning').append(result.earning+ " 원");
+            }
+        })
+    })  
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getEarningForDeliveryApp",
+            type: "post",
+            data: {token:localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+                
+            }
+        })
+    })  
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

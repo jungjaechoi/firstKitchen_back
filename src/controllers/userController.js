@@ -1,4 +1,4 @@
-import { Agent, Store, Delivery_completed, Delivery_proceeding, Order_proceeding, ProductUnit, ProductSet, ProductOption } from "../../models";
+import { Agent, Store, Delivery_completed, Delivery_proceeding, Order_proceeding,Order_completed, ProductUnit, ProductSet, ProductOption } from "../../models";
 import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 
@@ -179,8 +179,7 @@ export const changeStatus = async(req,res) => {
         });
     }
     else if(status == 1){
-      await Delivery_proceeding.destroy({where: {id:delivery_id}});
-      await Delivery_completed.create({
+      const delivery_completed = await Delivery_completed.create({
         store_id : delivery.dataValues.store_id,
         user_id: delivery.dataValues.user_id ,
         user_nickname: delivery.dataValues.user_nickname,
@@ -199,13 +198,80 @@ export const changeStatus = async(req,res) => {
         discountPrice: delivery.dataValues.discountPrice,
         deliveryPrice: delivery.dataValues.deliveryPrice
     });
+    console.log(delivery_completed + " is saved.")
+
+    const orders = await Order_proceeding.findAll({
+      where:{
+        delivery_id
+      }
+    })
+
+    for (var i = 0; i<orders.length ; i++){
+      const order = await Order_completed.create({
+          delivery_id: delivery_completed.dataValues.id,
+          productUnit_id:orders[i].dataValues.productUnit_id,
+          productSet_id:orders[i].dataValues.productSet_id,
+          productOption_id:orders[i].dataValues.productOption_id,
+          quantity: orders[i].dataValues.quantity
+      })
+      console.log(order.id + " is saved")
+    }
+
+    Delivery_proceeding.update(
+      {status: 2},
+      {where: {id: delivery_id}, returning: true}).then(function(result) {
+           res.send("success");
+      }).catch(function(err) {
+        console.log("Error on changing Status: " + err)
+          res.send("error");
+      });
     // 배달앱에 보내야함.
+    }
+    else if(status == 2){
+      await Delivery_proceeding.destroy({where: {id:delivery_id}});
+      return res.send("success");
     }
   }
   catch(err){
     console.log("Error on changing Status: " + err)
     res.send("error");
   }
+
+}
+
+export const getEarningForDeliveryApp = async(req,res) => {
   
+  const store_id = res.locals.store_id;
+
+  try{
+    const delivery_completeds = await Delivery_completed.findAll({
+      where:{
+        store_id
+      }
+    });
+    
+    kind_app = new Set();
+
+    for(var i = 0; i < delivery_completeds.length ; i++){
+      kind_app.add(delivery_completeds[i].dataValues.deliveryApp)
+    }
+
+    kind_app = Array.from(kind_app)
+    var count_earning_dict = {}
+
+    for(var i = 0; i < kind_app.length; i++){
+      count_earning_dict[kind_app[i]] = 0
+    }
+
+    for(var i = 0; i < delivery_completeds.length ; i++){
+      count_earning_dict[delivery_completeds[i].dataValues.deliveryApp] += delivery_completeds[i].dataValues.totalPaidPrice
+    }
+
+    // dict에 각 배달앱 total earning 담아놓음, 이거 묶어서 json으로 만들어 보내야댐
+
+  }
+  catch(err){
+
+  }
 
 }
