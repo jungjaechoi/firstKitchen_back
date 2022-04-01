@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+
+
+<div>
+
+    <div id="table" style="height: 340px;width: 400px">
+        <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+            <thead style = "height: 0px;">
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody style = "height: 34px;" id="tblShow">
+            </tbody>
+        </table>
+    </div>
+    
+   
+</div>
+        
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getPaymentList",
+            type: "post",
+            data: {token:localStorage.getItem('token'),
+                    start: new Date(2022, 1, 1),
+                    end: new Date()},
+            datatype: "json",
+            success: function(result){
+
+                var payment = result.paymentList;
+                var completed_payment = payment[0];
+                var proceeding_payment = payment[1];
+
+                for(var i = 0; i<completed_payment.length;i++){
+                    var objRow = document.all("tblShow").insertRow();
+                    var objCell_status =objRow.insertCell();
+                    objCell_status.innerHTML = completed_payment[i].status;
+                    var objCell_earning = objRow.insertCell();
+                    objCell_earning.innerHTML = completed_payment[i].totalPaidPrice;
+                }
+                for(var i = 0; i<proceeding_payment.length;i++){
+                    var objRow = document.all("tblShow").insertRow();
+                    var objCell_status =objRow.insertCell();
+                    objCell_status.innerHTML = proceeding_payment[i].status;
+                    var objCell_earning = objRow.insertCell();
+                    objCell_earning.innerHTML = proceeding_payment[i].totalPaidPrice;
+                }
+            }
+        })
+    }) 
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

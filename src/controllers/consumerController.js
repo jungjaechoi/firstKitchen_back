@@ -147,7 +147,6 @@ export const getMenuInfo = async(req,res) => {
     const {store_id, menu_id,menu_type} = req.body.data;
 
     try{
-
         if(menu_type == 0){
             const menu = await ProductUnit.findOne({
                 where:{
@@ -179,6 +178,21 @@ export const getMenuInfo = async(req,res) => {
     }
 } 
 
-export const getCartMenu = async(req,res) => {
+// export const getCartMenu = async(req,res) => {
+//     const {incart} = req.body.data;
+//     var menu = new Array();
 
-}
+//     for(var i = 0; i < incart.length ; i++){
+//         if(incart[i].menu_type == 0){
+
+//         }
+//         else if(incart[i].menu_type == 1){
+
+//         }
+//         else if(incart[i].menu_type == 2){
+            
+//         }
+//         menu.push()
+//     }
+    
+// }

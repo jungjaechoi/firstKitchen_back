@@ -82,6 +82,12 @@ module.exports = (sequelize, DataTypes) => {
         comment: "배달료",
         allowNULL:false
       },
+      status: {
+        type: DataTypes.INTEGER(5),
+        comment: "조리상태",
+        defaultValue: 0
+      },
+      // (0=대기, 1=접수, 2=완료(라이더한테 전달 or 포장), 3= 환불) 
     },
     {
       charset: "utf8",

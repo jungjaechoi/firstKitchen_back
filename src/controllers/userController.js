@@ -1,6 +1,8 @@
 import { Agent, Store, Delivery_completed, Delivery_proceeding, Order_proceeding,Order_completed, ProductUnit, ProductSet, ProductOption } from "../../models";
 import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
+import axios from "axios";
+const Sequelize = require('sequelize');
 
 export const getLogin = (req, res) => {
   return res.render("login/login.html");
@@ -12,6 +14,18 @@ export const getHome = (req,res) => {
  
 export const getNavibar = (req,res) => {
   return res.render("navibar.html");
+}
+
+export const getRealtimesales = (req,res) => {
+  return res.render("home/realtimesales.html");
+}
+
+export const getSaleslist = (req,res) => {
+  return res.render("home/saleslist.html");
+}
+
+export const getPaymenthistory = (req,res) => {
+  return res.render("home/paymenthistory.html");
 }
 
 export const postLogin = async(req,res) => {
@@ -58,22 +72,41 @@ export const getEarning = async(req,res) => {
   const store_id = res.locals.store_id
 
   try{
-    const delivery = await Delivery_completed.findAll({
+    
+    const delivery_completed = await Delivery_completed.findAll({
       where:{
         store_id
       }
     })
+
+    const delivery_proceeding = await Delivery_proceeding.findAll({
+      where:{
+        store_id
+      }
+    })
+
     var earning = 0
-    for (var i = 0; i<delivery.length ; i++){
-      earning += delivery[i].dataValues.totalPrice - delivery[i].dataValues.discountPrice; 
+
+    for (var i = 0; i<delivery_completed.length ; i++){
+      if(delivery_proceeding[i].dataValues.status != 3){
+        earning += delivery_completed[i].dataValues.totalPrice - delivery_completed[i].dataValues.discountPrice; 
+      }
     }
+
+    for (var i = 0; i<delivery_proceeding.length ; i++){
+      if(delivery_proceeding[i].dataValues.status != 2 && delivery_proceeding[i].dataValues.status != 3){
+        earning += delivery_proceeding[i].dataValues.totalPrice - delivery_proceeding[i].dataValues.discountPrice;
+      } 
+    }
+
     console.log("user inquire earningInfo", earning);
     return res.json({earning})
+
   } catch(err){
     
     console.log("Error on inquiring earningInfo: " + err)
     return res.send("error")
-  
+
   }
 }
 
@@ -169,6 +202,14 @@ export const changeStatus = async(req,res) => {
     var status = delivery.dataValues.status;
 
     if(status == 0){
+
+      var sendingParams = {"delivery_id": delivery_id,"status":1}
+
+      axios
+      .post(`http://192.168.100.60:4000/user/status`, {
+        data: sendingParams,
+      })
+
       Delivery_proceeding.update(
         {status: 1},
         {where: {id: delivery_id}, returning: true}).then(function(result) {
@@ -177,8 +218,10 @@ export const changeStatus = async(req,res) => {
           console.log("Error on changing Status: " + err)
             res.send("error");
         });
+
     }
     else if(status == 1){
+
       const delivery_completed = await Delivery_completed.create({
         store_id : delivery.dataValues.store_id,
         user_id: delivery.dataValues.user_id ,
@@ -196,8 +239,17 @@ export const changeStatus = async(req,res) => {
         totalPaidPrice: delivery.dataValues.totalPaidPrice,
         totalPrice: delivery.dataValues.totalPrice,
         discountPrice: delivery.dataValues.discountPrice,
-        deliveryPrice: delivery.dataValues.deliveryPrice
+        deliveryPrice: delivery.dataValues.deliveryPrice,
+        status: 2
     });
+
+    var sendingParams = {"delivery_id": delivery_id,"status":2}
+
+    axios
+    .post(`http://192.168.100.60:4000/user/status`, {
+      data: sendingParams,
+    })
+
     console.log(delivery_completed + " is saved.")
 
     const orders = await Order_proceeding.findAll({
@@ -225,7 +277,7 @@ export const changeStatus = async(req,res) => {
         console.log("Error on changing Status: " + err)
           res.send("error");
       });
-    // 배달앱에 보내야함.
+    
     }
     else if(status == 2){
       await Delivery_proceeding.destroy({where: {id:delivery_id}});
@@ -244,34 +296,103 @@ export const getEarningForDeliveryApp = async(req,res) => {
   const store_id = res.locals.store_id;
 
   try{
+    
     const delivery_completeds = await Delivery_completed.findAll({
       where:{
         store_id
       }
     });
+    const delivery_proceedings = await Delivery_proceeding.findAll({
+      where:{
+        store_id
+      }
+    });
     
-    kind_app = new Set();
+    var kind_app = new Set();
 
     for(var i = 0; i < delivery_completeds.length ; i++){
       kind_app.add(delivery_completeds[i].dataValues.deliveryApp)
+    }
+    for(var i = 0; i < delivery_proceedings.length ; i++){
+      kind_app.add(delivery_proceedings[i].dataValues.deliveryApp)
     }
 
     kind_app = Array.from(kind_app)
     var count_earning_dict = {}
 
     for(var i = 0; i < kind_app.length; i++){
-      count_earning_dict[kind_app[i]] = 0
+      count_earning_dict[kind_app[i]] = [0,0]
     }
 
     for(var i = 0; i < delivery_completeds.length ; i++){
-      count_earning_dict[delivery_completeds[i].dataValues.deliveryApp] += delivery_completeds[i].dataValues.totalPaidPrice
+      if (delivery_proceedings[i].dataValues.status != 3){
+        count_earning_dict[delivery_completeds[i].dataValues.deliveryApp][0] += 1;
+        count_earning_dict[delivery_completeds[i].dataValues.deliveryApp][1] += delivery_completeds[i].dataValues.totalPaidPrice
+      }
+    }
+    for(var i = 0; i < delivery_proceedings.length ; i++){
+      if (delivery_proceedings[i].dataValues.status != 2 && delivery_proceedings[i].dataValues.status != 3){
+        count_earning_dict[delivery_proceedings[i].dataValues.deliveryApp][0] += 1;
+        count_earning_dict[delivery_proceedings[i].dataValues.deliveryApp][1] += delivery_proceedings[i].dataValues.totalPaidPrice
+      }
     }
 
-    // dict에 각 배달앱 total earning 담아놓음, 이거 묶어서 json으로 만들어 보내야댐
+    var earning = new Array();
+
+    for(var key in count_earning_dict){
+      earning.push([key,count_earning_dict[key][0],count_earning_dict[key][1]])
+    }
+    earning = JSON.stringify(earning);
+    return res.json({earning});
+  }
+  catch(err){
+    console.log("Error on inquiring Earing for App: " + err)
+    res.send("error");
+  }
+}
+
+export const getPaymentList = async(req,res) =>{
+  
+  const Op = Sequelize.Op
+
+  const store_id = res.locals.store_id;
+  var {start,end} = req.body;
+  start = new Date(start);
+  end = new Date(end);
+
+  try{
+    var paymentList = new Array();
+    
+    var completed_payment = await Delivery_completed.findAll({
+      where:{
+        store_id,
+        [Op.and]: [
+          {createdAt: {[Op.lte]: end}},
+          {createdAt: {[Op.gte]: start}}
+        ]
+      }
+    });
+
+    paymentList.push(completed_payment);
+
+    var proceeding_payment = await Delivery_proceeding.findAll({
+      where:{
+        store_id,
+        [Op.and]: [
+          {createdAt: {[Op.lte]: end}},
+          {createdAt: {[Op.gte]: start}}
+        ]
+      }
+    });
+
+    paymentList.push(proceeding_payment);
+
+    return res.json({paymentList});
 
   }
   catch(err){
-
+    console.log("Error on inquiring PaymentList: " + err)
+    res.send("error");
   }
 
 }

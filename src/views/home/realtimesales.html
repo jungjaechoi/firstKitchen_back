@@ -15,11 +15,12 @@
 </script>
 
 <div style = "margin-left: 330px;">
+    <p style="border: solid 1px; width: 280px;" id = "date"></p>
     <p ><실시간 매출 현황></p>
     <div style = "position: absolute;  margin-top:1px; font-size: 30px;" id="earning"></div>
     
-    <p style="margin-top: 150px;"><주문내역></p>
-    <div id="table_wait" style="height: 340px;width: 150px">
+    <p style="margin-top: 150px;"><주문 경로 별 건수 및 매출></p>
+    <div id="table" style="height: 340px;width: 400px">
         <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
             <thead style = "height: 0px;">
                 <tr>
@@ -28,7 +29,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody style = "height: 34px;" id="tblShow_wait">
+            <tbody style = "height: 34px;" id="tblShow">
             </tbody>
         </table>
     </div>
@@ -37,6 +38,26 @@
 </div>
         
 <script type="text/javascript">
+
+    const date = document.getElementById('date')
+
+    function getTime(){
+        let today = new Date(); 
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let dates = today.getDate();  // 날짜
+        let hours = today.getHours(); // 시
+        let minutes = today.getMinutes();  // 분
+        let seconds = today.getSeconds();  // 초
+
+        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+    }
+
+    function init(){
+        setInterval(getTime, 1000);
+    }
+    getTime();
+    init();
 
     $(document).ready(function(){
         $.ajax({
@@ -57,7 +78,17 @@
             data: {token:localStorage.getItem('token')},
             datatype: "json",
             success: function(result){
-                
+                var earning = JSON.parse(result.earning);
+
+                for(var i = 0; i<earning.length;i++){
+                    var objRow = document.all("tblShow").insertRow();
+                    var objCell_app =objRow.insertCell();
+                    objCell_app.innerHTML = earning[i][0];
+                    var objCell_count = objRow.insertCell();
+                    objCell_count.innerHTML = earning[i][1] + "건";
+                    var objCell_earning = objRow.insertCell();
+                    objCell_earning.innerHTML = earning[i][2];
+                }
             }
         })
     })  

@@ -15,11 +15,8 @@
 </script>
 
 <div style = "margin-left: 330px;">
-    <p style="border: solid 1px; width: 280px;" id = "date"></p>
-    <p ><실시간 매출 현황></p>
-    <div style = "position: absolute;  margin-top:1px; font-size: 30px;" id="earning"></div>
     
-    <p style="margin-top: 150px;"><주문내역></p>
+    <p style="margin-top: 10px;"><주문내역></p>
     <ul style=" list-style:none;">
         <li style="float: left;">
             <div id="table_wait" style="height: 340px;width: 150px">
@@ -67,27 +64,6 @@
         
 <script type="text/javascript">
 
-    const date = document.getElementById('date')
-
-    function getTime(){
-        let today = new Date(); 
-        let year = today.getFullYear(); // 년도
-        let month = today.getMonth() + 1;  // 월
-        let dates = today.getDate();  // 날짜
-        let hours = today.getHours(); // 시
-        let minutes = today.getMinutes();  // 분
-        let seconds = today.getSeconds();  // 초
-
-        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
-    }
-
-    function init(){
-        setInterval(getTime, 1000);
-    }
-    getTime();
-    init();
-
-   
     function changeStatus_to_receipt(delivery_id) {
         var result = confirm("해당 주문을 접수처리 하시겠습니까?");
         if(result){
@@ -147,18 +123,6 @@
             }) 
         }
     }
-
-    $(document).ready(function(){
-        $.ajax({
-            url: "/user/getEarning",
-            type: "post",
-            data: {token:localStorage.getItem('token')},
-            datatype: "json",
-            success: function(result){
-                $('#earning').append(result.earning+ " 원");
-            }
-        })
-    })  
 
     $(document).ready(function(){
         $.ajax({
