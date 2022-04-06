@@ -28,63 +28,8 @@
         <!-- <li style="text-align: center; margin-bottom: 10px; list-style-type:none;">
             <input type = "button" value="Login" onclick="location.href = 'home'"  style=" font-size: 13px; width:100px; height:40px; font-size: 0.8em; margin-bottom:50px;">
         </li> -->
-        <form method="post" style="margin-top:50px;margin-bottom:20px; ">
-            <ul style="list-style-type:none; ">
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="deli_id" id="deli_id" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="delivery_id" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input type = "button" value="배달정보조회" onclick="getDeliveryInfo()" style=" font-size: 13px; width:300px; height:40px; font-size: 1.2em; ">
-                </li>
-            </ul>
-        </form>
-        <form method="post" style="margin-top:50px;margin-bottom:20px; ">
-            <ul style="list-style-type:none; ">
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="store_id" id="store_id" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="store_id" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="user_id" id="user_id" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="user_id" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="deliveryApp" id="deliveryApp" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="deliveryApp" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="orderTime" id="orderTime" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="orderTime" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="receptionType" id="receptionType" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="receptionType" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="jibunAddress" id="jibunAddress" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="jibunAddress" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="addressDetail" id="addressDetail" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="addressDetail" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="payType" id="payType" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="payType" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="tel" id="tel2" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="tel" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="totalPaidPrice" id="totalPaidPrice" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="totalPaidPrice" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="totalPrice" id="totalPrice" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="totalPrice" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="discountPrice" id="discountPrice" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="discountPrice" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="deliveryPrice" id="deliveryPrice" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="deliveryPrice" required>
-                </li>
-
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input type = "button" value="delivery등록" onclick="delivery()" style=" font-size: 13px; width:300px; height:40px; font-size: 1.2em; ">
-                </li>
-            </ul>
-        </form>
+       
+        
     </div>
 </div> <!-- /container -->
 
@@ -123,66 +68,6 @@
 
     }
 
-    function getDeliveryInfo(){
-
-        var deli_id = document.getElementById('deli_id').value;
-
-        $(document).ready(function(){
-            $.ajax({
-            url: "/consumer/getDeliveryInfo",
-            type: "post",
-            data: {id:deli_id},
-            datatype: "json",
-            success: function(result){
-                console.log(result);
-            }
-            })
-        })  
-    }
-
-    function delivery(){
-        
-        const store_id = document.getElementById('store_id').value;
-        console.log(store_id);
-        const user_id =  document.getElementById('user_id').value;
-        const deliveryApp = document.getElementById('deliveryApp').value;
-        const receptionType = document.getElementById('receptionType').value ;
-        const orderTime = document.getElementById('orderTime').value;
-        const jibunAddress =  document.getElementById('jibunAddress').value;
-        const addressDetail = document.getElementById('addressDetail').value;
-        const tel = document.getElementById('tel2').value;
-        const payType = document.getElementById('payType').value;
-        const totalPaidPrice = document.getElementById('totalPaidPrice').value;
-        const totalPrice = document.getElementById('totalPrice').value;
-        const discountPrice = document.getElementById('discountPrice').value;
-        const deliveryPrice = document.getElementById('deliveryPrice').value;
-        
-        $(document).ready(function(){
-            $.ajax({
-            url: "/consumer/postDeliveryInfo",
-            type: "post",
-            data: {
-                store_id: store_id,
-                user_id: user_id,
-                deliveryApp: deliveryApp,
-                receptionType:  receptionType,
-                orderTime: orderTime,
-                jibunAddress: jibunAddress,
-                addressDetail: addressDetail,
-                tel: tel,
-                payType:  payType,
-                totalPaidPrice: totalPaidPrice,
-                totalPrice: totalPrice,
-                discountPrice:discountPrice,
-                deliveryPrice: deliveryPrice
-            },
-            datatype: "json",
-            success: function(result){
-                console.log(result);
-            }
-            })
-        })  
-    }
 </script>
 
 </body>

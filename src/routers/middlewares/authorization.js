@@ -3,7 +3,7 @@ import {secretKey} from "../../../config/secretkey.js"
 
 export const verifyToken = (req, res, next) => {
     try {
-        const {token}= req.body
+        const {token}= req.body;
         const decoded = jwt.verify(token, secretKey);
         console.log(decoded.agent_id,decoded.store_id)
         if (decoded) {
@@ -19,3 +19,4 @@ export const verifyToken = (req, res, next) => {
         res.json({ error: 'token expired' });
     }
 };
+

@@ -49,10 +49,11 @@
                 <p style="display: inline-block;">결제 수단</p>
                 <p style="display: inline-block; float: right;" id = "payType"></p>
             </li>
+            <hr>
             <li>
                 <p>결제 내역</p>
-                <div id="table" style="height: 340px;width: 400px">
-                    <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+                <div id="table" style="height: 100px;width: 280px">
+                    <table  style = " margin-top:10px; margin-bottom:40px;">
                         <thead style = "height: 0px;">
                             <tr>
                                 <th></th>
@@ -66,8 +67,12 @@
             </li>
             <hr>
             <li style="text-align:center; list-style: none; ">
-                <a style="border: 1px solid; margin-top: 20px; margin-right: 10px;" id="refund-btn" class = "btn btn-default" onclick = "refundOrder()" >환불</a>
+                <a style="border: 1px solid; margin-top: 20px; margin-right: 10px;" id="refund-btn" class = "btn btn-default" onclick = "refundOrder()">환불</a>
                 <a style="border: 1px solid; margin-top: 20px;" id="delete-btn" class = "btn btn-default " onclick = "deleteOrder()">삭제</a>
+            </li>
+            <li style="text-align:center; list-style: none; display:none; ">
+                <a id="deli_id"></a>
+                <a id="isCompleted"></a>
             </li>
         </ul>
     </div>
@@ -76,6 +81,23 @@
 
         
 <script type="text/javascript">
+
+    function refundOrder(){
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/refund",
+                type: "post",
+                data: {delivery_id: document.getElementById("deli_id").innerHTML,
+                    isCompleted: document.getElementById("isCompleted").innerHTML,
+                    token: localStorage.getItem('token')
+                },
+                datatype: "json",
+                success: function(result){
+                    
+                }
+            })
+        })
+    }
 
     const createClickHandler = (row) => {
         return () => {
@@ -185,12 +207,26 @@
                     else{
                         payType.innerHTML = "미입력"
                     }
+                    
+                    $("#tblShow_orders").empty();
+
                     for(var i = 0 ; i <orderList.length; i++){
                         var objRow = document.all("tblShow_orders").insertRow();
+                        objRow.style = "border-collapse: separate; border-spacing: 0 10px;";
 
                         var objCell_menuName = objRow.insertCell();
-                        objCell_menuName.innerHTML = orderList[i][0] 
+                        objCell_menuName.innerHTML = orderList[i][0] + " * " + orderList[i][1]
+                        objCell_menuName.style = "width: 200px;"
+
+                        var objCell_price = objRow.insertCell();
+                        objCell_price.innerHTML = (orderList[i][1] * orderList[i][2]) + "원"
+                        
                     }
+
+                    const deli_id = document.getElementById("deli_id");
+                    deli_id.innerHTML = delivery.id;
+                    const isCompleted = document.getElementById("isCompleted");
+                    isCompleted .innerHTML = result.isCompleted;
                 }
             })
         })  

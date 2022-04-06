@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 const Sequelize = require('sequelize');
+const deliveryApp_IP = "http://192.168.100.64:4000";
+
 
 export const getLogin = (req, res) => {
   return res.render("login/login.html");
@@ -179,7 +181,6 @@ export const getDeliveryStatus = async(req,res) => {
     const result_arr = new Array(wait, receipt, completed);
     
     const result = JSON.stringify(result_arr)
-    console.log(result)
     return res.json({result});
 
   }catch(err){
@@ -206,11 +207,11 @@ export const changeStatus = async(req,res) => {
       var sendingParams = {"delivery_id": delivery_id,"status":1}
 
       axios
-      .post(`http://192.168.100.60:4000/user/status`, {
+      .post(`${deliveryApp_IP}/user/status`, {
         data: sendingParams,
       })
 
-      Delivery_proceeding.update(
+      await Delivery_proceeding.update(
         {status: 1},
         {where: {id: delivery_id}, returning: true}).then(function(result) {
              res.send("success");
@@ -246,7 +247,7 @@ export const changeStatus = async(req,res) => {
     var sendingParams = {"delivery_id": delivery_id,"status":2}
 
     axios
-    .post(`http://192.168.100.60:4000/user/status`, {
+    .post(`${deliveryApp_IP}/user/status`, {
       data: sendingParams,
     })
 
@@ -269,7 +270,7 @@ export const changeStatus = async(req,res) => {
       console.log(order.id + " is saved")
     }
 
-    Delivery_proceeding.update(
+    await Delivery_proceeding.update(
       {status: 2},
       {where: {id: delivery_id}, returning: true}).then(function(result) {
            res.send("success");
@@ -424,7 +425,7 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productUnit_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
         else if(orders[j].dataValues.productSet_id != null){
           var product = await ProductSet.findOne({
@@ -432,7 +433,7 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productSet_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
         else if(orders[j].dataValues.productOption_id != null){
           var product = await ProductOption.findOne({
@@ -440,11 +441,11 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productOption_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
       }
 
-      return res.json({delivery,orderList})
+      return res.json({delivery,orderList,isCompleted})
     }
     else{
       const delivery = await Delivery_proceeding.findOne({
@@ -468,7 +469,7 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productUnit_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
         else if(orders[j].dataValues.productSet_id != null){
           var product = await ProductSet.findOne({
@@ -476,7 +477,7 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productSet_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
         else if(orders[j].dataValues.productOption_id != null){
           var product = await ProductOption.findOne({
@@ -484,19 +485,55 @@ export const getDeliveryById = async(req,res) => {
               id: orders[j].dataValues.productOption_id
             }
           });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
         }
       }
-      console.log(orderList);
-      orderList = JSON.stringify(orderList)
-      console.log(orderList);
-      return res.json({delivery,orderList})
+      
+      return res.json({delivery,orderList,isCompleted})
 
     }
   }
   catch(err){
     console.log("Error on inquiring deliveryInfo by id: " + err)
     res.send("error");
+  }
+
+}
+
+export const refund = async (req,res) => {
+  const {delivery_id,isCompleted} = req.body;
+
+  try{
+
+    if(isCompleted==1){
+
+      Delivery_completed.update(
+        {status: 3},
+        {where: {id: delivery_id}, returning: true}).then(function(result) {
+             res.send("success");
+        }).catch(function(err) {
+          console.log("Error on changing Status: " + err)
+            res.send("error");
+        });
+      
+    }
+    else{
+
+      Delivery_proceeding.update(
+        {status: 3},
+        {where: {id: delivery_id}, returning: true}).then(function(result) {
+             res.send("success");
+        }).catch(function(err) {
+          console.log("Error on changing Status: " + err)
+            res.send("error");
+        });
+
+    }
+
+  }catch(err){
+
+
+
   }
 
 }

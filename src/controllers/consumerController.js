@@ -178,21 +178,68 @@ export const getMenuInfo = async(req,res) => {
     }
 } 
 
-// export const getCartMenu = async(req,res) => {
-//     const {incart} = req.body.data;
-//     var menu = new Array();
-
-//     for(var i = 0; i < incart.length ; i++){
-//         if(incart[i].menu_type == 0){
-
-//         }
-//         else if(incart[i].menu_type == 1){
-
-//         }
-//         else if(incart[i].menu_type == 2){
-            
-//         }
-//         menu.push()
-//     }
+export const getCartMenu = async(req,res) => {
+    var incarts = req.body.data;
+    try{
+        for(var i = 0; i < incarts.length ; i++){
+            if(incarts[i].menu_type == 0){
+                var temp_menu = await ProductUnit.findOne({
+                    where:{
+                        id: incarts[i].menu_id
+                    }
+                })
+                var temp_store = await Store.findOne({
+                    where:{
+                        id: incarts[i].store_id
+                    }
+                })
     
-// }
+                incarts[i].menu_name = temp_menu.dataValues.name;
+                incarts[i].price = temp_menu.dataValues.price;
+                incarts[i].store_name = temp_store.dataValues.storeName;
+    
+            }
+            else if(incarts[i].menu_type == 1){
+                var temp_menu = await ProductSet.findOne({
+                    where:{
+                        id: incarts[i].menu_id
+                    }
+                })
+                var temp_store = await Store.findOne({
+                    where:{
+                        id: incarts[i].store_id
+                    }
+                })
+    
+                incarts[i].menu_name = temp_menu.dataValues.name;
+                incarts[i].price = temp_menu.dataValues.price;
+                incarts[i].store_name = temp_store.dataValues.storeName;
+            }
+            else if(incarts[i].menu_type == 2){
+                var temp_menu = await ProductOption.findOne({
+                    where:{
+                        id: incarts[i].menu_id
+                    }
+                })
+                var temp_store = await Store.findOne({
+                    where:{
+                        id: incarts[i].store_id
+                    }
+                })
+    
+                incarts[i].menu_name = temp_menu.dataValues.name;
+                incarts[i].price = temp_menu.dataValues.price;
+                incarts[i].store_name = temp_store.dataValues.storeName;
+            }
+        }
+    
+        incarts = JSON.stringify(incarts);
+        return res.json({incarts});
+    }
+    catch(err){
+        console.log("Error on inquiring Cart: " + err)
+        return res.send("error")
+    }
+    
+    
+}
