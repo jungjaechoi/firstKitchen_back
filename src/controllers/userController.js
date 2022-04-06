@@ -396,3 +396,107 @@ export const getPaymentList = async(req,res) =>{
   }
 
 }
+
+export const getDeliveryById = async(req,res) => {
+  var {delivery_id,isCompleted} = req.body;
+  
+  try{
+    if(isCompleted==1){
+
+      const delivery = await Delivery_completed.findOne({
+        where:{
+          id:delivery_id
+        }
+      })
+
+      const orders = await Order_completed.findAll({
+        where:{
+          delivery_id
+        }
+      })
+
+      var orderList = new Array();
+
+      for (var j = 0; j<orders.length ; j++){
+        if (orders[j].dataValues.productUnit_id != null){
+          var product = await ProductUnit.findOne({
+            where:{
+              id: orders[j].dataValues.productUnit_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productSet_id != null){
+          var product = await ProductSet.findOne({
+            where:{
+              id: orders[j].dataValues.productSet_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productOption_id != null){
+          var product = await ProductOption.findOne({
+            where:{
+              id: orders[j].dataValues.productOption_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+      }
+
+      return res.json({delivery,orderList})
+    }
+    else{
+      const delivery = await Delivery_proceeding.findOne({
+        where:{
+          id:delivery_id
+        }
+      })
+      
+      const orders = await Order_proceeding.findAll({
+        where:{
+          delivery_id
+        }
+      })
+
+      var orderList = new Array();
+
+      for (var j = 0; j<orders.length ; j++){
+        if (orders[j].dataValues.productUnit_id != null){
+          var product = await ProductUnit.findOne({
+            where:{
+              id: orders[j].dataValues.productUnit_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productSet_id != null){
+          var product = await ProductSet.findOne({
+            where:{
+              id: orders[j].dataValues.productSet_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+        else if(orders[j].dataValues.productOption_id != null){
+          var product = await ProductOption.findOne({
+            where:{
+              id: orders[j].dataValues.productOption_id
+            }
+          });
+          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity));
+        }
+      }
+      console.log(orderList);
+      orderList = JSON.stringify(orderList)
+      console.log(orderList);
+      return res.json({delivery,orderList})
+
+    }
+  }
+  catch(err){
+    console.log("Error on inquiring deliveryInfo by id: " + err)
+    res.send("error");
+  }
+
+}

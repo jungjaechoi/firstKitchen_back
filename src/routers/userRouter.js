@@ -3,7 +3,7 @@ import { getDeliveryInfo } from "../controllers/consumerController";
 import {
   getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales,getSaleslist, getPaymenthistory,
-  getPaymentList
+  getPaymentList,getDeliveryById
 } from "../controllers/userController";
 import {verifyToken} from "./middlewares/authorization.js"
 
@@ -20,6 +20,7 @@ userRouter.post('/getDeliveryStatus',verifyToken,getDeliveryStatus);
 userRouter.post('/changeStatus',verifyToken,changeStatus);
 userRouter.post('/getEarningForDeliveryApp',verifyToken,getEarningForDeliveryApp);
 userRouter.post('/getPaymentList',verifyToken,getPaymentList)
+userRouter.post('/getDeliveryById',verifyToken,getDeliveryById)
 
 
 export default userRouter;
