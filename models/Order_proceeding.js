@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Order_proceeding = sequelize.define("Order_proceeding", {
+    const Order = sequelize.define("Order", {
       // id, createdAt, updatedAt 자동 생성
       delivery_id:{
         type: DataTypes.INTEGER(10),
@@ -28,28 +28,28 @@ module.exports = (sequelize, DataTypes) => {
       charset: "utf8",
       collate: "utf8_general_ci",
     });
-    Order_proceeding.associate = (models) => {
-        Order_proceeding.belongsTo(models.Delivery_proceeding, {
+    Order.associate = (models) => {
+        Order.belongsTo(models.Delivery, {
             foreignKey: "delivery_id",
             allowNull: true,
             constraints: false,
             onDelete: "cascade",
         });
-        Order_proceeding.belongsTo(models.ProductOption, {
+        Order.belongsTo(models.ProductOption, {
             foreignKey: "productOption_id",
             allowNull: true,
             constraints: false,
         });
-        Order_proceeding.belongsTo(models.ProductUnit, {
+        Order.belongsTo(models.ProductUnit, {
             foreignKey: "productUnit_id",
             allowNull: true,
             constraints: false,
         });
-        Order_proceeding.belongsTo(models.ProductSet, {
+        Order.belongsTo(models.ProductSet, {
             foreignKey: "productSet_id",
             allowNull: true,
             constraints: false,
         });
     };
-    return Order_proceeding;
+    return Order;
   };

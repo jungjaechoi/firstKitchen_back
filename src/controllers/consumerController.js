@@ -1,22 +1,19 @@
-import { Order_proceeding,Order_completed,Delivery_completed, Delivery_proceeding, ProductOption, ProductUnit, ProductSet, Store } from "../../models";
+import { Order, Delivery, ProductOption, ProductUnit, ProductSet, Store } from "../../models";
 
 
 export const postDeliveryInfo = async(req,res) => {
     console.log(req.body);
     const {store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
         jibunAddress,roadAddress,addressDetail,memo,request,
-        tel,payType,totalPaidPrice,totalPrice,
-        discountPrice,deliveryPrice,orders} = req.body.data;
+        tel,payType,orders} = req.body.data;
    
     var checkArr = new Array(store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
         addressDetail,
-        tel,payType,totalPaidPrice,totalPrice,
-        discountPrice,deliveryPrice,orders);
-    console.log(user_nickname);
+        tel,payType,orders);
+    
     var nameArr = new Array('store_id','user_id','user_nickname','deliveryApp','receptionType','orderTime',
         'addressDetail',
-        'tel','payType','totalPaidPrice','totalPrice',
-        'discountPrice','deliveryPrice','orders');
+        'tel','payType','orders');
 
     for (var i = 0; i<checkArr.length ; i++){
         if(checkArr[i] == null){
@@ -27,7 +24,50 @@ export const postDeliveryInfo = async(req,res) => {
     }
 
     try{
-        const delivery = await Delivery_proceeding.create({
+
+        const store = await Store.findOne({
+            where:{
+                id: store_id
+            }
+        });
+
+        const deliveryPrice = store.dataValues.deliveryPrice;
+        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+        console.log(deliveryPrice);
+        const discountPrice = 0
+
+        var totalPrice = 0
+        
+        for (var i = 0; i<orders.length ; i++){
+            if(orders[i].menu_type == 0){
+                const menu = await ProductUnit.findOne({
+                    where:{
+                        id: orders[i].menu_id
+                    }
+                });
+                totalPrice += menu.dataValues.price * orders[i].quantity
+            }
+            else if(orders[i].menu_type == 1){
+                const menu = await ProductSet.findOne({
+                    where:{
+                        id: orders[i].menu_id
+                    }
+                });
+                totalPrice += menu.dataValues.price * orders[i].quantity
+            }
+            else if(orders[i].menu_type == 2){
+                const menu = await ProductOption.findOne({
+                    where:{
+                        id: orders[i].menu_id
+                    }
+                });
+                totalPrice += menu.dataValues.price * orders[i].quantity
+            }
+        }
+
+        const totalPaidPrice = totalPrice - discountPrice + deliveryPrice;
+
+        const delivery = await Delivery.create({
             store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
             jibunAddress,roadAddress,addressDetail,memo,request,
             tel,payType,totalPaidPrice,totalPrice,
@@ -37,7 +77,7 @@ export const postDeliveryInfo = async(req,res) => {
 
         for (var i = 0; i<orders.length ; i++){
             if(orders[i].menu_type == 0){
-                const order = await Order_proceeding.create({
+                const order = await Order.create({
                     delivery_id: delivery.id,
                     productUnit_id:orders[i].menu_id,
                     quantity: orders[i].quantity
@@ -48,7 +88,7 @@ export const postDeliveryInfo = async(req,res) => {
 
         const id =  delivery.id
 
-        console.log("Insert into Delivery_proceeding: " + id);
+        console.log("Insert into Delivery: " + id);
         return res.json({id})
 
     } catch(err){
@@ -62,29 +102,12 @@ export const getDeliveryInfo = async(req,res) => {
 
     try{
         
-        const isProceeding = await Delivery_proceeding.findOne({
+        const deliveryInfo = await Delivery.findOne({
             where: {id}
         })
 
-        if(isProceeding){
-            const deliveryInfo = isProceeding
-            console.log("delivery_proceeding " + deliveryInfo.id + " is inquired")
-            return res.json({deliveryInfo})
-        }
-        else{
-            const isCompleted = await Delivery_completed.findOne({
-                where: {id}
-            })
-            if(isCompleted){
-                const deliveryInfo = isCompleted
-                console.log("delivery_completed " + deliveryInfo.id + " is inquired")
-                return res.json({deliveryInfo})
-            }
-            else{
-                console.log("Info which not exist is inquired");
-                return res.send("no Info")
-            }
-        }
+        console.log("delivery " + deliveryInfo.id + " is inquired")
+        return res.json({deliveryInfo})
 
     } catch(err){
         console.log("Error on inquiring deliveryInfo: " + err)
@@ -96,6 +119,7 @@ export const getAllStore = async(req,res) => {
     //나중에는 위치정보 받아서 가까운 가게 res해야함.
     try{
         const store = await Store.findAll({attributes: ['id','storeName','storeAddress','isOpen','deliveryPrice']})
+        console.log(store);
         return res.json({store});
     } catch(err){
         console.log("Error on inquiring AllStore: " + err)

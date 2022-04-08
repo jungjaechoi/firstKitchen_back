@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Delivery_proceeding = sequelize.define("Delivery_proceeding", {
+    const Delivery = sequelize.define("Delivery", {
       // id, createdAt, updatedAt 자동 생성
       store_id:{
         type: DataTypes.INTEGER(10),
@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         comment: "할인금액",
         allowNULL:false
       },
-      deliverylPrice: {
+      deliveryPrice: {
         type: DataTypes.INTEGER(10),
         comment: "배달료",
         allowNULL:false
@@ -93,18 +93,18 @@ module.exports = (sequelize, DataTypes) => {
       charset: "utf8",
       collate: "utf8_general_ci",
     });
-    Delivery_proceeding.associate = (models) => {
-      Delivery_proceeding.hasMany(models.Order_proceeding, {
+    Delivery.associate = (models) => {
+      Delivery.hasMany(models.Order, {
         foreignKey: "delivery_id",
         allowNull: true,
         constraints: false,
       });
-      Delivery_proceeding.belongsTo(models.Store, {
+      Delivery.belongsTo(models.Store, {
         foreignKey: "store_id",
         allowNull: true,
         constraints: false,
         onDelete: "cascade",
       });
     };
-    return Delivery_proceeding;
+    return Delivery;
   };

@@ -1,4 +1,4 @@
-import { Agent, Store, Delivery_completed, Delivery_proceeding, Order_proceeding,Order_completed, ProductUnit, ProductSet, ProductOption } from "../../models";
+import { Agent, Store,Delivery, Order, ProductUnit, ProductSet, ProductOption, OpenRecord } from "../../models";
 import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
@@ -22,12 +22,12 @@ export const getRealtimesales = (req,res) => {
   return res.render("home/realtimesales.html");
 }
 
-export const getSaleslist = (req,res) => {
-  return res.render("home/saleslist.html");
-}
-
 export const getPaymenthistory = (req,res) => {
   return res.render("home/paymenthistory.html");
+}
+
+export const getStartend = (req,res) => {
+  return res.render("home/startend.html");
 }
 
 export const postLogin = async(req,res) => {
@@ -63,7 +63,7 @@ export const postLogin = async(req,res) => {
     } 
   }catch(err){
       const token = ""
-      console.log('로그인 과정에서 error 발생')
+      console.log('error on postLogin' + err)
       return res.json({token,err})
     }
   
@@ -74,14 +74,8 @@ export const getEarning = async(req,res) => {
   const store_id = res.locals.store_id
 
   try{
-    
-    const delivery_completed = await Delivery_completed.findAll({
-      where:{
-        store_id
-      }
-    })
 
-    const delivery_proceeding = await Delivery_proceeding.findAll({
+    const delivery = await Delivery.findAll({
       where:{
         store_id
       }
@@ -89,15 +83,9 @@ export const getEarning = async(req,res) => {
 
     var earning = 0
 
-    for (var i = 0; i<delivery_completed.length ; i++){
-      if(delivery_proceeding[i].dataValues.status != 3){
-        earning += delivery_completed[i].dataValues.totalPrice - delivery_completed[i].dataValues.discountPrice; 
-      }
-    }
-
-    for (var i = 0; i<delivery_proceeding.length ; i++){
-      if(delivery_proceeding[i].dataValues.status != 2 && delivery_proceeding[i].dataValues.status != 3){
-        earning += delivery_proceeding[i].dataValues.totalPrice - delivery_proceeding[i].dataValues.discountPrice;
+    for (var i = 0; i<delivery.length ; i++){
+      if(delivery[i].dataValues.status != 4 && delivery[i].dataValues.status != 5){
+        earning += delivery[i].dataValues.totalPrice - delivery[i].dataValues.discountPrice;
       } 
     }
 
@@ -106,7 +94,7 @@ export const getEarning = async(req,res) => {
 
   } catch(err){
     
-    console.log("Error on inquiring earningInfo: " + err)
+    console.log("Error on getEarning " + err)
     return res.send("error")
 
   }
@@ -118,7 +106,7 @@ export const getDeliveryStatus = async(req,res) => {
   const store_id = res.locals.store_id;
 
   try{
-    var delivery = await Delivery_proceeding.findAll({
+    var delivery = await Delivery.findAll({
       where:{
         store_id
       }
@@ -134,7 +122,7 @@ export const getDeliveryStatus = async(req,res) => {
       var temp_arr = new Array();
       temp_arr.push(delivery[i].dataValues.id);
 
-      var orders = await Order_proceeding.findAll({
+      var orders = await Order.findAll({
         where:{
           delivery_id: delivery[i].dataValues.id
         }
@@ -173,7 +161,7 @@ export const getDeliveryStatus = async(req,res) => {
       else if(delivery[i].dataValues.status == 1){
         receipt.push(temp_arr);
       }
-      else{
+      else if(delivery[i].dataValues.status == 2){
         completed.push(temp_arr);
       }
     }
@@ -184,7 +172,7 @@ export const getDeliveryStatus = async(req,res) => {
     return res.json({result});
 
   }catch(err){
-    console.log("Error on inquiring DeliveryStatus: " + err)
+    console.log("Error on getDeliveryStatus" + err)
     return res.send("error")
   }
 }
@@ -194,7 +182,7 @@ export const changeStatus = async(req,res) => {
   const {delivery_id} = req.body;
   try{
 
-    const delivery = await Delivery_proceeding.findOne({
+    const delivery = await Delivery.findOne({
       where:{
         id:delivery_id
       }
@@ -211,82 +199,34 @@ export const changeStatus = async(req,res) => {
         data: sendingParams,
       })
 
-      await Delivery_proceeding.update(
-        {status: 1},
-        {where: {id: delivery_id}, returning: true}).then(function(result) {
-             res.send("success");
-        }).catch(function(err) {
-          console.log("Error on changing Status: " + err)
-            res.send("error");
-        });
+      await delivery.update({status:1});
+
+      return res.send("success");
 
     }
     else if(status == 1){
 
-      const delivery_completed = await Delivery_completed.create({
-        store_id : delivery.dataValues.store_id,
-        user_id: delivery.dataValues.user_id ,
-        user_nickname: delivery.dataValues.user_nickname,
-        deliveryApp: delivery.dataValues.deliveryApp,
-        receptionType: delivery.dataValues.receptionType,
-        orderTime: delivery.dataValues.orderTime,
-        jibunAddress: delivery.dataValues.jibunAddress,
-        roadAddress: delivery.dataValues.roadAddress,
-        addressDetail: delivery.dataValues.addressDetail,
-        memo: delivery.dataValues.memo,
-        request: delivery.dataValues.request,
-        tel: delivery.dataValues.tel,
-        payType: delivery.dataValues.payType,
-        totalPaidPrice: delivery.dataValues.totalPaidPrice,
-        totalPrice: delivery.dataValues.totalPrice,
-        discountPrice: delivery.dataValues.discountPrice,
-        deliveryPrice: delivery.dataValues.deliveryPrice,
-        status: 2
-    });
+      var sendingParams = {"delivery_id": delivery_id,"status":2}
 
-    var sendingParams = {"delivery_id": delivery_id,"status":2}
-
-    axios
-    .post(`${deliveryApp_IP}/user/status`, {
-      data: sendingParams,
-    })
-
-    console.log(delivery_completed + " is saved.")
-
-    const orders = await Order_proceeding.findAll({
-      where:{
-        delivery_id
-      }
-    })
-
-    for (var i = 0; i<orders.length ; i++){
-      const order = await Order_completed.create({
-          delivery_id: delivery_completed.dataValues.id,
-          productUnit_id:orders[i].dataValues.productUnit_id,
-          productSet_id:orders[i].dataValues.productSet_id,
-          productOption_id:orders[i].dataValues.productOption_id,
-          quantity: orders[i].dataValues.quantity
+      axios
+      .post(`${deliveryApp_IP}/user/status`, {
+        data: sendingParams,
       })
-      console.log(order.id + " is saved")
-    }
 
-    await Delivery_proceeding.update(
-      {status: 2},
-      {where: {id: delivery_id}, returning: true}).then(function(result) {
-           res.send("success");
-      }).catch(function(err) {
-        console.log("Error on changing Status: " + err)
-          res.send("error");
-      });
+      await delivery.update({status:2});
+
+      return res.send("success");
     
     }
     else if(status == 2){
-      await Delivery_proceeding.destroy({where: {id:delivery_id}});
+
+      await delivery.update({status:3});
+
       return res.send("success");
     }
   }
   catch(err){
-    console.log("Error on changing Status: " + err)
+    console.log("Error on changeStatus" + err)
     res.send("error");
   }
 
@@ -297,13 +237,8 @@ export const getEarningForDeliveryApp = async(req,res) => {
   const store_id = res.locals.store_id;
 
   try{
-    
-    const delivery_completeds = await Delivery_completed.findAll({
-      where:{
-        store_id
-      }
-    });
-    const delivery_proceedings = await Delivery_proceeding.findAll({
+
+    const deliverys = await Delivery.findAll({
       where:{
         store_id
       }
@@ -311,11 +246,8 @@ export const getEarningForDeliveryApp = async(req,res) => {
     
     var kind_app = new Set();
 
-    for(var i = 0; i < delivery_completeds.length ; i++){
-      kind_app.add(delivery_completeds[i].dataValues.deliveryApp)
-    }
-    for(var i = 0; i < delivery_proceedings.length ; i++){
-      kind_app.add(delivery_proceedings[i].dataValues.deliveryApp)
+    for(var i = 0; i < deliverys.length ; i++){
+      kind_app.add(deliverys[i].dataValues.deliveryApp)
     }
 
     kind_app = Array.from(kind_app)
@@ -325,16 +257,10 @@ export const getEarningForDeliveryApp = async(req,res) => {
       count_earning_dict[kind_app[i]] = [0,0]
     }
 
-    for(var i = 0; i < delivery_completeds.length ; i++){
-      if (delivery_proceedings[i].dataValues.status != 3){
-        count_earning_dict[delivery_completeds[i].dataValues.deliveryApp][0] += 1;
-        count_earning_dict[delivery_completeds[i].dataValues.deliveryApp][1] += delivery_completeds[i].dataValues.totalPaidPrice
-      }
-    }
-    for(var i = 0; i < delivery_proceedings.length ; i++){
-      if (delivery_proceedings[i].dataValues.status != 2 && delivery_proceedings[i].dataValues.status != 3){
-        count_earning_dict[delivery_proceedings[i].dataValues.deliveryApp][0] += 1;
-        count_earning_dict[delivery_proceedings[i].dataValues.deliveryApp][1] += delivery_proceedings[i].dataValues.totalPaidPrice
+    for(var i = 0; i < deliverys.length ; i++){
+      if (deliverys[i].dataValues.status != 2){
+        count_earning_dict[deliverys[i].dataValues.deliveryApp][0] += 1;
+        count_earning_dict[deliverys[i].dataValues.deliveryApp][1] += deliverys[i].dataValues.totalPrice - deliverys[i].dataValues.discountPrice 
       }
     }
 
@@ -347,7 +273,7 @@ export const getEarningForDeliveryApp = async(req,res) => {
     return res.json({earning});
   }
   catch(err){
-    console.log("Error on inquiring Earing for App: " + err)
+    console.log("Error on getEarningForDeliveryApp" + err)
     res.send("error");
   }
 }
@@ -362,9 +288,8 @@ export const getPaymentList = async(req,res) =>{
   end = new Date(end);
 
   try{
-    var paymentList = new Array();
-    
-    var completed_payment = await Delivery_completed.findAll({
+
+    const paymentList = await Delivery.findAll({
       where:{
         store_id,
         [Op.and]: [
@@ -373,167 +298,158 @@ export const getPaymentList = async(req,res) =>{
         ]
       }
     });
-
-    paymentList.push(completed_payment);
-
-    var proceeding_payment = await Delivery_proceeding.findAll({
-      where:{
-        store_id,
-        [Op.and]: [
-          {createdAt: {[Op.lte]: end}},
-          {createdAt: {[Op.gte]: start}}
-        ]
-      }
-    });
-
-    paymentList.push(proceeding_payment);
 
     return res.json({paymentList});
 
   }
   catch(err){
-    console.log("Error on inquiring PaymentList: " + err)
+    console.log("Error on getPaymentList" + err)
     res.send("error");
   }
 
 }
 
 export const getDeliveryById = async(req,res) => {
-  var {delivery_id,isCompleted} = req.body;
+  var {delivery_id} = req.body;
   
   try{
-    if(isCompleted==1){
-
-      const delivery = await Delivery_completed.findOne({
-        where:{
-          id:delivery_id
-        }
-      })
-
-      const orders = await Order_completed.findAll({
-        where:{
-          delivery_id
-        }
-      })
-
-      var orderList = new Array();
-
-      for (var j = 0; j<orders.length ; j++){
-        if (orders[j].dataValues.productUnit_id != null){
-          var product = await ProductUnit.findOne({
-            where:{
-              id: orders[j].dataValues.productUnit_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
-        else if(orders[j].dataValues.productSet_id != null){
-          var product = await ProductSet.findOne({
-            where:{
-              id: orders[j].dataValues.productSet_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
-        else if(orders[j].dataValues.productOption_id != null){
-          var product = await ProductOption.findOne({
-            where:{
-              id: orders[j].dataValues.productOption_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
+    
+    const delivery = await Delivery.findOne({
+      where:{
+        id:delivery_id
       }
-
-      return res.json({delivery,orderList,isCompleted})
-    }
-    else{
-      const delivery = await Delivery_proceeding.findOne({
-        where:{
-          id:delivery_id
-        }
-      })
-      
-      const orders = await Order_proceeding.findAll({
-        where:{
-          delivery_id
-        }
-      })
-
-      var orderList = new Array();
-
-      for (var j = 0; j<orders.length ; j++){
-        if (orders[j].dataValues.productUnit_id != null){
-          var product = await ProductUnit.findOne({
-            where:{
-              id: orders[j].dataValues.productUnit_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
-        else if(orders[j].dataValues.productSet_id != null){
-          var product = await ProductSet.findOne({
-            where:{
-              id: orders[j].dataValues.productSet_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
-        else if(orders[j].dataValues.productOption_id != null){
-          var product = await ProductOption.findOne({
-            where:{
-              id: orders[j].dataValues.productOption_id
-            }
-          });
-          orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
-        }
+    })
+    
+    const orders = await Order.findAll({
+      where:{
+        delivery_id
       }
-      
-      return res.json({delivery,orderList,isCompleted})
+    })
 
+    var orderList = new Array();
+
+    for (var j = 0; j<orders.length ; j++){
+      if (orders[j].dataValues.productUnit_id != null){
+        var product = await ProductUnit.findOne({
+          where:{
+            id: orders[j].dataValues.productUnit_id
+          }
+        });
+        orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+      }
+      else if(orders[j].dataValues.productSet_id != null){
+        var product = await ProductSet.findOne({
+          where:{
+            id: orders[j].dataValues.productSet_id
+          }
+        });
+        orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+      }
+      else if(orders[j].dataValues.productOption_id != null){
+        var product = await ProductOption.findOne({
+          where:{
+            id: orders[j].dataValues.productOption_id
+          }
+        });
+        orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+      }
     }
+    
+    return res.json({delivery,orderList})
+  
   }
   catch(err){
-    console.log("Error on inquiring deliveryInfo by id: " + err)
+    console.log("Error on getDeliveryById" + err)
     res.send("error");
   }
 
 }
 
-export const refund = async (req,res) => {
-  const {delivery_id,isCompleted} = req.body;
+export const postRefund = async (req,res) => {
+  var {delivery_id} = req.body;
 
   try{
 
-    if(isCompleted==1){
+    const delivery = await Delivery.findOne({
+      where:{
+        id:delivery_id
+      }
+    });
 
-      Delivery_completed.update(
-        {status: 3},
-        {where: {id: delivery_id}, returning: true}).then(function(result) {
-             res.send("success");
-        }).catch(function(err) {
-          console.log("Error on changing Status: " + err)
-            res.send("error");
-        });
-      
-    }
-    else{
+    var sendingParams = {"delivery_id": delivery_id,"status":4}
 
-      Delivery_proceeding.update(
-        {status: 3},
-        {where: {id: delivery_id}, returning: true}).then(function(result) {
-             res.send("success");
-        }).catch(function(err) {
-          console.log("Error on changing Status: " + err)
-            res.send("error");
-        });
+    axios
+    .post(`${deliveryApp_IP}/user/status`, {
+      data: sendingParams,
+    })
 
-    }
+    await delivery.update({status:4});
+
+    return res.json({delivery_id});
 
   }catch(err){
 
+    console.log("Error on refund: " + err)
+    res.send("error");
 
+  }
 
+}
+
+export const postDelete = async(req,res) => {
+  var {delivery_id} = req.body;
+  try{
+    const delivery = await Delivery.findOne({
+      where:{
+        id: delivery_id
+      }
+    })
+    await delivery.update({status:5});
+    return res.send("success");
+
+  }
+  catch(err){
+    console.log("Error on delete: " + err)
+    res.send("error");
+  }
+}
+
+export const start = async (req,res) =>{
+
+  const store_id = res.locals.store_id
+
+  try{
+
+    const store = await Store.fidnOne({
+      where:{
+        id: store_id
+      }
+    })
+
+    await delivery.update({isOpen:1});
+
+    let today = new Date(); 
+
+    let year = today.getFullYear(); // 년도
+    let month = today.getMonth() + 1;  // 월
+    let dates = today.getDate();  // 날짜
+    let hours = today.getHours(); // 시
+    let minutes = today.getMinutes();  // 분
+    let seconds = today.getSeconds();  // 초
+
+    const start_time = year + " " + month + " " + dates + " " + hours + " " + minutes + " " + seconds
+
+    await OpenRecord.create({
+      store_id,
+      start_time
+    })
+
+    return res.send("success");
+    
+  }
+  catch(err){
+    console.log("Error on start: " + err)
+    res.send("error");
   }
 
 }

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div style = "margin-left: 280px; margin-top: 20px; float:left; width: 300px;">
+    <p style="border: solid 1px; width: 300px;" id = "date"></p>
+    
+    <ul style="list-style: none;">
+        <li>
+            <p style="display: inline-block;">시작 시간: </p>
+            <p style="display: inline-block; float: right;" id = "refunded"></p>
+        </li>
+        <li>
+            <p style="display: inline-block;">마감 시간:</p>
+            <p style="display: inline-block; float: right;" id = "refunded"></p>
+        </li>
+        <li style="text-align:center; list-style: none;">
+            <a style="border: 1px solid; margin-top: 20px; margin-right: 10px; display: none;" id="start-btn" class = "start-btn btn btn-default" onclick = "start()">영업 시작</a>
+            <a style="border: 1px solid; margin-top: 20px; display: none;" id="end-btn" class = "end-btn btn btn-default " onclick = "end()">영업 마감</a>
+        </li>
+        <hr>
+    </ul>
+</div>
+        
+<script type="text/javascript">
+
+    function start(){
+        var result = confirm("영업을 시작하시겠습니까?");
+        if(result){
+            $(document).ready(function(){
+                $.ajax({
+                    url: "/user/start",
+                    type: "post",
+                    data: {token: localStorage.getItem('token')},
+                    datatype: "json",
+                    success: function(result){
+                        if(result !="error"){
+                            const start_btn = document.getElementById('start-btn');
+                            start_btn.style = "border: 1px solid; margin-top: 20px; margin-right: 10px; display:none;"
+                            const end_btn = document.getElementById('end-btn');
+                            end_btn.style = "border: 1px solid; margin-top: 20px; margin-right: 10px;"                            
+                        }
+                        else{
+                            alert("오류");
+                        }
+                    }
+                })
+            })
+        }
+    }
+
+    function end(){
+
+    }
+
+    const date = document.getElementById('date')
+
+    function getTime(){
+        let today = new Date(); 
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let dates = today.getDate();  // 날짜
+        let hours = today.getHours(); // 시
+        let minutes = today.getMinutes();  // 분
+        let seconds = today.getSeconds();  // 초
+
+        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+    }
+
+    function init(){
+        setInterval(getTime, 1000);
+    }
+    getTime();
+    init();
+
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

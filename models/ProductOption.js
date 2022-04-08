@@ -31,12 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       collate: "utf8_general_ci",
     });
     ProductOption.associate = (models) => {
-        ProductOption.hasMany(models.Order_proceeding, {
-            foreignKey: "productOption_id",
-            allowNull: true,
-            constraints: false,
-        });
-        ProductOption.hasMany(models.Order_completed, {
+        ProductOption.hasMany(models.Order, {
             foreignKey: "productOption_id",
             allowNull: true,
             constraints: false,

@@ -1,3 +1,18 @@
+ul{
+    margin:0;
+    padding:0;
+}
+
+.start-btn {
+    background-color: rgb(59, 206, 96);
+    font-weight: bold;
+}
+
+.end-btn {
+    background-color: rgb(235, 75, 75);
+    font-weight: bold;
+}
+
 .sidebar {
     height: 100vh;
     background: linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,0.9));

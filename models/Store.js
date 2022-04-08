@@ -70,12 +70,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         constraints: false,
       });
-      Store.hasMany(models.Delivery_proceeding, {
-        foreignKey: "store_id",
-        allowNull: true,
-        constraints: false,
-      });
-      Store.hasMany(models.Delivery_completed, {
+      Store.hasMany(models.Delivery, {
         foreignKey: "store_id",
         allowNull: true,
         constraints: false,
