@@ -1,7 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <meta name = "viewport", content="width=device-width, initial-scale=1">
+    
+    
 </head>
 <body>
 
@@ -14,15 +18,14 @@
     })
 </script>
 
-<div style = "margin-left: 330px;">
-    <p style="border: solid 1px; width: 280px;" id = "date"></p>
-    <p ><실시간 매출 현황></p>
-    <div style = "position: absolute;  margin-top:1px; font-size: 30px;" id="earning"></div>
-    
-    <p style="margin-top: 150px;"><주문내역></p>
-    <ul style=" list-style:none;">
-        <li style="float: left;">
-            <div id="table_wait" style="height: 340px;width: 150px">
+<div >
+    <p class = "container row" style="float: none; margin:0 auto; border: solid 1px; width: 260px;" id = "date"></p>
+    <hr>
+    <p style="margin-left: 15px; font-weight: bold;">실시간 매출 현황</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="earning"></div>
+    <ul class = "row" style=" list-style:none; margin-top: 50px; padding: 0;">
+        <li >
+            <div id="table_wait" class = "col-xs-4 col-sm-4 col-md-4" style="padding-right: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -34,8 +37,8 @@
                 </table>
             </div>
         </li>
-        <li style="float: left;">
-            <div id="table_receipt" style="height: 340px;width: 150px">
+        <li >
+            <div id="table_receipt"  class = "col-xs-4 col-sm-4 col-md-4" style="padding-left: 1px; padding-right: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -47,8 +50,8 @@
                 </table>
             </div>
         </li>
-        <li style="float: left;">
-            <div id="table_completed" style="height: 340px; width: 150px">
+        <li >
+            <div id="table_completed"  class = "col-xs-4 col-sm-4 col-md-4" style="padding-left: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -78,7 +81,18 @@
         let minutes = today.getMinutes();  // 분
         let seconds = today.getSeconds();  // 초
 
+        if(hours<10){
+            hours = "0" + String(hours)
+        }
+        if(minutes<10){
+            minutes = "0" + String(minutes)
+        }
+        if(seconds<10){
+            seconds = "0" + String(seconds)
+        }
+
         date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+        date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px;"
     }
 
     function init(){
@@ -156,6 +170,8 @@
             datatype: "json",
             success: function(result){
                 $('#earning').append(result.earning+ " 원");
+                const earning = document.getElementById("earning");
+                
             }
         })
     })  
@@ -180,7 +196,7 @@
                     temp_html += `<div onClick="changeStatus_to_receipt(${wait[i][0]})">`
 
                     for( var j = 1 ; j<wait[i].length ; j++){
-                        temp_html += wait[i][j][0] + " " + wait[i][j][1] + "개\n";
+                        temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1] + "\n";
                     }
                     temp_html += '</div>'
                     
@@ -197,7 +213,7 @@
                     temp_html += `<div onClick="changeStatus_to_completed(${receipt[i][0]})">`
 
                     for( var j = 1 ; j<receipt[i].length ; j++){
-                        temp_html += receipt[i][j][0] + " " + receipt[i][j][1] + "개\n";
+                        temp_html += receipt[i][j][0] + " "+ "*"+" " + receipt[i][j][1] + "\n";
                     }
                     temp_html += '</div>'
                     
@@ -214,7 +230,7 @@
                     temp_html += `<div onClick="changeStatus_delete(${completed[i][0]})">`
 
                     for( var j = 1 ; j<completed[i].length ; j++){
-                        temp_html += completed[i][j][0] + " " + completed[i][j][1] + "개\n";
+                        temp_html += completed[i][j][0] + " "+ "*"+" " + completed[i][j][1] + "\n";
                     }
                     temp_html += '</div>'
                     

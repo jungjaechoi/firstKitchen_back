@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 const Sequelize = require('sequelize');
-const deliveryApp_IP = "http://192.168.100.64:4000";
+const deliveryApp_IP = "http://192.168.100.65:4000";
 
 
 export const getLogin = (req, res) => {
