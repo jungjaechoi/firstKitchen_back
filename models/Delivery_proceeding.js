@@ -90,6 +90,7 @@ module.exports = (sequelize, DataTypes) => {
        // (0=대기, 1=접수, 2=완료(라이더한테 전달 or 포장)) 
     },
     {
+      timestamps: true,
       charset: "utf8",
       collate: "utf8_general_ci",
     });
