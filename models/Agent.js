@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     // 위치 정보 needs to be added
   },
   {
+    sequelize,
     timestamps: false,
     charset: "utf8",
     collate: "utf8_general_ci",

@@ -511,7 +511,11 @@ export const isOpen = async(req,res) => {
     
     const query = "select * from (select * from OpenRecords order by updatedAt DESC) a  limit 1";
 
-    const openRecord = await db.sequelize.query(query);
+    var openRecord = await db.sequelize.query(query);
+    
+    if(openRecord[0] == 0){
+      openRecord = 0
+    }
 
     return res.json({isOpen, openRecord});
   }
