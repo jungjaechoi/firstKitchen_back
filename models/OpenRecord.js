@@ -6,13 +6,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       start_time:{
-        type: DataTypes.DATE
+        type: DataTypes.STRING(50),
       },
       end_time:{
-        type: DataTypes.DATE
+        type: DataTypes.STRING(50),
       }
     },
     {
+      timestamps: true,
       charset: "utf8",
       collate: "utf8_general_ci",
     });

@@ -15,21 +15,21 @@
     })
 </script>
 
-<div style = "margin-left: 280px; margin-top: 20px; float:left; width: 300px;">
-    <p style="border: solid 1px; width: 300px;" id = "date"></p>
-    
+<div>
+    <p class = "container row" style="float: none; margin:0 auto; border: solid 1px; width: 260px;" id = "date"></p>
+    <hr>
     <ul style="list-style: none;">
         <li>
-            <p style="display: inline-block;">시작 시간: </p>
-            <p style="display: inline-block; float: right;" id = "start-time"></p>
+            <p style="display: inline-block; margin-left: 15px; font-weight: bold;">시작 시간: </p>
+            <p style="display: inline-block; position: absolute; left: 50%; transform: translateX(-50%);" id = "open-time"></p>
         </li>
         <li>
-            <p style="display: inline-block;">마감 시간:</p>
-            <p style="display: inline-block; float: right;" id = "end-time"></p>
+            <p style="display: inline-block; margin-left: 15px; font-weight: bold;">마감 시간:</p>
+            <p style="display: inline-block; position: absolute; left: 50%; transform: translateX(-50%);" id = "close-time"></p>
         </li>
         <li style="text-align:center; list-style: none;">
-            <a style="border: 1px solid; margin-top: 20px; margin-right: 10px; display: none;" id="start-btn" class = "start-btn btn btn-default" onclick = "start()">영업 시작</a>
-            <a style="border: 1px solid; margin-top: 20px; display: none;" id="end-btn" class = "end-btn btn btn-default " onclick = "end()">영업 마감</a>
+            <a style="border: 1px solid; margin-top: 20px; margin-right: 10px; background-color: rgb(59, 206, 96); font-weight: bold; display:none;" id="start-btn" class = "start-btn btn btn-default" onclick = "start()">영업 시작</a>
+            <a style="border: 1px solid; margin-top: 20px; background-color: rgb(235, 75, 75); font-weight: bold; display:none; " id="end-btn" class = "end-btn btn btn-default " onclick = "end()">영업 마감</a>
         </li>
         <hr>
     </ul>
@@ -37,21 +37,59 @@
         
 <script type="text/javascript">
 
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/isOpen",
+            type: "post",
+            data: {token: localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+
+                if(result !="error"){
+                    var isOpen = result.isOpen;
+                    var openRecord = result.openRecord[0];
+                    if(isOpen == 1){
+
+                        const openTime = document.getElementById('open-time');
+                        openTime.innerHTML = openRecord[0].start_time;
+
+                        const start_btn = document.getElementById('start-btn');
+                        start_btn.style = "border: 1px solid; margin-top: 20px; background-color: rgb(59, 206, 96); font-weight: bold; margin-right: 10px; display:none;"
+                        const end_btn = document.getElementById('end-btn');
+                        end_btn.style = "border: 1px solid; margin-top: 20px; background-color: rgb(235, 75, 75); font-weight: bold; margin-right: 10px;"
+                    }            
+                    else{
+
+                        const openTime = document.getElementById('open-time');
+                        openTime.innerHTML = openRecord[0].start_time;
+                        const closeTime = document.getElementById('close-time');
+                        closeTime.innerHTML = openRecord[0].end_time;
+
+                        const start_btn = document.getElementById('start-btn');
+                        start_btn.style = "border: 1px solid; margin-top: 20px; background-color: rgb(59, 206, 96); font-weight: bold; margin-right: 10px;"
+                        const end_btn = document.getElementById('end-btn');
+                        end_btn.style = "border: 1px solid; margin-top: 20px; margin-right: 10px; background-color: rgb(235, 75, 75); font-weight: bold; display:none;"
+                    }
+                }
+                else{
+                    alert("오류");
+                }
+            }
+        })
+    })
+
     function start(){
         var result = confirm("영업을 시작하시겠습니까?");
         if(result){
             $(document).ready(function(){
                 $.ajax({
-                    url: "/user/start",
+                    url: "/user/open",
                     type: "post",
                     data: {token: localStorage.getItem('token')},
                     datatype: "json",
                     success: function(result){
                         if(result !="error"){
-                            const start_btn = document.getElementById('start-btn');
-                            start_btn.style = "border: 1px solid; margin-top: 20px; margin-right: 10px; display:none;"
-                            const end_btn = document.getElementById('end-btn');
-                            end_btn.style = "border: 1px solid; margin-top: 20px; margin-right: 10px;"                            
+                            window.location.href = '/user/startend';  
                         }
                         else{
                             alert("오류");
@@ -63,7 +101,25 @@
     }
 
     function end(){
-
+        var result = confirm("영업을 종료하시겠습니까?");
+        if(result){
+            $(document).ready(function(){
+                $.ajax({
+                    url: "/user/close",
+                    type: "post",
+                    data: {token: localStorage.getItem('token')},
+                    datatype: "json",
+                    success: function(result){
+                        if(result !="error"){
+                            window.location.href = '/user/startend';  
+                        }
+                        else{
+                            alert("오류");
+                        }
+                    }
+                })
+            })
+        }
     }
 
     const date = document.getElementById('date')
