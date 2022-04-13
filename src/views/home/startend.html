@@ -19,7 +19,7 @@
 </script>
 
 <div>
-    <p class = "container row" style="float: none; margin:0 auto; border: solid 1px; width: 260px;" id = "date"></p>
+    <p class = "container row" style="float: none; margin-top: 70px; margin-left:auto; margin-right:auto;  border: solid 1px; width: 260px;" id = "date"></p>
     <hr>
     <ul style="list-style: none;">
         <li>
@@ -71,11 +71,13 @@
                     }            
                     else{
 
-                        const openTime = document.getElementById('open-time');
-                        openTime.innerHTML = openRecord[0].start_time;
-                        const closeTime = document.getElementById('close-time');
-                        closeTime.innerHTML = openRecord[0].end_time;
-
+                        if(result.openRecord != 0){
+                            const openTime = document.getElementById('open-time');
+                            openTime.innerHTML = openRecord[0].start_time;
+                            const closeTime = document.getElementById('close-time');
+                            closeTime.innerHTML = openRecord[0].end_time;
+                        }
+                        
                         const start_btn = document.getElementById('start-btn');
                         start_btn.style = "border: 1px solid; margin-top: 20px; background-color: rgb(59, 206, 96); font-weight: bold; margin-right: 10px;"
                         const end_btn = document.getElementById('end-btn');

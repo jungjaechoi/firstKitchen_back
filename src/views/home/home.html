@@ -18,14 +18,14 @@
     })
 </script>
 
-<div >
-    <p class = "container row" style="float: none; margin:0 auto; border: solid 1px; width: 260px;" id = "date"></p>
+<div>
+    <p class = "container row"  id = "date"></p>
     <hr>
     <p style="margin-left: 15px; font-weight: bold;">실시간 매출 현황</p>
     <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="earning"></div>
-    <ul class = "row" style=" list-style:none; margin-top: 50px; padding: 0;">
+    <ul class = "row" style=" list-style:none; margin-top: 50px; padding: 0; margin-top: 40px; margin-left:0; margin-right:0; width:100%; float:right;">
         <li >
-            <div id="table_wait" class = "col-xs-4 col-sm-4 col-md-4" style="padding-right: 1px;">
+            <div id="table_wait" class = "col-xs-4 col-sm-4 col-md-4" style="padding: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -38,7 +38,7 @@
             </div>
         </li>
         <li >
-            <div id="table_receipt"  class = "col-xs-4 col-sm-4 col-md-4" style="padding-left: 1px; padding-right: 1px;">
+            <div id="table_receipt"  class = "col-xs-4 col-sm-4 col-md-4" style="padding: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -51,7 +51,7 @@
             </div>
         </li>
         <li >
-            <div id="table_completed"  class = "col-xs-4 col-sm-4 col-md-4" style="padding-left: 1px;">
+            <div id="table_completed"  class = "col-xs-4 col-sm-4 col-md-4" style="padding: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
@@ -92,7 +92,7 @@
         }
 
         date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
-        date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px;"
+        date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px; margin-top: 70px;"
     }
 
     function init(){
@@ -196,7 +196,7 @@
                     temp_html += `<div onClick="changeStatus_to_receipt(${wait[i][0]})">`
 
                     for( var j = 1 ; j<wait[i].length ; j++){
-                        temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1] + "\n";
+                        temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1] + "<br>";
                     }
                     temp_html += '</div>'
                     
@@ -213,7 +213,7 @@
                     temp_html += `<div onClick="changeStatus_to_completed(${receipt[i][0]})">`
 
                     for( var j = 1 ; j<receipt[i].length ; j++){
-                        temp_html += receipt[i][j][0] + " "+ "*"+" " + receipt[i][j][1] + "\n";
+                        temp_html += receipt[i][j][0] + " "+ "*"+" " + receipt[i][j][1] + "<br>";
                     }
                     temp_html += '</div>'
                     
@@ -230,7 +230,7 @@
                     temp_html += `<div onClick="changeStatus_delete(${completed[i][0]})">`
 
                     for( var j = 1 ; j<completed[i].length ; j++){
-                        temp_html += completed[i][j][0] + " "+ "*"+" " + completed[i][j][1] + "\n";
+                        temp_html += completed[i][j][0] + " "+ "*"+" " + completed[i][j][1] + "<br>";
                     }
                     temp_html += '</div>'
                     

@@ -4,7 +4,7 @@ import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
-const deliveryApp_IP = "http://192.168.100.65:4000";
+const deliveryApp_IP = "http://192.168.100.68:4000";
 
 
 export const getLogin = (req, res) => {
@@ -511,7 +511,10 @@ export const isOpen = async(req,res) => {
     
     const query = "select * from (select * from OpenRecords order by updatedAt DESC) a  limit 1";
 
-    const openRecord = await db.sequelize.query(query);
+    var openRecord = await db.sequelize.query(query);
+    if(openRecord[0].length == 0){
+      openRecord = 0
+    }
 
     return res.json({isOpen, openRecord});
   }

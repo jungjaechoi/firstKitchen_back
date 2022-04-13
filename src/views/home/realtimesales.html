@@ -15,19 +15,18 @@
 </script>
 
 <div>
-    <p class = "container row" style="float: none; margin:0 auto; border: solid 1px; width: 260px;" id = "date"></p>
+    <p class = "container row"  id = "date"></p>
     <hr>
     <p style="margin-left: 15px; font-weight: bold;">실시간 매출 현황</p>
     <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="earning"></div>
     
-    <p style="margin-top: 80px; margin-left: 15px; font-weight: bold;">주문 경로 별 건수 및 매출</p>
-    <div id="table" style="height: 340px;width: 400px">
-        <table class="table table-hover" style = "  margin-bottom:40px;">
+    <div id="table" style="height: 340px; margin-top:50px;">
+        <table class="table table-hover" style = "margin-bottom:40px;">
             <thead style = "height: 0px;">
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                    <th>주문 경로</th>
+                    <th>건 수</th>
+                    <th>매출</th>
                 </tr>
             </thead>
             <tbody style = "height: 34px;" id="tblShow">
@@ -52,6 +51,7 @@
         let seconds = today.getSeconds();  // 초
 
         date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+        date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px; margin-top: 70px;"
     }
 
     function init(){

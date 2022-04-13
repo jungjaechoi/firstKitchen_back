@@ -32,8 +32,6 @@ export const postDeliveryInfo = async(req,res) => {
         });
 
         const deliveryPrice = store.dataValues.deliveryPrice;
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-        console.log(deliveryPrice);
         const discountPrice = 0
 
         var totalPrice = 0
