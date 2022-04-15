@@ -67,7 +67,14 @@
             data: {token:localStorage.getItem('token')},
             datatype: "json",
             success: function(result){
-                $('#earning').append(result.earning+ " 원");
+                if(result.error != 'token expired'){
+                    $('#earning').append(result.earning+ " 원");
+                }
+                else{
+                    localStorage.removeItem('token');
+                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                    window.location.href = '/user';
+                }
             }
         })
     })  

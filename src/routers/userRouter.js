@@ -1,9 +1,10 @@
 import express from "express";
+import { verify } from "jsonwebtoken";
 import { getDeliveryInfo } from "../controllers/consumerController";
 import {
   getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales, getPaymenthistory,
-  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close
+  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords
 } from "../controllers/userController";
 import {verifyToken} from "./middlewares/authorization.js"
 
@@ -26,6 +27,7 @@ userRouter.post('/delete',verifyToken,postDelete);
 userRouter.post('/open',verifyToken,open);
 userRouter.post('/close',verifyToken,close);
 userRouter.post('/isOpen',verifyToken,isOpen);
+userRouter.post('/getOpenRecords',verifyToken,getOpenRecords)
 
 
 export default userRouter;

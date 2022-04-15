@@ -3,19 +3,14 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 <div class="container">
     <div>
-        <form method="post" style="margin-top:50px;margin-bottom:20px; ">
-            <ul style="list-style-type:none; ">
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="tel" id="tel" type = "text" style = "width:300px; height:40px; font-size: 1.2em; " placeholder="010 - XXXX - XXXX" required>
-                </li>
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input type = "button" value="로그인 하기" onclick="login()" style=" font-size: 13px; width:300px; height:40px; font-size: 1.2em; ">
-                </li>
-            </ul>
+        <form method="post" style="margin-top:250px;margin-bottom:20px; text-align:center">
+            <input name="tel" id="tel" type = "text" style = "text-align: center; width:96%; height:80px; margin-bottom: 20px; font-size: 2.0em; border: 1px solid" placeholder="010 - XXXX - XXXX" required>
+            <input type = "button" value="로그인" onclick="login()" style=" font-size: 13px; width:200px; height:80px; font-size: 1.8em; ">
         </form>
         <!-- <form>
             <ul style="list-style-type:none; ">
@@ -24,14 +19,14 @@
                     <input type = "submit" value="인증하기"   style=" font-size: 13px; width:70px; height:40px; margin-left: 30px; font-size: 0.8em; margin-bottom: 50px;">
                 </li>
             </ul>
-        </form> -->
-        <!-- <li style="text-align: center; margin-bottom: 10px; list-style-type:none;">
+        </form> 
+        <li style="text-align: center; margin-bottom: 10px; list-style-type:none;">
             <input type = "button" value="Login" onclick="location.href = 'home'"  style=" font-size: 13px; width:100px; height:40px; font-size: 0.8em; margin-bottom:50px;">
         </li> -->
        
         
     </div>
-</div> <!-- /container -->
+</div> 
 
 <script type="text/javascript">
     function login(){

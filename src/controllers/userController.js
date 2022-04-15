@@ -4,7 +4,7 @@ import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
-const deliveryApp_IP = "http://192.168.100.68:4000";
+const deliveryApp_IP = "http://192.168.100.77:4000";
 
 
 export const getLogin = (req, res) => {
@@ -438,6 +438,22 @@ export const open = async (req,res) =>{
     let minutes = today.getMinutes();  // 분
     let seconds = today.getSeconds();  // 초
 
+    if(month<10){
+      month = "0"+ month;
+    }
+    if(dates<10){
+      dates = "0"+ dates;
+    }
+    if(hours<10){
+      hours = "0"+ hours;
+    }
+    if(minutes<10){
+      minutes = "0"+ minutes;
+    }
+    if(seconds<10){
+      seconds = "0"+ seconds;
+    }
+
     const start_time = year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds
 
     await OpenRecord.create({
@@ -483,6 +499,22 @@ export const close = async (req,res) => {
     let minutes = today.getMinutes();  // 분
     let seconds = today.getSeconds();  // 초
 
+    if(month<10){
+      month = "0"+ month;
+    }
+    if(dates<10){
+      dates = "0"+ dates;
+    }
+    if(hours<10){
+      hours = "0"+ hours;
+    }
+    if(minutes<10){
+      minutes = "0"+ minutes;
+    }
+    if(seconds<10){
+      seconds = "0"+ seconds;
+    }
+
     const end_time = year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds;
 
     await openRecord.update({
@@ -509,7 +541,7 @@ export const isOpen = async(req,res) => {
     
     const isOpen = store.dataValues.isOpen;
     
-    const query = "select * from (select * from OpenRecords order by updatedAt DESC) a  limit 1";
+    const query = `select * from (select * from (select * from OpenRecords where store_id = ${store_id}) b order by updatedAt DESC) a  limit 1`;
 
     var openRecord = await db.sequelize.query(query);
     if(openRecord[0].length == 0){
@@ -520,6 +552,23 @@ export const isOpen = async(req,res) => {
   }
   catch(err){
     console.log("Error on isOpen: " + err)
+    res.send("error");
+  }
+}
+
+export const getOpenRecords = async (req,res) => {
+  const store_id = res.locals.store_id
+  try{
+    const openRecords = await OpenRecord.findAll({
+      where:{
+        store_id
+      }
+    });
+    return res.json({openRecords});
+
+  }
+  catch(err){
+    console.log("Error on getOpenRecords: " + err)
     res.send("error");
   }
 }

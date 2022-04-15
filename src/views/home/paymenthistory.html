@@ -4,11 +4,21 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <meta name = "viewport", content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/jquery-ui.css">
+    <script src="/static/js/jquery-ui.js"></script>
 </head>
 <body>
 
 <div>
     <div id='navibar'></div>
+
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
+    <div style="text-align: center; margin-top: 20px;">
+        <input id = "date-start" type="date" name="startDate" > 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" >
+   </div>
+    
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -16,7 +26,8 @@
             });
         })
     </script>
-    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">결제 내역</p>
+
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 10px; font-weight: bold;">결제 내역</p>
     <div>
         <table id="table" class="table table-hover" style = "margin-bottom:40px;">
             <thead style = "height: 0px;">
@@ -99,8 +110,6 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-
-            
         </div>
     </div>  
 
@@ -180,56 +189,64 @@
             datatype: "json",
             success: function(result){
 
-                var payment = result.paymentList;
+                if(result.error != 'token expired'){
+                    
+                    var payment = result.paymentList;
                 
-                for(var i = 0; i<payment.length;i++){
-                    if(payment[i].status != 5){
-                        var objRow = document.all("tblShow").insertRow();
+                    for(var i = 0; i<payment.length;i++){
+                        if(payment[i].status != 5){
+                            var objRow = document.all("tblShow").insertRow();
 
-                        var objCell_id = objRow.insertCell();
-                        objCell_id.innerHTML = payment[i].id;
-                        objCell_id.style = "display:none";
+                            var objCell_id = objRow.insertCell();
+                            objCell_id.innerHTML = payment[i].id;
+                            objCell_id.style = "display:none";
 
-                        var objCell_status =objRow.insertCell();
+                            var objCell_status =objRow.insertCell();
 
-                        if(payment[i].status == 0){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
-                        }
-                        else if(payment[i].status == 1){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
-                        }
-                        else if(payment[i].status == 2 || payment[i].status == 3){
-                            if(payment[i].receptionType == "DELIVERY"){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                            if(payment[i].status == 0){
+                                objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
                             }
-                            else if(payment[i].receptionType == "PICKUP"){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                            else if(payment[i].status == 1){
+                                objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
                             }
-                            else{
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                            else if(payment[i].status == 2 || payment[i].status == 3){
+                                if(payment[i].receptionType == "DELIVERY"){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                }
+                                else if(payment[i].receptionType == "PICKUP"){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                }
+                                else{
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                }
                             }
+                            else if(payment[i].status == 4){
+                                objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
+                            }
+
+                            var objCell_earning = objRow.insertCell();
+                            objCell_earning.innerHTML = payment[i].totalPaidPrice;
+
+                            var objCell_date = objRow.insertCell();
+                            var date = payment[i].createdAt.split('T')
+                            date[1] = date[1].split('.');
+                            date[1] = date[1][0].split(":");
+                            date[1] = date[1][0] + " : " + date[1][1]
+                            objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
+
                         }
-                        else if(payment[i].status == 4){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
-                        }
+                    }
 
-                        var objCell_earning = objRow.insertCell();
-                        objCell_earning.innerHTML = payment[i].totalPaidPrice;
+                    const table = document.querySelector("table");
 
-                        var objCell_date = objRow.insertCell();
-                        var date = payment[i].createdAt.split('T')
-                        date[1] = date[1].split('.');
-                        date[1] = date[1][0].split(":");
-                        date[1] = date[1][0] + " : " + date[1][1]
-                        objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
-
+                    for (const currentRow of table.rows) {
+                        currentRow.onclick = createClickHandler(currentRow);
                     }
                 }
-
-                const table = document.querySelector("table");
-
-                for (const currentRow of table.rows) {
-                    currentRow.onclick = createClickHandler(currentRow);
+                else{
+                    localStorage.removeItem('token');
+                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                    window.location.href = '/user';
                 }
             }
         })

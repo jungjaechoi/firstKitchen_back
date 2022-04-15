@@ -37,16 +37,131 @@
         <hr>
     </ul>
 </div>
+
+<button type="button" id = "modal-btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal" style="display:none;"></button>
+
+<div id="modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                
+                <ul style="padding:0; margin:0">
+                    <li style="list-style: none;">
+                        <p style="font-weight: bold; display: inline-block;">시작 시간: </p>
+                        <p style="display: inline-block; float: right;" id = "modal-open-time"></p>
+                    </li>
+                    <li style="list-style: none;">
+                        <p style="font-weight: bold; display: inline-block;">마감 시간: </p>
+                        <p style="display: inline-block; float: right;" id="modal-close-time"></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id='calendar' class = "container"></div>
         
 <script type="text/javascript">
 
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
+
         initialView: 'dayGridMonth',
-        height: 370
+        expandRows: true,
+        aspectRatio: 1.35,
+        events: [],
+
+        eventClick: function(info) {
+            
+            var open_time = document.getElementById("modal-open-time");
+            var close_time = document.getElementById("modal-close-time");
+            open_time.innerHTML = info.event.extendedProps.open_time;
+            close_time.innerHTML = info.event.extendedProps.close_time;
+
+            document.getElementById('modal-btn').click();
+          }
     });
-    calendar.render();
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getOpenRecords",
+            type: "post",
+            data: {token: localStorage.getItem('token')},
+            datatype: "json",
+            success: function(result){
+
+                if(result.error != 'token expired'){
+                    if(result !="error"){
+                        const openRecords = result.openRecords;
+                        for(var i = 0; i<openRecords.length ; i++){
+    
+                            var open_time = "";
+                            var close_time = "";
+                            var date = "";
+    
+                            if(openRecords[i].start_time != null){
+                                
+                                var time = openRecords[i].start_time.split("&nbsp;&nbsp;&nbsp;")[1];
+                                time = time.split(":");
+                                time = time[0] + ":" + time[1]
+    
+                                open_time = time;
+    
+                                date = openRecords[i].start_time.split("&nbsp;&nbsp;&nbsp;")[0];
+                                date = date.split(' / ');
+    
+                                if(date[1]<10){
+                                    date[1] = "0" + date[1]
+                                }
+                                if(date[2]<10){
+                                    date[2] = "0" + date[2]
+                                }
+    
+                                date = date[0] + "-" + date[1] + "-" + date[2]
+        
+                            }
+                            if(openRecords[i].end_time != null){
+    
+                                var time = openRecords[i].end_time.split("&nbsp;&nbsp;&nbsp;")[1];
+                                time = time.split(":");
+                                time = time[0] + ":" + time[1]
+    
+                                close_time = time;
+    
+                            }
+    
+                            calendar.addEvent({
+                                title: "영업일",
+                                start: date,
+                                open_time: open_time,
+                                close_time: close_time
+                            });
+    
+                            calendar.render();
+                        }
+                    }
+                    else{
+                        alert("오류");
+                    }
+                }
+                else{
+                    localStorage.removeItem('token');
+                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                    window.location.href = '/user';
+                }
+            }
+        })
+    })
+
+    
+    
 
     $(document).ready(function(){
         $.ajax({
@@ -59,7 +174,7 @@
                 if(result !="error"){
                     var isOpen = result.isOpen;
                     var openRecord = result.openRecord[0];
-                    if(isOpen == 1){
+                    if(isOpen == 1 && result.openRecord != 0){
 
                         const openTime = document.getElementById('open-time');
                         openTime.innerHTML = openRecord[0].start_time;

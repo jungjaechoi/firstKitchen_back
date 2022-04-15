@@ -114,8 +114,9 @@
                     },
                     datatype: "json",
                     success: function(result){
-                        console.log(result);
+
                         window.location.href = '/user/home';
+
                     }
                 })
             }) 
@@ -134,8 +135,9 @@
                     },
                     datatype: "json",
                     success: function(result){
-                        console.log(result);
+                        
                         window.location.href = '/user/home';
+                       
                     }
                 })
             }) 
@@ -154,14 +156,15 @@
                     },
                     datatype: "json",
                     success: function(result){
-                        console.log(result);
+                        
                         window.location.href = '/user/home';
+                        
                     }
                 })
             }) 
         }
     }
-
+ 
     $(document).ready(function(){
         $.ajax({
             url: "/user/getEarning",
@@ -169,9 +172,14 @@
             data: {token:localStorage.getItem('token')},
             datatype: "json",
             success: function(result){
-                $('#earning').append(result.earning+ " 원");
-                const earning = document.getElementById("earning");
-                
+                if(result.error != 'token expired'){
+                    $('#earning').append(result.earning+ " 원");
+                }
+                else{
+                    localStorage.removeItem('token');
+                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                    window.location.href = '/user';
+                }
             }
         })
     })  
@@ -183,6 +191,7 @@
             data: {token:localStorage.getItem('token')},
             datatype: "json",
             success: function(result){
+
                 var json = result.result;
                 var arr = JSON.parse(json);
                 var wait = arr[0]
@@ -240,7 +249,7 @@
 
                     var objCell_menu = objRow.insertCell();
                     objCell_menu.innerHTML = temp_html
-                }
+                } 
             }
         })
     })  
