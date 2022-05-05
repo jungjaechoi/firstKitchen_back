@@ -43,7 +43,11 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       
+<<<<<<< HEAD
       { sequelize,
+=======
+      {
+>>>>>>> 75eab397aea4dbbe0779a4cf47ee093f5fb56ff9
         timestamps: false,
         charset: "utf8",
         collate: "utf8_general_ci",

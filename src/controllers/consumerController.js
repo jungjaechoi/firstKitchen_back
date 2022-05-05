@@ -1,7 +1,8 @@
 import { Order, Delivery, ProductOption, ProductUnit, ProductSet, Store } from "../../models";
-
+const Sequelize = require('sequelize');
 
 export const postDeliveryInfo = async(req,res) => {
+    console.log('#####################주문들어옴##########################');
     console.log(req.body);
     const {store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
         jibunAddress,roadAddress,addressDetail,memo,request,
@@ -32,8 +33,6 @@ export const postDeliveryInfo = async(req,res) => {
         });
 
         const deliveryPrice = store.dataValues.deliveryPrice;
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-        console.log(deliveryPrice);
         const discountPrice = 0
 
         var totalPrice = 0
@@ -82,7 +81,7 @@ export const postDeliveryInfo = async(req,res) => {
                     productUnit_id:orders[i].menu_id,
                     quantity: orders[i].quantity
                 })
-                console.log(order.id + " is saved")
+                
             }
         }
 
@@ -98,7 +97,8 @@ export const postDeliveryInfo = async(req,res) => {
 }
 
 export const getDeliveryInfo = async(req,res) => {
-    const {id} = req.body;
+
+    const {id} = req.body.data;
 
     try{
         
@@ -106,7 +106,6 @@ export const getDeliveryInfo = async(req,res) => {
             where: {id}
         })
 
-        console.log("delivery " + deliveryInfo.id + " is inquired")
         return res.json({deliveryInfo})
 
     } catch(err){
@@ -116,14 +115,21 @@ export const getDeliveryInfo = async(req,res) => {
 }
 
 export const getAllStore = async(req,res) => {
-    //나중에는 위치정보 받아서 가까운 가게 res해야함.
+    
+    const {x,y} = req.body.data;
+
+    console.log(x,y)
+
     try{
+
         const store = await Store.findAll({attributes: ['id','storeName','storeAddress','isOpen','deliveryPrice']})
-        console.log(store);
         return res.json({store});
+
     } catch(err){
+
         console.log("Error on inquiring AllStore: " + err)
         return res.send("error")
+
     }
 }
 
@@ -264,6 +270,183 @@ export const getCartMenu = async(req,res) => {
         console.log("Error on inquiring Cart: " + err)
         return res.send("error")
     }
-    
-    
+}
+
+export const getProceedingDelivery = async (req,res) => {
+
+    const {user_id} = req.body.data;
+    const Op = Sequelize.Op
+
+    try{
+        const deliveries = await Delivery.findAll({
+            where:{
+                user_id,
+                status: {
+                    [Op.or]: [0,1]
+                }
+            }
+        });
+        
+        var result = new Array();
+
+        for(var i = 0 ; i < deliveries.length ; i++){
+
+            var temp_dict = {}
+
+            const store = await Store.findOne({
+                where:{
+                    id: deliveries[i].dataValues.store_id
+                }
+            });
+
+            temp_dict['store_name'] = store.dataValues.storeName;
+
+            const orders = await Order.findAll({
+                where:{
+                    delivery_id: deliveries[i].dataValues.id
+                }
+            });
+
+            var orderList = new Array();
+            var total_price = 0
+
+            for (var j = 0; j<orders.length ; j++){
+                if (orders[j].dataValues.productUnit_id != null){
+                  var product = await ProductUnit.findOne({
+                    where:{
+                      id: orders[j].dataValues.productUnit_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productSet_id != null){
+                  var product = await ProductSet.findOne({
+                    where:{
+                      id: orders[j].dataValues.productSet_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productOption_id != null){
+                  var product = await ProductOption.findOne({
+                    where:{
+                      id: orders[j].dataValues.productOption_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+              }
+
+            temp_dict['menu'] = orderList;
+            temp_dict['total_price'] = total_price;
+            temp_dict['status'] = deliveries[i].dataValues.status;
+
+            result.push(temp_dict);
+        }
+
+        result = JSON.stringify(result);
+        return res.json({result});
+
+    }
+    catch(err){
+
+        console.log("Error on getProceedingDelivery: " + err)
+        return res.send("error")
+
+    }
+}
+
+export const getFinishedDelivery = async (req,res) => {
+
+    console.log(req.query);
+
+    const {user_id} = req.query;
+    const Op = Sequelize.Op
+
+    try{
+        const deliveries = await Delivery.findAll({
+            where:{
+                user_id,
+                status: {
+                    [Op.or]: [2,3,4,5]
+                }
+            }
+        });
+        
+        var result = new Array();
+
+        for(var i = 0 ; i < deliveries.length ; i++){
+
+            var temp_dict = {}
+
+            const store = await Store.findOne({
+                where:{
+                    id: deliveries[i].dataValues.store_id
+                }
+            });
+
+            temp_dict['store_name'] = store.dataValues.storeName;
+
+            const orders = await Order.findAll({
+                where:{
+                    delivery_id: deliveries[i].dataValues.id
+                }
+            });
+
+            var orderList = new Array();
+            var total_price = 0
+
+            for (var j = 0; j<orders.length ; j++){
+                if (orders[j].dataValues.productUnit_id != null){
+                  var product = await ProductUnit.findOne({
+                    where:{
+                      id: orders[j].dataValues.productUnit_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productSet_id != null){
+                  var product = await ProductSet.findOne({
+                    where:{
+                      id: orders[j].dataValues.productSet_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productOption_id != null){
+                  var product = await ProductOption.findOne({
+                    where:{
+                      id: orders[j].dataValues.productOption_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+              }
+
+            temp_dict['menu'] = orderList;
+            temp_dict['total_price'] = total_price;
+            temp_dict['status'] = deliveries[i].dataValues.status;
+            temp_dict['delivery_id'] = deliveries[i].dataValues.id;
+
+            result.push(temp_dict);
+        }
+
+        console.log(result);
+
+        result = JSON.stringify(result);
+        return res.json({result});
+
+    }
+    catch(err){
+
+        console.log("Error on getFinishedDelivery: " + err)
+        return res.send("error")
+
+    }
 }

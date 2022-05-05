@@ -2,22 +2,55 @@
 <html>
 <head>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <link rel = "stylesheet" href="/static/css/bootstrap.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <meta name = "viewport", content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/jquery-ui.css">
+    <script src="/static/js/jquery-ui.js"></script>
 </head>
 <body>
 
 <div>
+    <div id='navibar'></div>
 
-    <nav class = "navbar navbar-expand-md navbar-light bg-light">
-        <ul class = "navbar-nav">
-            <li class="nav-item"><a class = "nav-link" href="#" onclick="goBack();">Back</a></li>
-        </ul>
-        <a class="navbar-brand" style="margin-left: 20px; font-weight: bold;" >결제내역</a>
-    </nav>
-    <div  style="height: 340px;width: 200px; float:left;">
-        <table id="table" class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
+    <div style="text-align: center; margin-top: 20px;">
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
+    
+
+    <script type="text/javascript">
+        
+        const date = new Date();
+        const year = date.getFullYear(); // 년도
+        let month = date.getMonth()+1;  // 월
+        let dates = date.getDate();  // 날짜
+
+        if(month<10){
+            month = "0" + month;
+        }
+        if(dates<10){
+            dates = "0" + dates;
+        }
+
+        const today = year + '-' + month + '-' + dates 
+        
+        $('input[name=startDate]').attr('value',today);
+        $('input[name=endDate]').attr('value',today);
+
+        $(document).ready(function () {
+            $("#navibar").load("/user/navibar", function () {
+            });
+        })
+    </script>
+
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 10px; font-weight: bold;">결제 내역</p>
+    <div>
+        <table id="table" class="table table-hover" style = "margin-bottom:40px;">
             <thead style = "height: 0px;">
                 <tr>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -27,74 +60,82 @@
         </table>
     </div>
 
-    <div style = "margin-left: 100px; margin-top: 20px; float:left; width: 300px;">
-        <ul>
-            <li>
-                <p>결제시간</p>
-                <p style="border: solid 1px; width: 260px;" id = "date"></p>
-            </li>
-            <li>
-                <p>총 결제 금액</p>
-                <p id="totalPrice"></p>
-            </li>
-            <hr>
-            <li style="list-style: none;">
-                <p style="display: inline-block;">합계</p>
-                <p style="display: inline-block; float: right;"  id = "total"></p>
-            </li>
-            <li style="list-style: none;">
-                <p style="display: inline-block;">환불 가능 금액</p>
-                <p style="display: inline-block; float: right;" id = "refundable"></p>
-            </li>
-            <li style="list-style: none;">
-                <p style="display: inline-block;">환불된 금액</p>
-                <p style="display: inline-block; float: right;" id = "refunded"></p>
-            </li>
-            <hr>
-            <li>
-                <p style="display: inline-block;">결제 수단</p>
-                <p style="display: inline-block; float: right;" id = "payType"></p>
-            </li>
-            <hr>
-            <li>
-                <p>결제 내역</p>
-                <div id="table" style="height: 100px;width: 280px">
-                    <table  style = " margin-top:10px; margin-bottom:40px;">
-                        <thead style = "height: 0px;">
-                            <tr>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody style = "height: 34px;" id="tblShow_orders">
-                        </tbody>
-                    </table>
+    <button type="button" id = "modal-btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal" style="display:none;"></button>
+
+    <div id="modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-            </li>
-            <hr>
-            <li style="text-align:center; list-style: none;">
-                <a style="border: 1px solid; margin-top: 20px; margin-right: 10px; display:none;" id="refund-btn" class = "btn btn-default" onclick = "refundOrder()">환불</a>
-                <a style="border: 1px solid; margin-top: 20px; display:none;" id="delete-btn" class = "btn btn-default " onclick = "deleteOrder()">삭제</a>
-            </li>
-            <li style="text-align:center; list-style: none; display: none;">
-                <a id="deli_id"></a>
-            </li>
-        </ul>
-    </div>
+                <div class="modal-body">
+                    
+                    <ul style="padding:0; margin:0">
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">결제시간</p>
+                            <p style="display: inline-block; float: right;" id = "date"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">총 결제 금액</p>
+                            <p style="display: inline-block; float: right;" id="totalPrice"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">합계</p>
+                            <p style="display: inline-block; float: right;"  id = "total"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">환불 가능 금액</p>
+                            <p style="display: inline-block; float: right;" id = "refundable"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">환불된 금액</p>
+                            <p style="display: inline-block; float: right;" id = "refunded"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">결제 수단</p>
+                            <p style="display: inline-block; float: right;" id = "payType"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style = "font-weight: bold;">결제 내역</p>
+                            <div id="table">
+                                <table  style = " margin-top:10px; margin-bottom:40px; width: 100%;">
+                                    <thead style = "height: 0px;">
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style = "height: 34px;" id="tblShow_orders">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <hr>
+                        <li style="text-align:center; list-style: none;">
+                            <a style="border: 1px solid; margin-top: 20px; margin-right: 10px; display:none;" id="refund-btn" class = "btn btn-default" onclick = "refundOrder()">환불</a>
+                            <a style="border: 1px solid; margin-top: 20px; display:none;" id="delete-btn" class = "btn btn-default " onclick = "deleteOrder()">삭제</a>
+                        </li>
+                        <li style="text-align:center; list-style: none; display: none;">
+                            <a id="deli_id"></a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    
     
 </div>
-
         
 <script type="text/javascript">
-
-    if(localStorage.getItem('delivery_id')){
-        getDeliveryById(localStorage.getItem('delivery_id'));
-    }
-
-    function goBack(){
-        localStorage.removeItem('delivery_id');
-        window.history.back();
-    }
 
     function refundOrder(){
         var result = confirm("해당주문을 환불처리 하시겠습니까?");
@@ -109,7 +150,6 @@
                     datatype: "json",
                     success: function(result){
                         if(result !="error"){
-                            localStorage.setItem('delivery_id',result.delivery_id);
                             window.location.href = '/user/paymenthistory'; 
                         }
                         else{
@@ -135,8 +175,6 @@
                     datatype: "json",
                     success: function(result){
                         if(result !="error"){
-                            localStorage.removeItem('delivery_id');
-                            console.log('hihihihi');
                             window.location.href = '/user/paymenthistory'; 
                         }
                         else{
@@ -148,73 +186,85 @@
         }
     }
 
-    const createClickHandler = (row) => {
-        return () => {
-            const cell = row.getElementsByTagName("td");
-            const id = cell[0].innerHTML;
-            localStorage.setItem('delivery_id', id);
-            getDeliveryById(id);
-        };
-    };
 
-    $(document).ready(function(){
-        $.ajax({
-            url: "/user/getPaymentList",
-            type: "post",
-            data: {token:localStorage.getItem('token'),
-                    start: new Date(2022, 1, 1),
-                    end: new Date()},
-            datatype: "json",
-            success: function(result){
+    function getPaymentList() {
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/getPaymentList",
+                type: "post",
+                data: {token:localStorage.getItem('token'),
+                        start: date_start,
+                        end: date_end},
+                datatype: "json",
+                success: function(result){
 
-                var payment = result.paymentList;
+                    if(result.error != 'token expired'){
 
-                for(var i = 0; i<payment.length;i++){
-                    if(payment[i].status != 5){
+                        $("#tblShow tr").remove();
 
-                        var objRow = document.all("tblShow").insertRow();
+                        var payment = result.paymentList;
+                    
+                        for(var i = 0; i<payment.length;i++){
+                            if(payment[i].status != 5){
+                                var objRow = document.all("tblShow").insertRow();
 
-                        var objCell_id = objRow.insertCell();
-                        objCell_id.innerHTML = payment[i].id;
-                        objCell_id.style = "display:none";
+                                var objCell_id = objRow.insertCell();
+                                objCell_id.innerHTML = payment[i].id;
+                                objCell_id.style = "display:none";
 
-                        var objCell_status =objRow.insertCell();
+                                var objCell_status =objRow.insertCell();
 
-                        if(payment[i].status == 0){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
-                        }
-                        else if(payment[i].status == 1){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
-                        }
-                        else if(payment[i].status == 2 || payment[i].status == 3){
-                            if(payment[i].reception == "DELIVERY"){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                if(payment[i].status == 0){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
+                                }
+                                else if(payment[i].status == 1){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
+                                }
+                                else if(payment[i].status == 2 || payment[i].status == 3){
+                                    if(payment[i].receptionType == "DELIVERY"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                    }
+                                    else if(payment[i].receptionType == "PICKUP"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                    }
+                                    else{
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                    }
+                                }
+                                else if(payment[i].status == 4){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
+                                }
+
+                                var objCell_earning = objRow.insertCell();
+                                objCell_earning.innerHTML = payment[i].totalPaidPrice;
+
+                                var objCell_date = objRow.insertCell();
+                                var date = payment[i].createdAt.split('T')
+                                date[1] = date[1].split('.');
+                                date[1] = date[1][0].split(":");
+                                date[1] = date[1][0] + " : " + date[1][1]
+                                objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
+
                             }
-                            else if(payment[i].reception == "PICKUP"){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
-                            }
-                            else{
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
-                            }
-                        }
-                        else if(payment[i].status == 4){
-                            objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
                         }
 
-                        var objCell_earning = objRow.insertCell();
-                        objCell_earning.innerHTML = payment[i].totalPaidPrice;
+                        const table = document.querySelector("table");
 
+                        for (const currentRow of table.rows) {
+                            currentRow.onclick = createClickHandler(currentRow);
+                        }
+                    }
+                    else{
+                        localStorage.removeItem('token');
+                        alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                        window.location.href = '/user';
                     }
                 }
-
-                const table = document.querySelector("table");
-
-                for (const currentRow of table.rows) {
-                    currentRow.onclick = createClickHandler(currentRow);
-                }
-            }
+            })
         })
-    }) 
+    }
+
 
     function getDeliveryById(id){
         $(document).ready(function(){
@@ -230,8 +280,12 @@
 
                     const delivery = result.delivery;
                     const orderList = result.orderList;
-                    const date = document.getElementById("date")
-                    date.innerHTML = delivery.createdAt;
+                    const date_value = document.getElementById("date")
+                    var date = delivery.createdAt.split('T')
+                    date[1] = date[1].split('.');
+                    date[1] = date[1][0].split(":");
+                    date[1] = date[1][0] + " : " + date[1][1]
+                    date_value.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
                     const totalPrice = document.getElementById("totalPrice")
                     totalPrice.innerHTML = delivery.totalPaidPrice
                     const total = document.getElementById("total")
@@ -262,11 +316,11 @@
 
                         var objCell_menuName = objRow.insertCell();
                         objCell_menuName.innerHTML = orderList[i][0] + " * " + orderList[i][1]
-                        objCell_menuName.style = "width: 200px;"
+                        
 
                         var objCell_price = objRow.insertCell();
                         objCell_price.innerHTML = (orderList[i][1] * orderList[i][2]) + "원"
-                        
+                        objCell_price.style = "float:right"
                     }
 
                     var objRow = document.all("tblShow_orders").insertRow();
@@ -274,18 +328,17 @@
 
                     var objCell_deliveryPrice = objRow.insertCell();
                     objCell_deliveryPrice.innerHTML = "배달료"
-                    objCell_deliveryPrice.style = "width: 200px;"
 
                     var objCell_price = objRow.insertCell();
                     objCell_price.innerHTML = delivery.deliveryPrice  + "원"
-
+                    objCell_price.style = "float:right"
 
                     const deli_id = document.getElementById("deli_id");
                     deli_id.innerHTML = delivery.id;
 
                     if(delivery.status == 4){
                         const totalPrice = document.getElementById("totalPrice");
-                        totalPrice.style = "text-decoration:line-through;";
+                        totalPrice.style = "text-decoration:line-through; display: inline-block; float: right;";
                         const refundable = document.getElementById("refundable")
                         var temp = refundable.innerHTML 
                         refundable.innerHTML = 0
@@ -299,7 +352,7 @@
 
                             var cell_2 = cells[1]
                             
-                            cell_2.style = "text-decoration:line-through;";
+                            cell_2.style = "text-decoration:line-through; float:right";
                         }
                         var refund_btn = document.getElementById("refund-btn");
                         refund_btn.style.display = "none"
@@ -308,7 +361,7 @@
                     }
                     else{
                             const totalPrice = document.getElementById("totalPrice");
-                            totalPrice.style = "";
+                            totalPrice.style = "display: inline-block; float: right;";
                             var refund_btn = document.getElementById("refund-btn");
                             refund_btn.style.display = ""
                             var delete_btn = document.getElementById("delete-btn");
@@ -320,6 +373,40 @@
     }
 
 </script>  
+
+<script type="text/javascript">
+    const createClickHandler = (row) => {
+
+        return () => {
+            const cell = row.getElementsByTagName("td");
+            const id = cell[0].innerHTML;
+            getDeliveryById(id);
+            document.getElementById('modal-btn').click();
+        };
+    };
+
+    
+    let date_start = document.getElementById('date-start').value
+    let date_end = document.getElementById('date-end').value
+
+    date_start = new Date(date_start + "T00:00:00");
+    date_end = new Date(date_end + "T23:59:59");
+
+    getPaymentList();
+
+    const selectElement = document.querySelector('.date-start');
+
+    selectElement.addEventListener('change', (event) => {
+        
+        date_start = document.getElementById('date-start').value
+        date_end = document.getElementById('date-end').value
+
+        date_start = new Date(date_start + "T00:00:00");
+        date_end = new Date(date_end + "T23:59:59");
+
+        getPaymentList();
+    });
+</script>
 
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>

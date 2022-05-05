@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       
     },
     {
+<<<<<<< HEAD:models/Order_proceeding.js
       sequelize,
+=======
+>>>>>>> 75eab397aea4dbbe0779a4cf47ee093f5fb56ff9:models/Order.js
       timestamps: true,
       charset: "utf8",
       collate: "utf8_general_ci",
