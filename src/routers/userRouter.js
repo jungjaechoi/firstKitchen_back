@@ -1,11 +1,12 @@
 import express from "express";
+import { verify } from "jsonwebtoken";
 import { getDeliveryInfo } from "../controllers/consumerController";
 import {
   getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales, getPaymenthistory,
-  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend
+  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords
 } from "../controllers/userController";
-import {verifyToken,getVerifyToken} from "./middlewares/authorization.js"
+import {verifyToken} from "./middlewares/authorization.js"
 
 const userRouter = express.Router();
 
@@ -23,6 +24,10 @@ userRouter.post('/getPaymentList',verifyToken,getPaymentList);
 userRouter.post('/getDeliveryById',verifyToken,getDeliveryById);
 userRouter.post('/refund',verifyToken,postRefund);
 userRouter.post('/delete',verifyToken,postDelete);
+userRouter.post('/open',verifyToken,open);
+userRouter.post('/close',verifyToken,close);
+userRouter.post('/isOpen',verifyToken,isOpen);
+userRouter.post('/getOpenRecords',verifyToken,getOpenRecords)
 
 
 export default userRouter;
