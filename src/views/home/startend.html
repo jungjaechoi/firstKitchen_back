@@ -100,6 +100,7 @@
                 if(result.error != 'token expired'){
                     if(result !="error"){
                         const openRecords = result.openRecords;
+                        console.log(openRecords);
                         for(var i = 0; i<openRecords.length ; i++){
     
                             var open_time = "";
@@ -117,13 +118,6 @@
                                 date = openRecords[i].start_time.split("&nbsp;&nbsp;&nbsp;")[0];
                                 date = date.split(' / ');
     
-                                if(date[1]<10){
-                                    date[1] = "0" + date[1]
-                                }
-                                if(date[2]<10){
-                                    date[2] = "0" + date[2]
-                                }
-    
                                 date = date[0] + "-" + date[1] + "-" + date[2]
         
                             }
@@ -136,7 +130,7 @@
                                 close_time = time;
     
                             }
-    
+                            console.log(date)
                             calendar.addEvent({
                                 title: "영업일",
                                 start: date,
@@ -144,8 +138,9 @@
                                 close_time: close_time
                             });
     
-                            calendar.render();
+                            
                         }
+                        calendar.render();
                     }
                     else{
                         alert("오류");

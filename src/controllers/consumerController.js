@@ -97,7 +97,8 @@ export const postDeliveryInfo = async(req,res) => {
 }
 
 export const getDeliveryInfo = async(req,res) => {
-    const {id} = req.body;
+
+    const {id} = req.body.data;
 
     try{
         
@@ -114,7 +115,11 @@ export const getDeliveryInfo = async(req,res) => {
 }
 
 export const getAllStore = async(req,res) => {
-    //나중에는 위치정보 받아서 가까운 가게 res해야함.
+    
+    const {x,y} = req.body.data;
+
+    console.log(x,y)
+
     try{
 
         const store = await Store.findAll({attributes: ['id','storeName','storeAddress','isOpen','deliveryPrice']})
@@ -349,6 +354,98 @@ export const getProceedingDelivery = async (req,res) => {
     catch(err){
 
         console.log("Error on getProceedingDelivery: " + err)
+        return res.send("error")
+
+    }
+}
+
+export const getFinishedDelivery = async (req,res) => {
+
+    console.log(req.query);
+
+    const {user_id} = req.query;
+    const Op = Sequelize.Op
+
+    try{
+        const deliveries = await Delivery.findAll({
+            where:{
+                user_id,
+                status: {
+                    [Op.or]: [2,3,4,5]
+                }
+            }
+        });
+        
+        var result = new Array();
+
+        for(var i = 0 ; i < deliveries.length ; i++){
+
+            var temp_dict = {}
+
+            const store = await Store.findOne({
+                where:{
+                    id: deliveries[i].dataValues.store_id
+                }
+            });
+
+            temp_dict['store_name'] = store.dataValues.storeName;
+
+            const orders = await Order.findAll({
+                where:{
+                    delivery_id: deliveries[i].dataValues.id
+                }
+            });
+
+            var orderList = new Array();
+            var total_price = 0
+
+            for (var j = 0; j<orders.length ; j++){
+                if (orders[j].dataValues.productUnit_id != null){
+                  var product = await ProductUnit.findOne({
+                    where:{
+                      id: orders[j].dataValues.productUnit_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productSet_id != null){
+                  var product = await ProductSet.findOne({
+                    where:{
+                      id: orders[j].dataValues.productSet_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+                else if(orders[j].dataValues.productOption_id != null){
+                  var product = await ProductOption.findOne({
+                    where:{
+                      id: orders[j].dataValues.productOption_id
+                    }
+                  });
+                  orderList.push({"menu_name":product.dataValues.name, "menu_quantity":orders[j].dataValues.quantity});
+                  total_price += product.dataValues.price;
+                }
+              }
+
+            temp_dict['menu'] = orderList;
+            temp_dict['total_price'] = total_price;
+            temp_dict['status'] = deliveries[i].dataValues.status;
+            temp_dict['delivery_id'] = deliveries[i].dataValues.id;
+
+            result.push(temp_dict);
+        }
+
+        console.log(result);
+
+        result = JSON.stringify(result);
+        return res.json({result});
+
+    }
+    catch(err){
+
+        console.log("Error on getFinishedDelivery: " + err)
         return res.send("error")
 
     }

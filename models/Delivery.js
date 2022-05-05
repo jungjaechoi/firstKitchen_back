@@ -87,7 +87,7 @@ module.exports = (sequelize, DataTypes) => {
         comment: "조리상태",
         defaultValue: 0
       },
-       // (0=대기, 1=접수, 2=완료(라이더한테 전달 or 포장)) 
+       // 0=대기, 1=접수, 2=완료(라이더한테 전달 or 포장), 3=완료(home 화면에서 안보임), 4=환불(paymenthistory에서 보임), 5=환불(paymenthistory 에서 안보임)
     },
     {
       timestamps: true,

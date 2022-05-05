@@ -14,13 +14,31 @@
 
     <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
     <div style="text-align: center; margin-top: 20px;">
-        <input id = "date-start" type="date" name="startDate" > 
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
         <p style="display: inline-block;">~</p>
-        <input id = "date-end" type="date" name="endDate" >
-   </div>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
     
 
     <script type="text/javascript">
+        
+        const date = new Date();
+        const year = date.getFullYear(); // 년도
+        let month = date.getMonth()+1;  // 월
+        let dates = date.getDate();  // 날짜
+
+        if(month<10){
+            month = "0" + month;
+        }
+        if(dates<10){
+            dates = "0" + dates;
+        }
+
+        const today = year + '-' + month + '-' + dates 
+        
+        $('input[name=startDate]').attr('value',today);
+        $('input[name=endDate]').attr('value',today);
+
         $(document).ready(function () {
             $("#navibar").load("/user/navibar", function () {
             });
@@ -116,7 +134,6 @@
     
     
 </div>
-
         
 <script type="text/javascript">
 
@@ -169,88 +186,85 @@
         }
     }
 
-    const createClickHandler = (row) => {
 
-        return () => {
-            const cell = row.getElementsByTagName("td");
-            const id = cell[0].innerHTML;
-            getDeliveryById(id);
-            document.getElementById('modal-btn').click();
-        };
-    };
+    function getPaymentList() {
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/getPaymentList",
+                type: "post",
+                data: {token:localStorage.getItem('token'),
+                        start: date_start,
+                        end: date_end},
+                datatype: "json",
+                success: function(result){
 
-    $(document).ready(function(){
-        $.ajax({
-            url: "/user/getPaymentList",
-            type: "post",
-            data: {token:localStorage.getItem('token'),
-                    start: new Date(2022, 1, 1),
-                    end: new Date()},
-            datatype: "json",
-            success: function(result){
+                    if(result.error != 'token expired'){
 
-                if(result.error != 'token expired'){
+                        $("#tblShow tr").remove();
+
+                        var payment = result.paymentList;
                     
-                    var payment = result.paymentList;
-                
-                    for(var i = 0; i<payment.length;i++){
-                        if(payment[i].status != 5){
-                            var objRow = document.all("tblShow").insertRow();
+                        for(var i = 0; i<payment.length;i++){
+                            if(payment[i].status != 5){
+                                var objRow = document.all("tblShow").insertRow();
 
-                            var objCell_id = objRow.insertCell();
-                            objCell_id.innerHTML = payment[i].id;
-                            objCell_id.style = "display:none";
+                                var objCell_id = objRow.insertCell();
+                                objCell_id.innerHTML = payment[i].id;
+                                objCell_id.style = "display:none";
 
-                            var objCell_status =objRow.insertCell();
+                                var objCell_status =objRow.insertCell();
 
-                            if(payment[i].status == 0){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
-                            }
-                            else if(payment[i].status == 1){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
-                            }
-                            else if(payment[i].status == 2 || payment[i].status == 3){
-                                if(payment[i].receptionType == "DELIVERY"){
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                if(payment[i].status == 0){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
                                 }
-                                else if(payment[i].receptionType == "PICKUP"){
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                else if(payment[i].status == 1){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
                                 }
-                                else{
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                else if(payment[i].status == 2 || payment[i].status == 3){
+                                    if(payment[i].receptionType == "DELIVERY"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                    }
+                                    else if(payment[i].receptionType == "PICKUP"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                    }
+                                    else{
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                    }
                                 }
+                                else if(payment[i].status == 4){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
+                                }
+
+                                var objCell_earning = objRow.insertCell();
+                                objCell_earning.innerHTML = payment[i].totalPaidPrice;
+
+                                var objCell_date = objRow.insertCell();
+                                var date = payment[i].createdAt.split('T')
+                                date[1] = date[1].split('.');
+                                date[1] = date[1][0].split(":");
+                                date[1] = date[1][0] + " : " + date[1][1]
+                                objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
+
                             }
-                            else if(payment[i].status == 4){
-                                objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
-                            }
+                        }
 
-                            var objCell_earning = objRow.insertCell();
-                            objCell_earning.innerHTML = payment[i].totalPaidPrice;
+                        const table = document.querySelector("table");
 
-                            var objCell_date = objRow.insertCell();
-                            var date = payment[i].createdAt.split('T')
-                            date[1] = date[1].split('.');
-                            date[1] = date[1][0].split(":");
-                            date[1] = date[1][0] + " : " + date[1][1]
-                            objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
-
+                        for (const currentRow of table.rows) {
+                            currentRow.onclick = createClickHandler(currentRow);
                         }
                     }
-
-                    const table = document.querySelector("table");
-
-                    for (const currentRow of table.rows) {
-                        currentRow.onclick = createClickHandler(currentRow);
+                    else{
+                        localStorage.removeItem('token');
+                        alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                        window.location.href = '/user';
                     }
                 }
-                else{
-                    localStorage.removeItem('token');
-                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
-                    window.location.href = '/user';
-                }
-            }
+            })
         })
-    }) 
+    }
+
 
     function getDeliveryById(id){
         $(document).ready(function(){
@@ -359,6 +373,40 @@
     }
 
 </script>  
+
+<script type="text/javascript">
+    const createClickHandler = (row) => {
+
+        return () => {
+            const cell = row.getElementsByTagName("td");
+            const id = cell[0].innerHTML;
+            getDeliveryById(id);
+            document.getElementById('modal-btn').click();
+        };
+    };
+
+    
+    let date_start = document.getElementById('date-start').value
+    let date_end = document.getElementById('date-end').value
+
+    date_start = new Date(date_start + "T00:00:00");
+    date_end = new Date(date_end + "T23:59:59");
+
+    getPaymentList();
+
+    const selectElement = document.querySelector('.date-start');
+
+    selectElement.addEventListener('change', (event) => {
+        
+        date_start = document.getElementById('date-start').value
+        date_end = document.getElementById('date-end').value
+
+        date_start = new Date(date_start + "T00:00:00");
+        date_end = new Date(date_end + "T23:59:59");
+
+        getPaymentList();
+    });
+</script>
 
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>

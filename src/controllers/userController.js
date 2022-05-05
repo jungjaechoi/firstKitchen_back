@@ -4,7 +4,7 @@ import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
-const deliveryApp_IP = "http://192.168.100.77:4000";
+const deliveryApp_IP = "http://192.168.100.65:4000";
 
 
 export const getLogin = (req, res) => {
@@ -285,8 +285,6 @@ export const getPaymentList = async(req,res) =>{
 
   const store_id = res.locals.store_id;
   var {start,end} = req.body;
-  start = new Date(start);
-  end = new Date(end);
 
   try{
 
@@ -468,7 +466,6 @@ export const open = async (req,res) =>{
     console.log("Error on start: " + err)
     res.send("error");
   }
-
 }
 
 export const close = async (req,res) => {
