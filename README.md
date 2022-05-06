@@ -50,6 +50,9 @@ Click을 통해 Status 변경 가능
 
 <br><br>
 
+## 💡 Database
+
+<img src="/img/5.png">
 
 ## ⚙ Technical Features 
 - JWT Token 사용해서 보안 강화 
