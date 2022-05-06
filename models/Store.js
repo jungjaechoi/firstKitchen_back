@@ -16,6 +16,16 @@ module.exports = (sequelize, DataTypes) => {
           comment: "가게 주소",
           allowNULL:false
         },
+        longitude: {
+          type: DataTypes.FLOAT(20),
+          comment: "경도",
+          allowNULL:false
+        },
+        latitude: {
+          type: DataTypes.FLOAT(20),
+          comment: "위도",
+          allowNULL:false
+        },
         tel: {
           type: DataTypes.STRING(20),
           comment: "전화번호",

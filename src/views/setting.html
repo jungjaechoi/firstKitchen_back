@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <meta name = "viewport", content="width=device-width, initial-scale=1">
+    
+    
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+
+<p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">자동 영업 종료 시간</p>
+<div style="text-align: center; margin-top: 20px;">
+    <input type="time" value="00:00:00" id="auto-end-time">
+</div>
+
+    
+   
+</div>
+        
+<script type="text/javascript">
+
+    localStorage.removeItem('date-start');
+    localStorage.removeItem('date-end');
+
+    const selectElement_end = document.getElementById('auto-end-time');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        auto_end_time = document.getElementById('auto-end-time').value
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/setAutoEndTime",
+                type: "post",
+                data: {
+                    auto_end_time: auto_end_time,
+                    token: localStorage.getItem('token')
+                },
+                datatype: "json",
+                success: function(result){
+                    if(result !="error"){
+                        window.location.href = '/user/paymenthistory'; 
+                    }
+                    else{
+                        alert("오류");
+                    }
+                }
+            })
+        })
+        
+    });
+
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

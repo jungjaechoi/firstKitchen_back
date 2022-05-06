@@ -1,4 +1,4 @@
-import { Agent, Store,Delivery, Order, ProductUnit, ProductSet, ProductOption, OpenRecord } from "../../models";
+import { Agent, Store, Delivery, Order, ProductUnit, ProductSet, ProductOption, OpenRecord } from "../../models";
 import jwt from 'jsonwebtoken';
 import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
@@ -29,6 +29,10 @@ export const getPaymenthistory = (req,res) => {
 
 export const getStartend = (req,res) => {
   return res.render("home/startend.html");
+}
+
+export const getSetting = (req,res) => {
+  return res.render("setting.html");
 }
 
 export const postLogin = async(req,res) => {
@@ -554,18 +558,52 @@ export const isOpen = async(req,res) => {
 }
 
 export const getOpenRecords = async (req,res) => {
+
   const store_id = res.locals.store_id
+
   try{
+
     const openRecords = await OpenRecord.findAll({
       where:{
         store_id
       }
     });
+
     return res.json({openRecords});
 
   }
   catch(err){
+
     console.log("Error on getOpenRecords: " + err)
     res.send("error");
+
+  }
+
+}
+
+export const setAutoEndTime = async (req,res) => {
+
+  const {auto_end_time} = req.body;
+  const store_id = res.locals.store_id
+
+  try{
+
+    const store = await Store.findOne({
+      where:{
+        store_id
+      }
+    });
+
+    await store.update({auto_end_time: auto_end_time});
+
+    res.send("success");
+
+  }
+
+  catch(err){
+
+    console.log("Error on setAutoEndTime: " + err);
+    res.send("error");
+
   }
 }

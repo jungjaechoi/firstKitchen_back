@@ -22,22 +22,36 @@
 
     <script type="text/javascript">
         
-        const date = new Date();
-        const year = date.getFullYear(); // 년도
-        let month = date.getMonth()+1;  // 월
-        let dates = date.getDate();  // 날짜
+        let local_date_start = localStorage.getItem('date-start');
+        let local_date_end = localStorage.getItem('date-end')
 
-        if(month<10){
-            month = "0" + month;
-        }
-        if(dates<10){
-            dates = "0" + dates;
-        }
+        if (!local_date_start){
 
-        const today = year + '-' + month + '-' + dates 
+            const date = new Date();
+            const year = date.getFullYear(); // 년도
+            let month = date.getMonth()+1;  // 월
+            let dates = date.getDate();  // 날짜
+    
+            if(month<10){
+                month = "0" + month;
+            }
+            if(dates<10){
+                dates = "0" + dates;
+            }
+    
+            const today = year + '-' + month + '-' + dates 
+            
+            $('input[name=startDate]').attr('value',today);
+            $('input[name=endDate]').attr('value',today);
+
+        }
+        else{
+
+            $('input[name=startDate]').attr('value',local_date_start);
+            $('input[name=endDate]').attr('value',local_date_end);
+
+        }
         
-        $('input[name=startDate]').attr('value',today);
-        $('input[name=endDate]').attr('value',today);
 
         $(document).ready(function () {
             $("#navibar").load("/user/navibar", function () {
@@ -138,7 +152,7 @@
 <script type="text/javascript">
 
     function refundOrder(){
-        var result = confirm("해당주문을 환불처리 하시겠습니까?");
+        let result = confirm("해당주문을 환불처리 하시겠습니까?");
         if(result){
             $(document).ready(function(){
                 $.ajax({
@@ -163,7 +177,7 @@
     }
 
     function deleteOrder(){
-        var result = confirm("해당주문을 화면에서 삭제 하시겠습니까?");
+        let result = confirm("해당주문을 화면에서 삭제 하시겠습니까?");
         if(result){
             $(document).ready(function(){
                 $.ajax({
@@ -203,17 +217,17 @@
 
                         $("#tblShow tr").remove();
 
-                        var payment = result.paymentList;
+                        let payment = result.paymentList;
                     
-                        for(var i = 0; i<payment.length;i++){
+                        for(let i = 0; i<payment.length;i++){
                             if(payment[i].status != 5){
-                                var objRow = document.all("tblShow").insertRow();
+                                let objRow = document.all("tblShow").insertRow();
 
-                                var objCell_id = objRow.insertCell();
+                                let objCell_id = objRow.insertCell();
                                 objCell_id.innerHTML = payment[i].id;
                                 objCell_id.style = "display:none";
 
-                                var objCell_status =objRow.insertCell();
+                                let objCell_status =objRow.insertCell();
 
                                 if(payment[i].status == 0){
                                     objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
@@ -236,11 +250,11 @@
                                     objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
                                 }
 
-                                var objCell_earning = objRow.insertCell();
+                                let objCell_earning = objRow.insertCell();
                                 objCell_earning.innerHTML = payment[i].totalPaidPrice;
 
-                                var objCell_date = objRow.insertCell();
-                                var date = payment[i].createdAt.split('T')
+                                let objCell_date = objRow.insertCell();
+                                let date = payment[i].createdAt.split('T')
                                 date[1] = date[1].split('.');
                                 date[1] = date[1][0].split(":");
                                 date[1] = date[1][0] + " : " + date[1][1]
@@ -281,7 +295,7 @@
                     const delivery = result.delivery;
                     const orderList = result.orderList;
                     const date_value = document.getElementById("date")
-                    var date = delivery.createdAt.split('T')
+                    let date = delivery.createdAt.split('T')
                     date[1] = date[1].split('.');
                     date[1] = date[1][0].split(":");
                     date[1] = date[1][0] + " : " + date[1][1]
@@ -310,26 +324,26 @@
                     
                     $("#tblShow_orders").empty();
 
-                    for(var i = 0 ; i <orderList.length; i++){
-                        var objRow = document.all("tblShow_orders").insertRow();
+                    for(let i = 0 ; i <orderList.length; i++){
+                        let objRow = document.all("tblShow_orders").insertRow();
                         objRow.style = "border-collapse: separate; border-spacing: 0 10px;";
 
-                        var objCell_menuName = objRow.insertCell();
+                        let objCell_menuName = objRow.insertCell();
                         objCell_menuName.innerHTML = orderList[i][0] + " * " + orderList[i][1]
                         
 
-                        var objCell_price = objRow.insertCell();
+                        let objCell_price = objRow.insertCell();
                         objCell_price.innerHTML = (orderList[i][1] * orderList[i][2]) + "원"
                         objCell_price.style = "float:right"
                     }
 
-                    var objRow = document.all("tblShow_orders").insertRow();
+                    let objRow = document.all("tblShow_orders").insertRow();
                     objRow.style = "border-collapse: separate; border-spacing: 0 10px;";
 
-                    var objCell_deliveryPrice = objRow.insertCell();
+                    let objCell_deliveryPrice = objRow.insertCell();
                     objCell_deliveryPrice.innerHTML = "배달료"
 
-                    var objCell_price = objRow.insertCell();
+                    let objCell_price = objRow.insertCell();
                     objCell_price.innerHTML = delivery.deliveryPrice  + "원"
                     objCell_price.style = "float:right"
 
@@ -340,31 +354,31 @@
                         const totalPrice = document.getElementById("totalPrice");
                         totalPrice.style = "text-decoration:line-through; display: inline-block; float: right;";
                         const refundable = document.getElementById("refundable")
-                        var temp = refundable.innerHTML 
+                        let temp = refundable.innerHTML 
                         refundable.innerHTML = 0
                         const refunded = document.getElementById("refunded")
                         refunded.innerHTML = temp
                         const total = document.getElementById("total")
                         total.innerHTML = (Number(refundable.innerHTML) + Number(refunded.innerHTML))
-                        var rows = document.getElementById("tblShow_orders").getElementsByTagName("tr");
-                        for(var i = 0; i<rows.length-1; i++){
-                            var cells = rows[i].getElementsByTagName("td");
+                        let rows = document.getElementById("tblShow_orders").getElementsByTagName("tr");
+                        for(let i = 0; i<rows.length-1; i++){
+                            let cells = rows[i].getElementsByTagName("td");
 
-                            var cell_2 = cells[1]
+                            let cell_2 = cells[1]
                             
                             cell_2.style = "text-decoration:line-through; float:right";
                         }
-                        var refund_btn = document.getElementById("refund-btn");
+                        let refund_btn = document.getElementById("refund-btn");
                         refund_btn.style.display = "none"
-                        var delete_btn = document.getElementById("delete-btn");
+                        let delete_btn = document.getElementById("delete-btn");
                         delete_btn.style.display = ""
                     }
                     else{
                             const totalPrice = document.getElementById("totalPrice");
                             totalPrice.style = "display: inline-block; float: right;";
-                            var refund_btn = document.getElementById("refund-btn");
+                            let refund_btn = document.getElementById("refund-btn");
                             refund_btn.style.display = ""
-                            var delete_btn = document.getElementById("delete-btn");
+                            let delete_btn = document.getElementById("delete-btn");
                             delete_btn.style.display = "none"
                         }
                 }
@@ -394,12 +408,31 @@
 
     getPaymentList();
 
-    const selectElement = document.querySelector('.date-start');
+    const selectElement_start = document.getElementById('date-start');
 
-    selectElement.addEventListener('change', (event) => {
+    selectElement_start.addEventListener('change', (event) => {
         
         date_start = document.getElementById('date-start').value
         date_end = document.getElementById('date-end').value
+
+        localStorage.setItem('date-start', date_start);
+        localStorage.setItem('date-end', date_end);
+
+        date_start = new Date(date_start + "T00:00:00");
+        date_end = new Date(date_end + "T23:59:59");
+
+        getPaymentList();
+    });
+
+    const selectElement_end = document.getElementById('date-end');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        date_start = document.getElementById('date-start').value
+        date_end = document.getElementById('date-end').value
+
+        localStorage.setItem('date-start', date_start);
+        localStorage.setItem('date-end', date_end);
 
         date_start = new Date(date_start + "T00:00:00");
         date_end = new Date(date_end + "T23:59:59");

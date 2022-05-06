@@ -70,6 +70,9 @@
         
 <script type="text/javascript">
 
+    localStorage.removeItem('date-start');
+    localStorage.removeItem('date-end');
+
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
 

@@ -4,7 +4,8 @@ import { getDeliveryInfo } from "../controllers/consumerController";
 import {
   getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales, getPaymenthistory,
-  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords
+  getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords, getSetting,
+  setAutoEndTime
 } from "../controllers/userController";
 import {verifyToken} from "./middlewares/authorization.js"
 
@@ -16,6 +17,7 @@ userRouter.get('/navibar',getNavibar);
 userRouter.get('/realtimesales',getRealtimesales);
 userRouter.get('/paymenthistory',getPaymenthistory);
 userRouter.get('/startend',getStartend);
+userRouter.get('/settings',getSetting);
 userRouter.post('/getEarning',verifyToken,getEarning);
 userRouter.post('/getDeliveryStatus',verifyToken,getDeliveryStatus);
 userRouter.post('/changeStatus',verifyToken,changeStatus);
@@ -27,7 +29,9 @@ userRouter.post('/delete',verifyToken,postDelete);
 userRouter.post('/open',verifyToken,open);
 userRouter.post('/close',verifyToken,close);
 userRouter.post('/isOpen',verifyToken,isOpen);
-userRouter.post('/getOpenRecords',verifyToken,getOpenRecords)
+userRouter.post('/getOpenRecords',verifyToken,getOpenRecords);
+userRouter.post('/setAutoEndTime',verifyToken,setAutoEndTime);
+
 
 
 export default userRouter;

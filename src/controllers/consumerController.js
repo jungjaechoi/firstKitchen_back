@@ -1,5 +1,34 @@
 import { Order, Delivery, ProductOption, ProductUnit, ProductSet, Store } from "../../models";
+import axios from "axios";
 const Sequelize = require('sequelize');
+
+
+const REST_API_KEY = "b513516c12938a946355be879e3dd35c";
+const fullAddress = "서울특별시 안암동3가";
+
+function kakao(){
+    axios.get(`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(fullAddress)}`, {
+            headers: { Authorization: `KakaoAK ${REST_API_KEY}` },
+        }).then(res => {
+            console.log(res.data.documents[0].address.x,res.data.documents[0].address.y);
+        }).catch(function (error){
+            console.log(error);
+        })
+}
+
+function getDistanceFromLatLonInKm(lat1,lng1,lat2,lng2) { 
+    function deg2rad(deg) { 
+        return deg * (Math.PI/180) 
+    } 
+    
+    var R = 6371; // Radius of the earth in km 
+    var dLat = deg2rad(lat2-lat1); // deg2rad below 
+    var dLon = deg2rad(lng2-lng1); 
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; // Distance in km 
+    return d; 
+}
 
 export const postDeliveryInfo = async(req,res) => {
     console.log('#####################주문들어옴##########################');
@@ -118,12 +147,21 @@ export const getAllStore = async(req,res) => {
     
     const {x,y} = req.body.data;
 
-    console.log(x,y)
+    console.log(x,y);
 
     try{
 
-        const store = await Store.findAll({attributes: ['id','storeName','storeAddress','isOpen','deliveryPrice']})
-        return res.json({store});
+        const store = await Store.findAll({attributes: ['id','storeName','storeAddress','longitude','latitude','isOpen','deliveryPrice']});
+
+        var answer = new Array();       
+
+        for(var i = 0 ; i < store.length ; i++){
+            if (getDistanceFromLatLonInKm(y,x,store[i].dataValues.latitude,store[i].dataValues.longitude) <= 5){
+                answer.push(store[i])
+            }
+        }
+
+        return res.json({answer});
 
     } catch(err){
 
@@ -279,6 +317,9 @@ export const getProceedingDelivery = async (req,res) => {
 
     try{
         const deliveries = await Delivery.findAll({
+            order:[
+                ['createdAt','DESC']
+            ],
             where:{
                 user_id,
                 status: {
@@ -368,6 +409,9 @@ export const getFinishedDelivery = async (req,res) => {
 
     try{
         const deliveries = await Delivery.findAll({
+            order:[
+                ['createdAt','DESC']
+            ],
             where:{
                 user_id,
                 status: {
