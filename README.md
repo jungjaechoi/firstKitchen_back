@@ -52,7 +52,7 @@ Click을 통해 Status 변경 가능
 
 ## 💡 Database
 
-<img src="/img/5.png" width="800" height="624">
+<img src="/img/5.png" width="1000" height="781">
 
 ## ⚙ Technical Features 
 - JWT Token 사용해서 보안 강화 
