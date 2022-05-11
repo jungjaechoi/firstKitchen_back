@@ -50,6 +50,11 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.INTEGER(10),
           comment: "배달료",
           allowNULL:false
+        },
+        autoEndTime:{
+          type: DataTypes.STRING(20),
+          comment: "자동마감시간",
+          defaultValue: "00:00"
         }
       },
       

@@ -21,7 +21,7 @@
 
 <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">자동 영업 종료 시간</p>
 <div style="text-align: center; margin-top: 20px;">
-    <input type="time" value="00:00:00" id="auto-end-time">
+    <input type="time" value="" id="auto-end-time">
 </div>
 
     
@@ -37,28 +37,47 @@
 
     selectElement_end.addEventListener('change', (event) => {
         
-        auto_end_time = document.getElementById('auto-end-time').value
+        autoEndTime = document.getElementById('auto-end-time').value
         
         $(document).ready(function(){
             $.ajax({
                 url: "/user/setAutoEndTime",
                 type: "post",
                 data: {
-                    auto_end_time: auto_end_time,
+                    autoEndTime: autoEndTime,
                     token: localStorage.getItem('token')
                 },
                 datatype: "json",
                 success: function(result){
                     if(result !="error"){
-                        window.location.href = '/user/paymenthistory'; 
+                        alert("수정 완료"); 
                     }
                     else{
                         alert("오류");
                     }
                 }
             })
-        })
+        });
         
+    });
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/user/getAutoEndTime",
+            type: "post",
+            data: {
+                token: localStorage.getItem('token')
+            },
+            datatype: "json",
+            success: function(result){
+                if(result !="error"){
+                    $('input[id=auto-end-time]').attr('value',result);
+                }
+                else{
+                    alert("오류");
+                }
+            }
+        })
     });
 
 </script>  

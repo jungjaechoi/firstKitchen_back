@@ -147,8 +147,6 @@ export const getAllStore = async(req,res) => {
     
     const {x,y} = req.body.data;
 
-    console.log(x,y);
-
     try{
 
         const store = await Store.findAll({attributes: ['id','storeName','storeAddress','longitude','latitude','isOpen','deliveryPrice']});

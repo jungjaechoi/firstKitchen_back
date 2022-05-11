@@ -583,18 +583,18 @@ export const getOpenRecords = async (req,res) => {
 
 export const setAutoEndTime = async (req,res) => {
 
-  const {auto_end_time} = req.body;
+  const {autoEndTime} = req.body;
   const store_id = res.locals.store_id
 
   try{
 
     const store = await Store.findOne({
       where:{
-        store_id
+        id: store_id
       }
     });
 
-    await store.update({auto_end_time: auto_end_time});
+    await store.update({autoEndTime: autoEndTime});
 
     res.send("success");
 
@@ -603,6 +603,30 @@ export const setAutoEndTime = async (req,res) => {
   catch(err){
 
     console.log("Error on setAutoEndTime: " + err);
+    res.send("error");
+
+  }
+}
+
+export const getAutoEndTime = async (req,res) => {
+
+  const store_id = res.locals.store_id
+
+  try{
+
+    const store = await Store.findOne({
+      where:{
+        id: store_id
+      }
+    });
+
+    res.send(store.dataValues.autoEndTime);
+
+  }
+
+  catch(err){
+
+    console.log("Error on getAutoEndTime: " + err);
     res.send("error");
 
   }
