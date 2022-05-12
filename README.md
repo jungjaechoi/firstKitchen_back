@@ -1,5 +1,7 @@
 # FirstKitchen - 점주용 POS 
 
+[FirstKitchen 배달앱](https://github.com/pyun0825/first_kitchen)
+
 <br>
 
 ### 📌 Development Environment 
