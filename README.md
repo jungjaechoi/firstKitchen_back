@@ -59,4 +59,4 @@ Click을 통해 Status 변경 가능
 ## ⚙ Technical Features 
 - JWT Token 사용해서 보안 강화 
 - Socket.io 사용해서 실시간 통신(예정)
-- 지리 정보 시스템 S2를 사용한 거리별 가게 추천 알고리즘 (예정) -> [참조 링크](https://techblog.woowahan.com/2717/).
+- AWS lambda 를 사용한 serverless server: 자동 마감 시스템
