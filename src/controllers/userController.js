@@ -583,8 +583,10 @@ export const getOpenRecords = async (req,res) => {
 
 export const setAutoEndTime = async (req,res) => {
 
-  const {autoEndTime} = req.body;
+  const {hour,minute} = req.body;
   const store_id = res.locals.store_id
+
+  console.log(hour,minute);
 
   try{
 
@@ -594,7 +596,7 @@ export const setAutoEndTime = async (req,res) => {
       }
     });
 
-    await store.update({autoEndTime: autoEndTime});
+    await store.update({autoEndTime: hour+":"+minute});
 
     res.send("success");
 

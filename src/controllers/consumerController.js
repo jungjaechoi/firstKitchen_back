@@ -1,5 +1,6 @@
 import { Order, Delivery, ProductOption, ProductUnit, ProductSet, Store } from "../../models";
 import axios from "axios";
+import db from "../../models";
 const Sequelize = require('sequelize');
 
 
@@ -31,7 +32,6 @@ function getDistanceFromLatLonInKm(lat1,lng1,lat2,lng2) {
 }
 
 export const postDeliveryInfo = async(req,res) => {
-    console.log('#####################주문들어옴##########################');
     console.log(req.body);
     const {store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
         jibunAddress,roadAddress,addressDetail,memo,request,
@@ -149,12 +149,15 @@ export const getAllStore = async(req,res) => {
 
     try{
 
-        const store = await Store.findAll({attributes: ['id','storeName','storeAddress','longitude','latitude','isOpen','deliveryPrice']});
+        const query = `select * from Stores where longitude between ${x-0.035} and ${x+0.035} and latitude between ${y-0.03} and ${y+0.03}`;
+        let store = await db.sequelize.query(query);
+
+        store = store[0];
 
         var answer = new Array();       
 
         for(var i = 0 ; i < store.length ; i++){
-            if (getDistanceFromLatLonInKm(y,x,store[i].dataValues.latitude,store[i].dataValues.longitude) <= 5){
+            if (getDistanceFromLatLonInKm(y,x,store[i].latitude,store[i].longitude) <= 3){
                 answer.push(store[i])
             }
         }

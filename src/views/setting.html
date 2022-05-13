@@ -20,9 +20,44 @@
 
 
 <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">자동 영업 종료 시간</p>
+
 <div style="text-align: center; margin-top: 20px;">
-    <input type="time" value="" id="auto-end-time">
+    <select name = "hour" id = "auto-end-hour">
+        <option value="00">00 시</option>
+        <option value="01">01 시</option>
+        <option value="02">02 시</option>
+        <option value="03">03 시</option>
+        <option value="04">04 시</option>
+        <option value="05">05 시</option>
+        <option value="06">06 시</option>
+        <option value="07">07 시</option>
+        <option value="08">08 시</option>
+        <option value="09">09 시</option>
+        <option value="10">10 시</option>
+        <option value="11">11 시</option>
+        <option value="12">12 시</option>
+        <option value="13">13 시</option>
+        <option value="14">14 시</option>
+        <option value="15">15 시</option>
+        <option value="16">16 시</option>
+        <option value="17">17 시</option>
+        <option value="18">18 시</option>
+        <option value="19">19 시</option>
+        <option value="20">20 시</option>
+        <option value="21">21 시</option>
+        <option value="22">22 시</option>
+        <option value="23">23 시</option>
+    </select>
+    <select name="minute" id = "auto-end-minute">
+        <option value="00">00 분</option>
+        <option value="30">30 분</option>
+    </select>
 </div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <input type = "button" value="수정" onClick="submit()" style=" font-size: 13px; width:100px; height:40px; font-size: 1.2em; ">
+</div>
+
 
     
    
@@ -30,27 +65,25 @@
         
 <script type="text/javascript">
 
-    localStorage.removeItem('date-start');
-    localStorage.removeItem('date-end');
+    function submit(){
 
-    const selectElement_end = document.getElementById('auto-end-time');
+        const hour = document.getElementById('auto-end-hour').value;
+        const minute = document.getElementById('auto-end-minute').value;
 
-    selectElement_end.addEventListener('change', (event) => {
-        
-        autoEndTime = document.getElementById('auto-end-time').value
-        
+        console.log(hour,minute);
         $(document).ready(function(){
             $.ajax({
                 url: "/user/setAutoEndTime",
                 type: "post",
                 data: {
-                    autoEndTime: autoEndTime,
+                    hour: hour,
+                    minute: minute,
                     token: localStorage.getItem('token')
                 },
                 datatype: "json",
                 success: function(result){
                     if(result !="error"){
-                        alert("수정 완료"); 
+                        alert("수정되었습니다.");
                     }
                     else{
                         alert("오류");
@@ -58,8 +91,7 @@
                 }
             })
         });
-        
-    });
+    }
 
     $(document).ready(function(){
         $.ajax({
@@ -70,12 +102,28 @@
             },
             datatype: "json",
             success: function(result){
+
                 if(result !="error"){
-                    $('input[id=auto-end-time]').attr('value',result);
+
+                    result = result.split(":");
+
+                    const hour = Number(result[0]);
+                    const minute = result[1];
+
+                    document.getElementById('auto-end-hour').options[hour].selected = true;
+
+                    if(minute == "00"){
+                        document.getElementById('auto-end-minute').options[0].selected = true;
+                    }
+                    else{
+                        document.getElementById('auto-end-minute').options[1].selected = true;
+                    }
+                    
                 }
                 else{
                     alert("오류");
                 }
+
             }
         })
     });
