@@ -525,8 +525,65 @@ export const close = async (req,res) => {
     return res.send("success");
   }
   catch(err){
-    console.log("Error on end: " + err)
+    console.log("Error on close: " + err)
     res.send("error");
+  }
+}
+
+const autoClose = async (store_id) => {
+  
+  try{
+
+    const store = await Store.findOne({
+      where:{
+        id: store_id
+      }
+    })
+
+    if(store.dataValues.isOpen == 0){
+      const openRecord = await OpenRecord.findOne({
+        where:{
+          store_id,
+          end_time: null
+        }
+      });
+  
+      await store.update({isOpen:0});
+  
+      let today = new Date(); 
+  
+      let year = today.getFullYear(); // 년도
+      let month = today.getMonth() + 1;  // 월
+      let dates = today.getDate();  // 날짜
+      let hours = today.getHours(); // 시
+      let minutes = today.getMinutes();  // 분
+      let seconds = today.getSeconds();  // 초
+  
+      if(month<10){
+        month = "0"+ month;
+      }
+      if(dates<10){
+        dates = "0"+ dates;
+      }
+      if(hours<10){
+        hours = "0"+ hours;
+      }
+      if(minutes<10){
+        minutes = "0"+ minutes;
+      }
+      if(seconds<10){
+        seconds = "0"+ seconds;
+      }
+  
+      const end_time = year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds;
+  
+      await openRecord.update({
+        end_time: end_time
+      })
+    }  
+  }
+  catch(err){
+    console.log("Error on autoClose: " + err)
   }
 }
 
@@ -633,3 +690,38 @@ export const getAutoEndTime = async (req,res) => {
 
   }
 }
+
+export const autoEndStore = async (req,res) => {
+  
+  try{
+
+    let today = new Date(); 
+
+    let hours = today.getHours(); // 시
+    let minutes = today.getMinutes();  // 분
+
+    if(hours<10){
+      hours = "0"+ hours;
+    }
+    if(minutes<10){
+      minutes = "0"+ minutes;
+    }
+
+    let endTimes = await Store.findAll({
+      where:{
+        autoEndTime: hours+":"+minutes
+      },
+      attributes:['id','autoEndTime']
+    });
+    
+    for(var i = 0 ; i < endTimes.length ; i++){
+      autoClose(endTimes[i].dataValues.id);
+    }
+
+  }
+  catch(err){
+    console.log("Error on autoEndStore: " + err);
+    res.send("error");
+  }
+
+} 
