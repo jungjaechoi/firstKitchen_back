@@ -11,11 +11,21 @@
 > **Back-end** 
 > - Node.js
 > - MySQL, Sequelize
+> 
+> **Devops**
+> - AWS lambda 
+> - API gateway, EventBridge
 
 </br><br>
 
 ## 💡 Introduction
 공유주방에서 쓰일 POS를 웹 앱으로 제작
+
+<br><br>
+
+## 💡 Lambda
+
+<img src="/img/5.PNG" width="232" height="409">
 
 <br><br>
 
