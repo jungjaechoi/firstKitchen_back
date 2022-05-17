@@ -25,6 +25,8 @@
 
 ## 💡 Lambda
 
+[log 보러가기](https://velog.io/@www8989/AWS-lambda)
+
 server 실행시 setEndTime(lambda function)이 trigger되어 
 
 동적으로 autoEndStore(lambda function)에 EventBridge trigger들을 생성하여 연결한다.
