@@ -540,7 +540,7 @@ const autoClose = async (store_id) => {
       }
     })
 
-    if(store.dataValues.isOpen == 0){
+    if(store.dataValues.isOpen == 1){
       const openRecord = await OpenRecord.findOne({
         where:{
           store_id,
@@ -707,6 +707,8 @@ export const autoEndStore = async (req,res) => {
       minutes = "0"+ minutes;
     }
 
+    console.log(hours+":"+minutes);
+
     let endTimes = await Store.findAll({
       where:{
         autoEndTime: hours+":"+minutes
@@ -718,6 +720,8 @@ export const autoEndStore = async (req,res) => {
       autoClose(endTimes[i].dataValues.id);
     }
 
+    res.send("success");
+
   }
   catch(err){
     console.log("Error on autoEndStore: " + err);
@@ -725,3 +729,23 @@ export const autoEndStore = async (req,res) => {
   }
 
 } 
+
+export const getAllAutoEndTime = async (req,res) => {
+
+  try{
+
+    let store = await Store.findAll({
+      attributes:['id','autoEndTime']
+    });
+
+    store = JSON.stringify(store);
+
+    res.json(store);
+
+  }
+  catch(err){
+    console.log("Error on getAllAutoEndTime: " + err);
+    res.send("error");
+  }
+
+}

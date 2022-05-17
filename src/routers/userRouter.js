@@ -5,7 +5,7 @@ import {
   getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales, getPaymenthistory,
   getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords, getSetting,
-  setAutoEndTime,getAutoEndTime,autoEndStore
+  setAutoEndTime,getAutoEndTime,autoEndStore, getAllAutoEndTime
 } from "../controllers/userController";
 import {verifyToken} from "./middlewares/authorization.js"
 
@@ -28,12 +28,11 @@ userRouter.post('/refund',verifyToken,postRefund);
 userRouter.post('/delete',verifyToken,postDelete);
 userRouter.post('/open',verifyToken,open);
 userRouter.post('/close',verifyToken,close);
-
 userRouter.post('/isOpen',verifyToken,isOpen);
 userRouter.post('/getOpenRecords',verifyToken,getOpenRecords);
 userRouter.post('/setAutoEndTime',verifyToken,setAutoEndTime);
 userRouter.post('/getAutoEndTime',verifyToken,getAutoEndTime);
 userRouter.post('/autoEndStore',autoEndStore);
-
+userRouter.get('/getAllAutoEndTime',getAllAutoEndTime);
 
 export default userRouter;
