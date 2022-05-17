@@ -12,7 +12,7 @@
 > - Node.js
 > - MySQL, Sequelize
 > 
-> **Devops**
+> **DevOps**
 > - AWS lambda 
 > - API gateway, EventBridge
 
