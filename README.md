@@ -25,7 +25,19 @@
 
 ## 💡 Lambda
 
-<img src="/img/5.PNG" width="232" height="409">
+server 실행시 setEndTime(lambda function)이 trigger되어 
+
+동적으로 autoEndStore(lambda function)에 EventBridge trigger들을 생성하여 연결한다.
+
+cron에 의해서 해당 시간이되면 autoEndStore 함수가 pos server로 post 요청을 보내어 
+
+해당 store를 자동마감시킨다.
+
+
+<br><br>
+
+
+<img src="/img/6.PNG" width="937" height="400">
 
 <br><br>
 
