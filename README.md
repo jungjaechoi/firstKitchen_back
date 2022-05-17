@@ -27,19 +27,27 @@
 
 [Blog 보러가기](https://velog.io/@www8989/AWS-lambda)
 
-server 실행시 setEndTime(lambda function)이 trigger되어 
+<br>
 
-동적으로 autoEndStore(lambda function)에 EventBridge trigger들을 생성하여 연결한다.
+POS server 실행시 setEndTime(lambda function)이 작동. 
 
-cron에 의해서 해당 시간이되면 autoEndStore 함수가 pos server로 post 요청을 보내어 
+setEndTime은 POS server로부터 각 store의 autoEndTime을 받아옴.
 
-해당 store를 자동마감시킨다.
+그 후 동적으로 autoEndStore(lambda function)에 EventBridge trigger들을 연결.
+
+해당 시간이되면 autoEndStore가 POS server로 post 요청을 보내 해당 store 자동마감.
 
 
 <br><br>
 
 
 <img src="/img/6.PNG" width="937" height="400">
+
+<br><br>
+
+## 💡 getAllStore API issue
+
+[Blog 보러가기](https://velog.io/@www8989/getAllStore-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-issue)
 
 <br><br>
 
