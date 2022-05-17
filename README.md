@@ -25,7 +25,7 @@
 
 ## 💡 Lambda
 
-[log 보러가기](https://velog.io/@www8989/AWS-lambda)
+[Blog 보러가기](https://velog.io/@www8989/AWS-lambda)
 
 server 실행시 setEndTime(lambda function)이 trigger되어 
 
