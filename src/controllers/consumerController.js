@@ -148,21 +148,28 @@ export const getAllStore = async(req,res) => {
     const {x,y} = req.body.data;
 
     try{
+        if(x == null, y == null){
+            const answer = await Store.findAll();
 
-        const query = `select * from Stores where longitude between ${x-0.035} and ${x+0.035} and latitude between ${y-0.03} and ${y+0.03}`;
-        let store = await db.sequelize.query(query);
-
-        store = store[0];
-
-        var answer = new Array();       
-
-        for(var i = 0 ; i < store.length ; i++){
-            if (getDistanceFromLatLonInKm(y,x,store[i].latitude,store[i].longitude) <= 3){
-                answer.push(store[i])
-            }
+            return res.json({answer});
         }
+        else{
+            const query = `select * from Stores where longitude between ${x-0.035} and ${x+0.035} and latitude between ${y-0.03} and ${y+0.03}`;
+            let store = await db.sequelize.query(query);
 
-        return res.json({answer});
+            store = store[0];
+
+            var answer = new Array();       
+
+            for(var i = 0 ; i < store.length ; i++){
+                if (getDistanceFromLatLonInKm(y,x,store[i].latitude,store[i].longitude) <= 3){
+                    answer.push(store[i])
+                }
+            }
+
+            return res.json({answer});
+        }
+        
 
     } catch(err){
 
@@ -496,3 +503,26 @@ export const getFinishedDelivery = async (req,res) => {
     }
 }
 
+export const getLikeStore = async (req,res) => {
+
+    const {storeIdList} = req.query;
+    const Op = Sequelize.Op
+    
+    try{
+
+        const answer = await Store.findAll({
+            where:{
+                id: {
+                    [Op.or]: storeIdList
+                }
+            }
+        });
+
+        return res.json({answer});
+
+    }
+    catch(err){
+        console.log("Error on getLikeStore: " + err)
+        return res.send("error")
+    }
+}

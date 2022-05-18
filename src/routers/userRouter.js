@@ -7,7 +7,7 @@ import {
   getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords, getSetting,
   setAutoEndTime,getAutoEndTime,autoEndStore, getAllAutoEndTime
 } from "../controllers/userController";
-import {verifyToken} from "./middlewares/authorization.js"
+import {postVerifyToken} from "./middlewares/authorization.js"
 
 const userRouter = express.Router();
 
@@ -18,20 +18,20 @@ userRouter.get('/realtimesales',getRealtimesales);
 userRouter.get('/paymenthistory',getPaymenthistory);
 userRouter.get('/startend',getStartend);
 userRouter.get('/settings',getSetting);
-userRouter.post('/getEarning',verifyToken,getEarning);
-userRouter.post('/getDeliveryStatus',verifyToken,getDeliveryStatus);
-userRouter.post('/changeStatus',verifyToken,changeStatus);
-userRouter.post('/getEarningForDeliveryApp',verifyToken,getEarningForDeliveryApp);
-userRouter.post('/getPaymentList',verifyToken,getPaymentList);
-userRouter.post('/getDeliveryById',verifyToken,getDeliveryById);
-userRouter.post('/refund',verifyToken,postRefund);
-userRouter.post('/delete',verifyToken,postDelete);
-userRouter.post('/open',verifyToken,open);
-userRouter.post('/close',verifyToken,close);
-userRouter.post('/isOpen',verifyToken,isOpen);
-userRouter.post('/getOpenRecords',verifyToken,getOpenRecords);
-userRouter.post('/setAutoEndTime',verifyToken,setAutoEndTime);
-userRouter.post('/getAutoEndTime',verifyToken,getAutoEndTime);
+userRouter.post('/getEarning',postVerifyToken,getEarning);
+userRouter.post('/getDeliveryStatus',postVerifyToken,getDeliveryStatus);
+userRouter.post('/changeStatus',postVerifyToken,changeStatus);
+userRouter.post('/getEarningForDeliveryApp',postVerifyToken,getEarningForDeliveryApp);
+userRouter.post('/getPaymentList',postVerifyToken,getPaymentList);
+userRouter.post('/getDeliveryById',postVerifyToken,getDeliveryById);
+userRouter.post('/refund',postVerifyToken,postRefund);
+userRouter.post('/delete',postVerifyToken,postDelete);
+userRouter.post('/open',postVerifyToken,open);
+userRouter.post('/close',postVerifyToken,close);
+userRouter.post('/isOpen',postVerifyToken,isOpen);
+userRouter.post('/getOpenRecords',postVerifyToken,getOpenRecords);
+userRouter.post('/setAutoEndTime',postVerifyToken,setAutoEndTime);
+userRouter.post('/getAutoEndTime',postVerifyToken,getAutoEndTime);
 userRouter.post('/autoEndStore',autoEndStore);
 userRouter.get('/getAllAutoEndTime',getAllAutoEndTime);
 

@@ -5,6 +5,7 @@ import db from "../models";
 import morgan from "morgan";
 import userRouter from "./routers/userRouter";
 import consumerRouter from "./routers/consumerRouter";
+import statisticRouter from "./routers/statisticRouter";
 import { localsMiddleware } from "./middlewares";
 var MySQLStore = require("express-mysql-session")(session);
 
@@ -64,3 +65,4 @@ app.use("/static", express.static("assets"));
 app.use(localsMiddleware);
 app.use("/user", userRouter);
 app.use("/consumer", consumerRouter)
+app.use("/statistic", statisticRouter)
