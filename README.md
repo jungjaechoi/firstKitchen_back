@@ -1,6 +1,6 @@
 # FirstKitchen - 점주용 POS 
 
-[FirstKitchen 배달앱](https://github.com/pyun0825/first_kitchen)
+[FirstKitchen 배달앱 Git 보러가기](https://github.com/pyun0825/first_kitchen)
 
 <br>
 
@@ -46,6 +46,8 @@ setEndTime은 POS server로부터 각 store의 autoEndTime을 받아옴.
 <br><br>
 
 ## 💡 getAllStore API issue
+
+배달앱 사용자 설정 배송지 3km 이내 가게들만 조회하게 하는 API
 
 [Blog 보러가기](https://velog.io/@www8989/getAllStore-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-issue)
 
