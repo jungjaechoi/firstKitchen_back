@@ -20,7 +20,7 @@ export const getTotalEarningByDay = async(req,res) => {
         const query1 = `select left(createdAt,10) as date, sum(totalPaidPrice) as dayEarning from deliveries where store_id = ${store_id} and (status = 0 or status = 1 or status = 2 or status = 3)  group by(left(createdAt,10));`;
         let dayEarning = await db.sequelize.query(query1);
 
-        const query2 = `select left(createdAt,10) as date, sum(totalPaidPrice-deliveryPrice) as dayRefund from deliveries where store_id = ${store_id} and (status = 4 or status = 5)  group by(left(createdAt,10));`;
+        const query2 = `select left(createdAt,10) as date, sum(-1*(totalPaidPrice-deliveryPrice)) as dayRefund from deliveries where store_id = ${store_id} and (status = 4 or status = 5)  group by(left(createdAt,10));`;
         let dayRefund = await db.sequelize.query(query2);
 
         return res.json({dayEarning,dayRefund});

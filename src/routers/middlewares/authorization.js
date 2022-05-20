@@ -22,10 +22,8 @@ export const postVerifyToken = (req, res, next) => {
 
 export const getVerifyToken = (req, res, next) => {
     try {
-        console.log(req.body);
-        console.log(req.param.data);
-        const {token}= req.param;
-        console.log(token);
+
+        const {token}= req.query;
         const decoded = jwt.verify(token, secretKey);
         console.log(decoded.agent_id,decoded.store_id)
         if (decoded) {

@@ -18,36 +18,22 @@
     })
 </script>
 
-<button type="button" id = "modal-btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal" style="display:none;"></button>
-
-<div id="modal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                
-                <ul style="padding:0; margin:0">
-                    <li style="list-style: none;">
-                        <p style="font-weight: bold; display: inline-block;">시작 시간: </p>
-                        <p style="display: inline-block; float: right;" id = "modal-open-time"></p>
-                    </li>
-                    <li style="list-style: none;">
-                        <p style="font-weight: bold; display: inline-block;">마감 시간: </p>
-                        <p style="display: inline-block; float: right;" id="modal-close-time"></p>
-                    </li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+<div id='calendar' class = "container" style = "margin-top: 80px; width: 100% "></div>
+        
+<div id="table" style="height: 340px; margin-top:50px;">
+    <table class="table table-hover" style = "margin-bottom:40px;">
+        <thead style = "height: 0px;">
+            <tr>
+                <th>주문 경로</th>
+                <th>건 수</th>
+                <th>매출</th>
+            </tr>
+        </thead>
+        <tbody style = "height: 34px;" id="tblShow">
+        </tbody>
+    </table>
 </div>
 
-<div id='calendar' class = "container" style = "margin-top: 80px"></div>
-        
 <script type="text/javascript">
 
     localStorage.removeItem('date-start');
@@ -60,15 +46,14 @@
         expandRows: true,
         aspectRatio: 1.35,
         events: [],
+        contentHeight: 330,
+
 
         eventClick: function(info) {
             
-            var open_time = document.getElementById("modal-open-time");
-            var close_time = document.getElementById("modal-close-time");
-            open_time.innerHTML = info.event.extendedProps.open_time;
-            close_time.innerHTML = info.event.extendedProps.close_time;
+            
 
-            document.getElementById('modal-btn').click();
+            
           }
     });
 
@@ -80,8 +65,51 @@
             datatype: "json",
             success: function(result){
 
-                console.log(result);
+                daySales = {}
+                const dayEarning = result.dayEarning[0]
+                const dayRefund = result.dayRefund[0]
+
+                for(var i = 0 ; i<dayEarning.length; i++){
+                    daySales[dayEarning[i].date] = [dayEarning[i].dayEarning]
+                }
+
+                let keys = Object.keys(daySales)
+                console.log(keys);
+                for(var i = 0 ; i<dayRefund.length; i++){
+                    if(daySales[dayRefund[i].date]){
+                        daySales[dayRefund[i].date].push(dayRefund[i].dayRefund)
+                    }
+                    else{
+                        daySales[dayRefund[i].date] = [dayRefund[i].dayRefund]
+                    }
+                }
+
+                keys = Object.keys(daySales)
+
+                for(var i = 0 ; i<keys.length ; i++){
+                    for(var j = 0 ; j<daySales[keys[i]].length ; j++){
+                        if(daySales[keys[i]][j]>0){
+                            calendar.addEvent({
+                                title: daySales[keys[i]][j],
+                                start: keys[i],
+                                color: 'white',
+                                textColor: 'blue',
+
+                            });
+                        }
+                        else{
+                            calendar.addEvent({
+                                title: daySales[keys[i]][j],
+                                start: keys[i],
+                                color: 'white',
+                                textColor: 'red'
+                            });
+                        }
+                    }
+                }
                 
+                calendar.render();
+                calendar.updateSize();
             }
         })
     })

@@ -6,7 +6,8 @@ import morgan from "morgan";
 import userRouter from "./routers/userRouter";
 import consumerRouter from "./routers/consumerRouter";
 import statisticRouter from "./routers/statisticRouter";
-import { localsMiddleware } from "./middlewares";
+
+var CORS = require('cors')();
 var MySQLStore = require("express-mysql-session")(session);
 
 var options = {
@@ -30,7 +31,6 @@ app.engine("html", require("ejs").renderFile); // temporarily using html only
 app.set("views", process.cwd() + "/src/views");
 
 
-
 app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // for post request encoding
@@ -51,7 +51,6 @@ const doSync = async() => {
 
 doSync();
 
-
 app.use(
   session({
     secret: "session_cookie_secret", //나중에 .env에 hash 코드로 변경
@@ -61,8 +60,8 @@ app.use(
   })
 );
 
+app.use(CORS);
 app.use("/static", express.static("assets"));
-app.use(localsMiddleware);
 app.use("/user", userRouter);
 app.use("/consumer", consumerRouter)
 app.use("/statistic", statisticRouter)
