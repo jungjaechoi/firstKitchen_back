@@ -23,13 +23,11 @@ const app = express();
 
 const logger = morgan("dev");
 
-const PORT = 4000;
+const PORT = 3000;
 
 app.set("view engine", "html");
 app.engine("html", require("ejs").renderFile); // temporarily using html only
 app.set("views", process.cwd() + "/src/views");
-
-
 
 app.use(logger);
 app.use(express.json());
@@ -39,18 +37,17 @@ const handleListening = () => {
   console.log(`Server Listening on port: http://localhost:${PORT}`);
 };
 
-const doSync = async() => {
-  try{
+const doSync = async () => {
+  try {
     await db.sequelize.sync().then((req) => {
       app.listen(PORT, handleListening);
     });
-  } catch(err){
+  } catch (err) {
     console.log(err);
-  }  
-}
+  }
+};
 
 doSync();
-
 
 app.use(
   session({
@@ -64,5 +61,5 @@ app.use(
 app.use("/static", express.static("assets"));
 app.use(localsMiddleware);
 app.use("/user", userRouter);
-app.use("/consumer", consumerRouter)
-app.use("/statistic", statisticRouter)
+app.use("/consumer", consumerRouter);
+app.use("/statistic", statisticRouter);
