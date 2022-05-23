@@ -21,12 +21,13 @@
 <div id='calendar' class = "container" style = "margin-top: 80px; width: 100% "></div>
         
 <div id="table" style="height: 340px; margin-top:50px;">
+    <p class="date"style="margin-left:30px; margin-bottom:0; display:hidden">날짜를 선택하세요</p>
     <table class="table table-hover" style = "margin-bottom:40px;">
         <thead style = "height: 0px;">
             <tr>
-                <th>주문 경로</th>
-                <th>건 수</th>
-                <th>매출</th>
+                <th style="padding:0"></th>
+                <th style="padding:0"></th>
+                <th style="padding:0"></th>
             </tr>
         </thead>
         <tbody style = "height: 34px;" id="tblShow">
@@ -36,8 +37,7 @@
 
 <script type="text/javascript">
 
-    localStorage.removeItem('date-start');
-    localStorage.removeItem('date-end');
+    
 
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -50,9 +50,74 @@
 
 
         eventClick: function(info) {
-            
-            
 
+            let date = info.event.extendedProps.titleDate
+            $('.date').text(date);
+
+            $(document).ready(function(){
+                $.ajax({
+                    url: `/statistic/getDayDeliveredList?token=${localStorage.getItem('token')}&date=${date}`,
+                    type: "get",
+                    datatype: "json",
+                    success: function(result){
+                        if(result !="error"){
+                            const answer = result.answer;
+                            console.log(answer);
+                            $("#tblShow tr").remove();
+
+                            for(var i = 0 ; i < answer.length ; i++){
+                                let objRow = document.all("tblShow").insertRow();
+                                let objCell_status =objRow.insertCell();
+
+                                if(answer[i][0].status == 0){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
+                                }
+                                else if(answer[i][0].status == 1){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
+                                }
+                                else if(answer[i][0].status == 2 || answer[i][0].status == 3){
+                                    if(answer[i][0].receptionType == "DELIVERY"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                    }
+                                    else if(answer[i][0].receptionType == "PICKUP"){
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                    }
+                                    else{
+                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                    }
+                                }
+                                else if(answer[i][0].status == 4){
+                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
+                                }
+
+                                let objCell_earning = objRow.insertCell();
+                                let temp =""
+
+                                for(var j = 0 ; j<answer[i][1].length;j++){
+                                    temp += answer[i][1][j][0] + " " + answer[i][1][j][1] + '&nbsp;&nbsp;&nbsp;'
+                                }
+
+                                objCell_earning.innerHTML = answer[i][0].totalPaidPrice + '<br>' + temp;
+
+                                let objCell_time = objRow.insertCell();
+                                let time = answer[i][0].createdAt.split('T');
+                                time = time[1].split('.');
+                                time = time[0].split(":");
+                                time = time[0] + ":" + time[1]
+
+                                objCell_time.innerHTML = time
+
+                            }
+
+                            
+                            
+                        }
+                        else{
+                            alert("오류");
+                        }
+                    }
+                })
+            })
             
           }
     });
@@ -94,6 +159,7 @@
                                 start: keys[i],
                                 color: 'white',
                                 textColor: 'blue',
+                                titleDate: keys[i]
 
                             });
                         }
@@ -102,14 +168,15 @@
                                 title: daySales[keys[i]][j],
                                 start: keys[i],
                                 color: 'white',
-                                textColor: 'red'
+                                textColor: 'red',
+                                titleDate: keys[i]
                             });
                         }
                     }
                 }
                 
                 calendar.render();
-                calendar.updateSize();
+
             }
         })
     })

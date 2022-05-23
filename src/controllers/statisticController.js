@@ -31,3 +31,80 @@ export const getTotalEarningByDay = async(req,res) => {
     }
 
 }
+
+export const getDayDeliveredList = async (req,res) => {
+
+    const store_id = res.locals.store_id;
+    const {date} = req.query;
+    const Op = Sequelize.Op
+    let start = new Date(date + "T00:00:00");
+    let end = new Date(date + "T23:59:59");
+
+    try{
+        
+        const delivery = await Delivery.findAll({
+            where:{
+              store_id,
+              [Op.and]: [
+                {createdAt: {[Op.lte]: end}},
+                {createdAt: {[Op.gte]: start}}
+              ]
+            }
+        });
+
+        console.log(delivery);
+        let answer = []
+
+        for(var i = 0 ; i<delivery.length ; i++){
+
+            const orders = await Order.findAll({
+                where:{
+                  delivery_id: delivery[i].dataValues.id
+                }
+            });
+          
+            var orderList = [];
+        
+            for (var j = 0; j<orders.length ; j++){
+                if (orders[j].dataValues.productUnit_id != null){
+                    var product = await ProductUnit.findOne({
+                    where:{
+                        id: orders[j].dataValues.productUnit_id
+                    }
+                    });
+                    orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+                }
+                else if(orders[j].dataValues.productSet_id != null){
+                    var product = await ProductSet.findOne({
+                    where:{
+                        id: orders[j].dataValues.productSet_id
+                    }
+                    });
+                    orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+                }
+                else if(orders[j].dataValues.productOption_id != null){
+                    var product = await ProductOption.findOne({
+                    where:{
+                        id: orders[j].dataValues.productOption_id
+                    }
+                    });
+                    orderList.push(new Array(product.dataValues.name, orders[j].dataValues.quantity, product.dataValues.price));
+                }
+            }
+
+            let temp = [delivery[i],orderList]
+            answer.push(temp);
+
+        }
+
+        console.log(answer)
+        
+        return res.json({answer})
+    
+    }
+    catch(err){
+        console.log("Error on getDeliveryById" + err)
+        res.send("error");
+    }
+
+}

@@ -5,7 +5,7 @@ export const postVerifyToken = (req, res, next) => {
     try {
         const {token}= req.body;
         const decoded = jwt.verify(token, secretKey);
-        console.log(decoded.agent_id,decoded.store_id)
+       
         if (decoded) {
             res.locals.agent_id = decoded.agent_id;
             res.locals.store_id = decoded.store_id;
@@ -25,7 +25,7 @@ export const getVerifyToken = (req, res, next) => {
 
         const {token}= req.query;
         const decoded = jwt.verify(token, secretKey);
-        console.log(decoded.agent_id,decoded.store_id)
+        
         if (decoded) {
             res.locals.agent_id = decoded.agent_id;
             res.locals.store_id = decoded.store_id;

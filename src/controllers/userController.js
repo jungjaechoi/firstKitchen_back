@@ -301,7 +301,7 @@ export const getPaymentList = async(req,res) =>{
         ]
       }
     });
-
+    console.log(paymentList);
     return res.json({paymentList});
 
   }
