@@ -27,7 +27,8 @@ export const getTotalEarningByDay = async(req,res) => {
 
     }
     catch(err){
-
+        console.log("Error on getTotalEarningByDay" + err)
+        res.send("error");
     }
 
 }
@@ -52,7 +53,6 @@ export const getDayDeliveredList = async (req,res) => {
             }
         });
 
-        console.log(delivery);
         let answer = []
 
         for(var i = 0 ; i<delivery.length ; i++){
@@ -96,14 +96,12 @@ export const getDayDeliveredList = async (req,res) => {
             answer.push(temp);
 
         }
-
-        console.log(answer)
         
         return res.json({answer})
     
     }
     catch(err){
-        console.log("Error on getDeliveryById" + err)
+        console.log("Error on getDayDeliveredList" + err)
         res.send("error");
     }
 
