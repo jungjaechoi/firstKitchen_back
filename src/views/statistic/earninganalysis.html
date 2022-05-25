@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div>
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
+    <div style="text-align: center; margin-top: 20px;">
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
+    <hr>
+    <p style="margin-left: 15px; font-weight: bold;">결제 금액</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-paid"></div>
+    <p style="margin-left: 15px; font-weight: bold;">결제 건수</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-num"></div>
+    <p style="margin-left: 15px; font-weight: bold;">평균 결제 금액</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-paid-avg"></div>
+    <hr>
+    <p style="margin-left: 15px; font-weight: bold;">취소 금액</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund"></div>
+    <p style="margin-left: 15px; font-weight: bold;">취소 건수</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund-num"></div>
+    <p style="margin-left: 15px; font-weight: bold;">평균 취소 금액</p>
+    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund-avg"></div>
+    <hr>
+    
+    <div id="table" style="height: 340px; margin-top:50px;">
+        <table class="table table-hover" style = "margin-bottom:40px;">
+            <thead style = "height: 0px;">
+                <tr>
+                    <th>주문 경로</th>
+                    <th>건 수</th>
+                    <th>매출</th>
+                </tr>
+            </thead>
+            <tbody style = "height: 34px;" id="tblShow">
+            </tbody>
+        </table>
+    </div>
+    
+   
+</div>
+        
+<script type="text/javascript">
+
+    function getEarningAnalysisData(date_start,date_end){
+        console.log(date_start);
+        $(document).ready(function(){
+            $.ajax({
+                url: `/statistic/getEarningAnalysisData?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
+                type: "get",
+                datatype: "json",
+                success: function(result){
+                    if(result.error != 'token expired'){
+
+                        const deliverys = result.delivery;
+
+                        var kind_app = new Set();
+
+                        for(var i = 0; i < deliverys.length ; i++){
+                            kind_app.add(deliverys[i].deliveryApp)
+                        }
+
+                        kind_app = Array.from(kind_app)
+                        var count_earning_dict = {}
+
+                        for(var i = 0; i < kind_app.length; i++){
+                            count_earning_dict[kind_app[i]] = [0,0]
+                        }
+
+                        for(var i = 0; i < deliverys.length ; i++){
+                            if (deliverys[i].status != 4 && deliverys[i].status != 5){
+                                count_earning_dict[deliverys[i].deliveryApp][0] += 1;
+                                count_earning_dict[deliverys[i].deliveryApp][1] += deliverys[i].totalPrice - deliverys[i].discountPrice 
+                            }
+                        }
+
+                        var earning = new Array();
+
+                        for(var key in count_earning_dict){
+                            earning.push([key,count_earning_dict[key][0],count_earning_dict[key][1]])
+                        }
+
+                        for(var i = 0; i<earning.length;i++){
+                            var objRow = document.all("tblShow").insertRow();
+                            var objCell_app =objRow.insertCell();
+                            objCell_app.innerHTML = earning[i][0];
+                            var objCell_count = objRow.insertCell();
+                            objCell_count.innerHTML = earning[i][1] + "건";
+                            var objCell_earning = objRow.insertCell();
+                            objCell_earning.innerHTML = earning[i][2];
+                        }
+                    }
+                    else{
+                        localStorage.removeItem('token');
+                        alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                        window.location.href = '/user';
+                    }
+                }
+            });
+        });
+    }
+
+    const selectElement_start = document.getElementById('date-start');
+
+    selectElement_start.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if (date_end != ""){     
+            getEarningAnalysisData(date_start,date_end);
+        }
+    });
+
+    const selectElement_end = document.getElementById('date-end');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if(date_start != ""){
+            getEarningAnalysisData(date_start,date_end);
+        }
+    });
+
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

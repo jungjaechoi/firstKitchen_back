@@ -20,10 +20,10 @@
 
 <div id='calendar' class = "container" style = "margin-top: 80px; width: 100% "></div>
         
-<div id="table" style="height: 340px; margin-top:50px;">
+<div  style="height: 340px; margin-top:50px;">
     <p class="date"style="margin-left:30px;  margin-bottom:0; float:left">날짜를 선택하세요</p>
-    <p style='border: 1px solid; margin-right: 30px; margin-bottom:5px; float:right; visibility: hidden' id = "orderAnalysis-btn" onClick = "orderAnalysis()">배달 대행 관리</p>
-    <table class="table table-hover" style = "margin-bottom:40px;">
+    
+    <table  id="paymentTable"class="table table-hover" style = "margin-bottom:40px;">
         <thead style = "height: 0px;">
             <tr>
                 <th style="padding:0"></th>
@@ -35,6 +35,73 @@
         </tbody>
     </table>
 </div>
+
+<button type="button" id = "modal-btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#modal" style="display:none;"></button>
+
+    <div id="modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    
+                    <ul style="padding:0; margin:0">
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">상태</p>
+                            <p style="display: inline-block; float: right;" id = "status"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">결제시간</p>
+                            <p style="display: inline-block; float: right;" id = "date"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">총 결제 금액</p>
+                            <p style="display: inline-block; float: right;" id="totalPrice"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">지번 주소</p>
+                            <p style="display: inline-block; float: right;" id = "jibunAddress"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">도로명 주소</p>
+                            <p style="display: inline-block; float: right;" id = "roadAddress"></p>
+                        </li>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">상세 주소</p>
+                            <p style="display: inline-block; float: right;" id="detailAddress"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style="font-weight: bold; display: inline-block;">결제 수단</p>
+                            <p style="display: inline-block; float: right;" id = "payType"></p>
+                        </li>
+                        <hr>
+                        <li style="list-style: none;">
+                            <p style = "font-weight: bold;">결제 내역</p>
+                            <div id="table">
+                                <table  style = " margin-top:10px; margin-bottom:40px; width: 100%;">
+                                    <thead style = "height: 0px;">
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style = "height: 34px;" id="tblShow_orders">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script type="text/javascript">
 
@@ -52,9 +119,6 @@
 
         eventClick: function(info) {
 
-            const orderAnalysis_btn = document.getElementById("orderAnalysis-btn");
-            orderAnalysis_btn.style = 'border: 1px solid; margin-right: 30px; margin-bottom:5px; float:right;'
-
             let date = info.event.extendedProps.titleDate
             $('.date').text(date);
 
@@ -71,6 +135,11 @@
 
                             for(var i = 0 ; i < answer.length ; i++){
                                 let objRow = document.all("tblShow").insertRow();
+
+                                let objCell_id = objRow.insertCell();
+                                objCell_id.innerHTML = answer[i][0].id;
+                                objCell_id.style = "display:none";
+
                                 let objCell_status =objRow.insertCell();
 
                                 if(answer[i][0].status == 0){
@@ -113,9 +182,11 @@
                                 objCell_time.style = "padding-top:15px"
 
                             }
+                            const table = document.querySelectorAll("table");
 
-                            
-                            
+                            for (const currentRow of table[3].rows) {
+                                currentRow.onclick = createClickHandler(currentRow);
+                            }
                         }
                         else{
                             alert("오류");
@@ -186,9 +257,129 @@
         })
     })
 
-function orderAnalysis() {
-    alert('hi');
-}
+    function getDeliveryById(id){
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/getDeliveryById",
+                type: "post",
+                data: {
+                    token:localStorage.getItem('token'),
+                    delivery_id:id,     
+                },
+                datatype: "json",
+                success: function(result){
+                    console.log(result);
+                    const delivery = result.delivery;
+                    const orderList = result.orderList;
+                    const delivery_status = document.getElementById("status")
+
+                    if(delivery.status == 0){
+                        delivery_status.innerHTML = `주문`
+                    }
+                    else if(delivery.status == 1){
+                        delivery_status.innerHTML = `접수`
+                    }
+                    else if(delivery.status == 2 || delivery.status == 3){
+                        if(delivery.receptionType == "DELIVERY"){
+                            delivery_status.innerHTML = `배달`
+                        }
+                        else if(delivery.receptionType == "PICKUP"){
+                            delivery_status.innerHTML = `포장`
+                        }
+                        else{
+                            delivery_status.innerHTML = `오류`
+                        }
+                    }
+                    else if(delivery.status == 4){
+                        delivery_status.innerHTML = `환불`
+                    }
+
+                    const jibunAddress = document.getElementById('jibunAddress');
+                    jibunAddress.innerHTML = delivery.jibunAddress;
+
+                    const roadAddress = document.getElementById('roadAddress');
+                    roadAddress.innerHTML = delivery.roadAddress;
+
+                    const detailAddress = document.getElementById('detailAddress');
+                    detailAddress.innerHTML = delivery.addressDetail;
+
+                    const date_value = document.getElementById("date")
+                    let date = delivery.createdAt.split('T')
+                    date[1] = date[1].split('.');
+                    date[1] = date[1][0].split(":");
+                    date[1] = date[1][0] + " : " + date[1][1]
+                    date_value.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
+                    const totalPrice = document.getElementById("totalPrice")
+                    totalPrice.innerHTML = delivery.totalPaidPrice
+                    const payType = document.getElementById("payType")
+                    if(delivery.payType == 1){
+                        payType.innerHTML = "주문시 결제"
+                    }
+                    else if(delivery.payType == 2){
+                        payType.innerHTML = "만나서 카드결제"
+                    }
+                    else if(delivery.payType == 3){
+                        payType.innerHTML = "만나서 현금결제"
+                    }
+                    else{
+                        payType.innerHTML = "미입력"
+                    }
+                    
+                    $("#tblShow_orders").empty();
+
+                    for(let i = 0 ; i <orderList.length; i++){
+                        let objRow = document.all("tblShow_orders").insertRow();
+                        objRow.style = "border-collapse: separate; border-spacing: 0 10px;";
+
+                        let objCell_menuName = objRow.insertCell();
+                        objCell_menuName.innerHTML = orderList[i][0] + " * " + orderList[i][1]
+                        
+
+                        let objCell_price = objRow.insertCell();
+                        objCell_price.innerHTML = (orderList[i][1] * orderList[i][2]) + "원"
+                        objCell_price.style = "float:right"
+                    }
+
+                    let objRow = document.all("tblShow_orders").insertRow();
+                    objRow.style = "border-collapse: separate; border-spacing: 0 10px;";
+
+                    let objCell_deliveryPrice = objRow.insertCell();
+                    objCell_deliveryPrice.innerHTML = "배달료"
+
+                    let objCell_price = objRow.insertCell();
+                    objCell_price.innerHTML = delivery.deliveryPrice  + "원"
+                    objCell_price.style = "float:right"
+
+                    if(delivery.status == 4){
+                        const totalPrice = document.getElementById("totalPrice");
+                        totalPrice.style = "text-decoration:line-through; display: inline-block; float: right;";
+                        let rows = document.getElementById("tblShow_orders").getElementsByTagName("tr");
+                        for(let i = 0; i<rows.length-1; i++){
+                            let cells = rows[i].getElementsByTagName("td");
+
+                            let cell_2 = cells[1]
+                            
+                            cell_2.style = "text-decoration:line-through; float:right";
+                        }
+                    }
+                    else{
+                            const totalPrice = document.getElementById("totalPrice");
+                            totalPrice.style = "display: inline-block; float: right;";
+                        }
+                }
+            })
+        })  
+    }
+
+    const createClickHandler = (row) => {
+
+        return () => {
+            const cell = row.getElementsByTagName("td");
+            const id = cell[0].innerHTML;
+            getDeliveryById(id);
+            document.getElementById('modal-btn').click();
+        };
+    };
     
 
 </script>  

@@ -6,9 +6,11 @@ import db from "../../models";
 const Sequelize = require('sequelize');
 
 export const getSalesCalendar = async(req,res) => {
-
     return res.render("statistic/salescalendar.html");
+}
 
+export const getEarningAnalysis = async(req,res) => {
+    return res.render("statistic/earninganalysis.html");
 }
 
 export const getTotalEarningByDay = async(req,res) => {
@@ -106,3 +108,34 @@ export const getDayDeliveredList = async (req,res) => {
     }
 
 }
+
+export const getEarningAnalysisData = async (req,res) => {
+
+    const store_id = res.locals.store_id;
+    let {start,end} = req.query;
+    const Op = Sequelize.Op
+    console.log(start,end);
+    start = new Date(start + "T00:00:00");
+    end = new Date(end + "T23:59:59");
+    console.log(start,end);
+
+    try{
+
+        const delivery = await Delivery.findAll({
+            where:{
+              store_id,
+              [Op.and]: [
+                {createdAt: {[Op.lte]: end}},
+                {createdAt: {[Op.gte]: start}}
+              ]
+            }
+        });
+        
+        return res.json({delivery});
+    }
+    catch(err){
+        console.log("Error on getEarningAnalysisData" + err)
+        res.send("error");
+    }
+}
+

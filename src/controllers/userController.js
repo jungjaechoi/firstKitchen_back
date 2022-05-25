@@ -263,7 +263,7 @@ export const getEarningForDeliveryApp = async(req,res) => {
     }
 
     for(var i = 0; i < deliverys.length ; i++){
-      if (deliverys[i].dataValues.status != 2){
+      if (deliverys[i].status != 4 && deliverys[i].status != 5){
         count_earning_dict[deliverys[i].dataValues.deliveryApp][0] += 1;
         count_earning_dict[deliverys[i].dataValues.deliveryApp][1] += deliverys[i].dataValues.totalPrice - deliverys[i].dataValues.discountPrice 
       }
