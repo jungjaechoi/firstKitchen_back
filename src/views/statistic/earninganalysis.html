@@ -22,19 +22,48 @@
         <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
     </div>
     <hr>
-    <p style="margin-left: 15px; font-weight: bold;">결제 금액</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-paid"></div>
-    <p style="margin-left: 15px; font-weight: bold;">결제 건수</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-num"></div>
-    <p style="margin-left: 15px; font-weight: bold;">평균 결제 금액</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="total-paid-avg"></div>
-    <hr>
-    <p style="margin-left: 15px; font-weight: bold;">취소 금액</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund"></div>
-    <p style="margin-left: 15px; font-weight: bold;">취소 건수</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund-num"></div>
-    <p style="margin-left: 15px; font-weight: bold;">평균 취소 금액</p>
-    <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="refund-avg"></div>
+
+    <ul style="padding:0; margin:0">
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 결제 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="total-paid"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 결제 건수</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="total-num"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">평균 결제 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="total-paid-avg"></div>
+        </li>
+        <hr>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">카드 결제 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="card-paid"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">현금 결제 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="cash-paid"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">간편 결제 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="easy-paid"></div>
+        </li>
+        <hr>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 취소 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="refund"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 취소 건수</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="refund-num"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">평균 취소 금액</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="refund-avg"></div>
+        </li>
+    </ul>
+    
     <hr>
     
     <div id="table" style="height: 340px; margin-top:50px;">
@@ -57,7 +86,7 @@
 <script type="text/javascript">
 
     function getEarningAnalysisData(date_start,date_end){
-        console.log(date_start);
+        
         $(document).ready(function(){
             $.ajax({
                 url: `/statistic/getEarningAnalysisData?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
@@ -67,42 +96,95 @@
                     if(result.error != 'token expired'){
 
                         const deliverys = result.delivery;
+                        console.log(deliverys);
 
-                        var kind_app = new Set();
+                        let kind_app = new Set();
 
-                        for(var i = 0; i < deliverys.length ; i++){
+                        for(let i = 0; i < deliverys.length ; i++){
                             kind_app.add(deliverys[i].deliveryApp)
                         }
 
                         kind_app = Array.from(kind_app)
-                        var count_earning_dict = {}
+                        let count_earning_dict = {}
+                        let total_paid = 0
+                        let total_num = 0
+                        let refund = 0
+                        let refund_num = 0
+                        let card_paid = 0
+                        let cash_paid = 0
+                        let easy_paid = 0
 
-                        for(var i = 0; i < kind_app.length; i++){
+                        for(let i = 0; i < kind_app.length; i++){
                             count_earning_dict[kind_app[i]] = [0,0]
                         }
 
-                        for(var i = 0; i < deliverys.length ; i++){
+                        for(let i = 0; i < deliverys.length ; i++){
                             if (deliverys[i].status != 4 && deliverys[i].status != 5){
+
+                                let paid = deliverys[i].totalPrice - deliverys[i].discountPrice - deliverys[i].deliveryPrice 
+
                                 count_earning_dict[deliverys[i].deliveryApp][0] += 1;
-                                count_earning_dict[deliverys[i].deliveryApp][1] += deliverys[i].totalPrice - deliverys[i].discountPrice 
+                                count_earning_dict[deliverys[i].deliveryApp][1] += paid
+                                total_paid += paid
+                                total_num += 1
+                                
+                                if(deliverys[i].payType == 1){
+                                    easy_paid += paid
+                                }
+                                else if(deliverys[i].payType == 2){
+                                    card_paid += paid
+                                }
+                                else if(deliverys[i].payType == 3){
+                                    cash_paid += paid
+                                }
+                            }
+                            else{
+                                refund += deliverys[i].totalPrice - deliverys[i].discountPrice - deliverys[i].deliveryPrice
+                                refund_num += 1
                             }
                         }
 
-                        var earning = new Array();
+                        let earning = new Array();
 
-                        for(var key in count_earning_dict){
+                        for(let key in count_earning_dict){
                             earning.push([key,count_earning_dict[key][0],count_earning_dict[key][1]])
                         }
 
-                        for(var i = 0; i<earning.length;i++){
-                            var objRow = document.all("tblShow").insertRow();
-                            var objCell_app =objRow.insertCell();
+                        console.log(total_paid,total_num);
+
+                        const total_paid_obj= document.getElementById('total-paid');
+                        total_paid_obj.innerHTML = total_paid
+                        const total_num_obj = document.getElementById('total-num');
+                        total_num_obj.innerHTML = total_num
+                        const total_avg_obj = document.getElementById('total-paid-avg');
+                        total_avg_obj.innerHTML = parseInt(total_paid/total_num);
+
+                        const card_paid_obj = document.getElementById('card-paid');
+                        card_paid_obj.innerHTML = card_paid
+                        const cash_paid_obj = document.getElementById('cash-paid');
+                        cash_paid_obj.innerHTML = cash_paid
+                        const easy_paid_obj = document.getElementById('easy-paid');
+                        easy_paid_obj.innerHTML = easy_paid
+
+                        const refund_obj = document.getElementById('refund');
+                        refund_obj.innerHTML = refund
+                        const refund_num_obj = document.getElementById('refund-num');
+                        refund_num_obj.innerHTML = refund_num
+                        const refund_avg_obj = document.getElementById('refund-avg');
+                        refund_avg_obj.innerHTML = parseInt(refund/refund_num);
+
+                        for(let i = 0; i<earning.length;i++){
+                            let objRow = document.all("tblShow").insertRow();
+                            let objCell_app =objRow.insertCell();
                             objCell_app.innerHTML = earning[i][0];
-                            var objCell_count = objRow.insertCell();
+                            let objCell_count = objRow.insertCell();
                             objCell_count.innerHTML = earning[i][1] + "건";
-                            var objCell_earning = objRow.insertCell();
+                            let objCell_earning = objRow.insertCell();
                             objCell_earning.innerHTML = earning[i][2];
                         }
+
+
+
                     }
                     else{
                         localStorage.removeItem('token');

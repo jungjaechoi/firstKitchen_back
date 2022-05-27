@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div>
+    <ul style="padding:0; margin:0 ; margin-top:100px">
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 누적 고객</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="accum-num"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">이번달 신규 고객</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="new-num"></div>
+        </li>
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">이번달 재방문율</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="revisit"></div>
+        </li>
+    </ul>
+    <hr>
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 30px; font-weight: bold;">TOP 10 이용고객</p>
+    <div style="text-align: center; margin-top: 20px;">
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
+    <div id="table" style="height: 340px; margin-top:10px;">
+        <table class="table table-hover" style = "margin-bottom:40px;">
+            <thead style = "height: 0px;">
+                <tr>
+                    <th>순위</th>
+                    <th>Phone No.</th>
+                    <th>방문수</th>
+                    <th>결제금액</th>
+                </tr>
+            </thead>
+            <tbody style = "height: 34px;" id="tblShow">
+            </tbody>
+        </table>
+    </div>
+    
+   
+</div>
+        
+<script type="text/javascript">
+
+    function getConsumerRank(date_start,date_end){
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: `/statistic/getConsumerRank?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
+                type: "get",
+                datatype: "json",
+                success: function(result){
+                    if(result.error != 'token expired'){
+
+                        const deliverys = result.delivery;
+                        for(let i = 0; i<deliverys.length;i++){
+                            let objRow = document.all("tblShow").insertRow();
+
+                            let objCell_rank = objRow.insertCell();
+                            objCell_rank.innerHTML = i+1;
+
+                            let objCell_tel = objRow.insertCell();
+                            objCell_tel.innerHTML = deliverys[i].tel;
+
+                            let objCell_visitedNum = objRow.insertCell();
+                            objCell_visitedNum.innerHTML = deliverys[i].visitedNum;
+
+                            let objCell_paid = objRow.insertCell();
+                            objCell_paid.innerHTML = deliverys[i].paid;
+                        }
+                    }
+                    else{
+                        localStorage.removeItem('token');
+                        alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                        window.location.href = '/user';
+                    }
+                }
+            });
+        });
+    }
+
+    $(document).ready(function(){
+        $.ajax({
+            url: `/statistic/getConsumerData?token=${localStorage.getItem('token')}`,
+            type: "get",
+            datatype: "json",
+            success: function(result){
+                if(result !="error"){
+                   
+                    const newConNum = result.monthNewConNum[1][0].newConNum;
+                    const monthNum = result.monthNum;
+                    const accumNum = result.accumNum.length;
+
+                    const accum_num_obj = document.getElementById('accum-num');
+                    const revisit_obj = document.getElementById('revisit');
+                    const new_num_obj = document.getElementById('new-num');
+
+                    
+                    new_num_obj.innerHTML = newConNum + " 명";
+                    accum_num_obj.innerHTML = accumNum + "명";
+                    
+                    let manyVisit = 0
+
+                    for(let i = 0; i<monthNum.length ; i++){
+                        if(monthNum[i].visitedNum > 1){
+                            manyVisit += 1
+                        }
+                    }
+
+                    let percent = manyVisit/monthNum.length*100
+                    percent = percent.toFixed(2);
+
+                    revisit_obj.innerHTML = percent + " %";
+                    
+                }
+                else{
+                    alert("오류");
+                }
+            }
+        })
+    })
+
+    const selectElement_start = document.getElementById('date-start');
+
+    selectElement_start.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if (date_end != ""){     
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    const selectElement_end = document.getElementById('date-end');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if(date_start != ""){
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

@@ -6,6 +6,63 @@ import db from "../../models";
 const Sequelize = require('sequelize');
 const deliveryApp_IP = "http://192.168.100.69:4000";
 
+const autoClose = async (store_id) => {
+  
+  try{
+
+    const store = await Store.findOne({
+      where:{
+        id: store_id
+      }
+    })
+
+    if(store.dataValues.isOpen == 1){
+      const openRecord = await OpenRecord.findOne({
+        where:{
+          store_id,
+          end_time: null
+        }
+      });
+  
+      await store.update({isOpen:0});
+  
+      let today = new Date(); 
+  
+      let year = today.getFullYear(); // 년도
+      let month = today.getMonth() + 1;  // 월
+      let dates = today.getDate();  // 날짜
+      let hours = today.getHours(); // 시
+      let minutes = today.getMinutes();  // 분
+      let seconds = today.getSeconds();  // 초
+  
+      if(month<10){
+        month = "0"+ month;
+      }
+      if(dates<10){
+        dates = "0"+ dates;
+      }
+      if(hours<10){
+        hours = "0"+ hours;
+      }
+      if(minutes<10){
+        minutes = "0"+ minutes;
+      }
+      if(seconds<10){
+        seconds = "0"+ seconds;
+      }
+  
+      const end_time = year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds;
+  
+      await openRecord.update({
+        end_time: end_time
+      })
+    }  
+  }
+  catch(err){
+    console.log("Error on autoClose: " + err)
+  }
+}
+
 export const getLogin = (req, res) => {
   return res.render("login/login.html");
 };
@@ -530,62 +587,7 @@ export const close = async (req,res) => {
   }
 }
 
-const autoClose = async (store_id) => {
-  
-  try{
 
-    const store = await Store.findOne({
-      where:{
-        id: store_id
-      }
-    })
-
-    if(store.dataValues.isOpen == 1){
-      const openRecord = await OpenRecord.findOne({
-        where:{
-          store_id,
-          end_time: null
-        }
-      });
-  
-      await store.update({isOpen:0});
-  
-      let today = new Date(); 
-  
-      let year = today.getFullYear(); // 년도
-      let month = today.getMonth() + 1;  // 월
-      let dates = today.getDate();  // 날짜
-      let hours = today.getHours(); // 시
-      let minutes = today.getMinutes();  // 분
-      let seconds = today.getSeconds();  // 초
-  
-      if(month<10){
-        month = "0"+ month;
-      }
-      if(dates<10){
-        dates = "0"+ dates;
-      }
-      if(hours<10){
-        hours = "0"+ hours;
-      }
-      if(minutes<10){
-        minutes = "0"+ minutes;
-      }
-      if(seconds<10){
-        seconds = "0"+ seconds;
-      }
-  
-      const end_time = year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds;
-  
-      await openRecord.update({
-        end_time: end_time
-      })
-    }  
-  }
-  catch(err){
-    console.log("Error on autoClose: " + err)
-  }
-}
 
 export const isOpen = async(req,res) => {
   const store_id = res.locals.store_id

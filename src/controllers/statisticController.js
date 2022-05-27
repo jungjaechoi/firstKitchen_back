@@ -13,6 +13,10 @@ export const getEarningAnalysis = async(req,res) => {
     return res.render("statistic/earninganalysis.html");
 }
 
+export const getConsumerAnalysis = async(req,res) => {
+    return res.render("statistic/consumeranalysis.html");
+}
+
 export const getTotalEarningByDay = async(req,res) => {
 
     const store_id = res.locals.store_id
@@ -114,11 +118,10 @@ export const getEarningAnalysisData = async (req,res) => {
     const store_id = res.locals.store_id;
     let {start,end} = req.query;
     const Op = Sequelize.Op
-    console.log(start,end);
+    console.log(start);
     start = new Date(start + "T00:00:00");
     end = new Date(end + "T23:59:59");
-    console.log(start,end);
-
+    
     try{
 
         const delivery = await Delivery.findAll({
@@ -139,3 +142,81 @@ export const getEarningAnalysisData = async (req,res) => {
     }
 }
 
+export const getConsumerRank = async (req,res) => {
+    const store_id = res.locals.store_id;
+    let {start,end} = req.query;
+    const Op = Sequelize.Op
+    start = new Date(start + "T00:00:00");
+    end = new Date(end + "T23:59:59");
+    try{
+
+        const delivery = await Delivery.findAll({
+            attributes: ['tel', [Sequelize.fn('sum', (Sequelize.col('totalPaidPrice'))), 'paid'],[Sequelize.fn('count', Sequelize.col('tel')), 'visitedNum']],
+            group: ['user_id'],
+            where: {
+                store_id,
+                [Op.and]: [
+                    {createdAt: {[Op.lte]: end}},
+                    {createdAt: {[Op.gte]: start}},
+                    {status: {[Op.not]: 4}},
+                    {status: {[Op.not]: 5}},
+                  ]   
+            },
+            order: [
+                [Sequelize.fn('sum', Sequelize.col('totalPaidPrice')), 'DESC']
+              ],
+            limit: 7
+        })
+
+        return res.json({delivery});
+    }
+    catch(err){
+        console.log("Error on getConsumerRank" + err)
+        res.send("error");
+    }
+}
+
+export const getConsumerData = async (req,res) => {
+
+    const store_id = res.locals.store_id;
+    const Op = Sequelize.Op
+    
+    var date = new Date();
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    var month = date.getFullYear() + '-' + Number(date.getMonth()+1) + '-' + 1;
+
+    try{
+        const accumNum = await Delivery.findAll({
+            attributes: [[Sequelize.fn('count', Sequelize.col('tel')), 'visitedNum']],
+            group: ['user_id'],
+            where: {
+                store_id,
+            }
+        });
+
+        const monthNum = await Delivery.findAll({
+            attributes: [[Sequelize.fn('count', Sequelize.col('tel')), 'visitedNum']],
+            group: ['user_id'],
+            where: {
+                store_id,
+                [Op.and]: [
+                    {createdAt: {[Op.lte]: lastDay}},
+                    {createdAt: {[Op.gte]: firstDay}},
+                  ]   
+            }
+        });
+
+        const query = `select count(distinct user_id) as newConNum from deliveries where store_id = ${store_id} and user_id not in (select distinct user_id from deliveries where createdAt < '${month}'and store_id=${store_id});`
+        let monthNewConNum = await db.sequelize.query(query);
+
+        return res.json({accumNum, monthNum, monthNewConNum});
+
+    }
+    catch(err){
+        console.log("Error on getConsumerData" + err)
+        res.send("error");
+    }
+}
+
+export const 
