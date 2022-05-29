@@ -17,6 +17,14 @@ export const getConsumerAnalysis = async(req,res) => {
     return res.render("statistic/consumeranalysis.html");
 }
 
+export const getItemAnalysis = async(req,res) => {
+    return res.render("statistic/itemanalysis.html");
+}
+
+export const getSalesAnalysis = async(req,res) => {
+    return res.render("statistic/salesanalysis.html");
+}
+
 export const getTotalEarningByDay = async(req,res) => {
 
     const store_id = res.locals.store_id
@@ -42,10 +50,10 @@ export const getTotalEarningByDay = async(req,res) => {
 export const getDayDeliveredList = async (req,res) => {
 
     const store_id = res.locals.store_id;
-    const {date} = req.query;
+    let {start,end} = req.query;
     const Op = Sequelize.Op
-    let start = new Date(date + "T00:00:00");
-    let end = new Date(date + "T23:59:59");
+    start = new Date(start + "T00:00:00");
+    end = new Date(end + "T23:59:59");
 
     try{
         
@@ -165,7 +173,7 @@ export const getConsumerRank = async (req,res) => {
             order: [
                 [Sequelize.fn('sum', Sequelize.col('totalPaidPrice')), 'DESC']
               ],
-            limit: 7
+            limit: 10
         })
 
         return res.json({delivery});
@@ -219,4 +227,92 @@ export const getConsumerData = async (req,res) => {
     }
 }
 
-export const 
+export const getItemRank = async (req,res) => {
+    const store_id = res.locals.store_id;
+    let {start,end} = req.query;
+    const Op = Sequelize.Op
+    start = new Date(start + "T00:00:00");
+    end = new Date(end + "T23:59:59");
+
+    try{
+        
+        const delivery = await Delivery.findAll({
+            attributes: [[Sequelize.fn('sum', (Sequelize.col('Orders.quantity'))), 'quantity']],
+            include: [
+                { 
+                    model: Order, 
+                    as: "Orders", 
+                    attributes: ["quantity"],
+                    include: [
+                        {model: ProductUnit, as: "ProductUnit"}
+                    ]
+                },
+            ],
+            group: ['name'],
+            where: {
+                store_id,
+                [Op.and]: [
+                    {createdAt: {[Op.lte]: end}},
+                    {createdAt: {[Op.gte]: start}},
+                    {status: {[Op.not]: 4}},
+                    {status: {[Op.not]: 5}},
+                  ]   
+            },
+            order: [
+                [Sequelize.fn('sum', Sequelize.col('Orders.quantity')), 'DESC']
+              ],
+        })
+        
+        return res.json({delivery});
+    }
+    catch(err){
+        console.log("Error on getItemRank" + err)
+        res.send("error");
+    }
+}
+
+export const getSalesAnalysisData = async(req,res) => {
+
+    const store_id = res.locals.store_id;
+    let {start,end} = req.query;
+    const Op = Sequelize.Op
+    start = new Date(start + "T00:00:00");
+    end = new Date(end + "T23:59:59");
+
+    try{
+
+        const delivery = await Delivery.findAll({
+            attributes: ['totalPaidPrice','createdAt'],
+            where:{
+              store_id,
+              [Op.and]: [
+                {createdAt: {[Op.lte]: end}},
+                {createdAt: {[Op.gte]: start}}
+              ]
+            }
+        });
+
+        let numForHour = []
+        let paidForHour = []
+
+        for(let i = 0; i < 24; i++){
+            numForHour.push(0)
+            paidForHour.push(0)
+        }
+
+        for(let i = 0 ; i < delivery.length ; i++){
+
+            let hour = delivery[i].dataValues.createdAt.getHours();
+        
+            numForHour[hour] += 1
+            paidForHour[hour] += delivery[i].dataValues.totalPaidPrice;
+        }
+        
+        return res.json({numForHour,paidForHour});
+    }
+    catch(err){
+        console.log("Error on getSalesAnalysisData" + err);
+        res.send("error");
+    }
+
+}

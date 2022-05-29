@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div>
+    
+    <div style="text-align: center; margin-top: 80px;">
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
+    
+    <hr>
+
+    <ul style="padding:0; margin:0 ;margin-top:30px">
+        <li style="list-style: none;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">주문이 가장 많이 들어온 1시간</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="max-time"></div>
+        </li>
+        <li style="list-style: none; margin-top:10px;">
+            <p style="margin-left: 15px; font-weight: bold; display: inline-block;">주문이 가장 적게 들어온 1시간</p>
+            <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="min-time"></div>
+        </li>
+    </ul>
+
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 40px; font-weight: bold;">시간별 결제 금액</p>
+    <div id="paidChartContainer" style="margin:0px 15px">
+        <canvas id="paidChart"></canvas>
+    </div>   
+
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 40px; font-weight: bold;">시간별 주문 건수</p>
+    <div id="numChartContainer" style="margin:0px 15px">
+        <canvas id="numChart"></canvas>
+    </div>   
+   
+</div>
+
+        
+<script type="text/javascript">
+
+    function getConsumerRank(date_start,date_end){
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: `/statistic/getSalesAnalysisData?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
+                type: "get",
+                datatype: "json",
+                success: function(result){
+                    if(result !="error"){
+                        
+                        const numForHour = result.numForHour;
+                        const paidForHour = result.paidForHour;
+
+                        let min_order = Math.pow(10,10);
+                        let max_order = 0;
+
+                        let min_time = -1
+                        let max_time = -1
+
+                        for(let i = 0; i<24 ; i++){
+                            if(numForHour[i] > max_order){
+                                max_order = numForHour[i];
+                                max_time = i;
+                            }
+                            if(numForHour[i] < min_order && numForHour[i]!= 0){
+                                min_order = numForHour[i];
+                                min_time = i;
+                            }
+                        }
+
+                        document.getElementById('min-time').innerHTML = min_time+ ":00 ~ " + Number(min_time+1) + ":00";
+                        document.getElementById('max-time').innerHTML = max_time+ ":00 ~ " + Number(max_time+1) + ":00";
+
+                        $("#paidChart").remove();
+                        $('#paidChartContainer').append('<canvas id="paidChart"></canvas>');
+                        $("#numChart").remove();
+                        $('#numChartContainer').append('<canvas id="numChart"></canvas>');
+
+                        let labels = []
+                        for(let i = 0 ; i <24; i++){
+                            labels.push(i);
+                        }
+                    
+                        const paidData = {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Paid for hour',
+                                backgroundColor: ['red'],
+                                borderColor: 'black',
+                                data: paidForHour,
+                                borderWidth: 1
+                            }]
+                        };
+                    
+                        const paidConfig = {
+                        type: 'line',
+                        data: paidData,
+                        options: {}
+                        };
+
+                        const paidChart = new Chart(
+                            document.getElementById('paidChart'),
+                            paidConfig
+                        );
+
+                        const numData = {
+                            labels: labels,
+                            datasets: [{
+                                label: '# of ordering for hour',
+                                backgroundColor: ['red'],
+                                borderColor: 'black',
+                                data: numForHour,
+                                borderWidth: 1
+                            }]
+                        };
+                    
+                        const numConfig = {
+                        type: 'line',
+                        data: numData,
+                        options: {}
+                        };
+
+                        const numChart = new Chart(
+                            document.getElementById('numChart'),
+                            numConfig
+                        );
+                        
+                        
+                    }
+                    else{
+                        alert("오류");
+                    }
+                }
+            })
+        })
+    }
+
+
+    const selectElement_start = document.getElementById('date-start');
+
+    selectElement_start.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if (date_end != ""){     
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    const selectElement_end = document.getElementById('date-end');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if(date_start != ""){
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>

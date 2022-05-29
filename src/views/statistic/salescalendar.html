@@ -124,7 +124,7 @@
 
             $(document).ready(function(){
                 $.ajax({
-                    url: `/statistic/getDayDeliveredList?token=${localStorage.getItem('token')}&date=${date}`,
+                    url: `/statistic/getDayDeliveredList?token=${localStorage.getItem('token')}&start=${date}&end=${date}`,
                     type: "get",
                     datatype: "json",
                     success: function(result){

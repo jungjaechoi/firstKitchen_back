@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body>
+
+<div id='navibar'></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navibar").load("/user/navibar", function () {
+        });
+    })
+</script>
+
+<div>
+    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold;">TOP 10 인기 상품</p>
+    <div style="text-align: center; margin-top: 20px;">
+        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+        <p style="display: inline-block;">~</p>
+        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+    </div>
+    <div id="table" style="height: 340px; margin-top:10px;">
+        <table class="table table-hover" style = "margin-bottom:40px;">
+            <thead style = "height: 0px;">
+                <tr>
+                    <th>순위</th>
+                    <th>메뉴명</th>
+                    <th>주문 수</th>
+                </tr>
+            </thead>
+            <tbody style = "height: 34px;" id="tblShow">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="chartContainer" style="margin: 0px 30px;">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+   
+</div>
+
+        
+<script type="text/javascript">
+
+    function getConsumerRank(date_start,date_end){
+        
+        $(document).ready(function(){
+            $.ajax({
+                url: `/statistic/getItemRank?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
+                type: "get",
+                datatype: "json",
+                success: function(result){
+                    if(result !="error"){
+                        $("#tblShow tr").remove();
+                        $("#myChart").remove();
+                        $('#chartContainer').append('<canvas id="myChart"></canvas>');
+                        const delivery = result.delivery;
+                        console.log(delivery);
+                        let labels = []
+                        let orderedNumList = []
+
+                        for(let i = 0; i<delivery.length;i++){
+                            let objRow = document.all("tblShow").insertRow();
+
+                            let objCell_rank = objRow.insertCell();
+                            objCell_rank.innerHTML = i+1;
+
+                            let objCell_name = objRow.insertCell();
+                            objCell_name.innerHTML = delivery[i].Orders[0].ProductUnit.name;
+
+                            labels.push(delivery[i].Orders[0].ProductUnit.name);
+
+                            let objCell_orderedNum = objRow.insertCell();
+                            objCell_orderedNum.innerHTML = delivery[i].quantity + " 번";
+
+                            orderedNumList.push(delivery[i].quantity);
+                        }
+                    
+                        const data = {
+                            labels: labels,
+                            datasets: [{
+                                label: 'My First dataset',
+                                backgroundColor: ['rgb(237,255,246)','rgb(237,237,255)','rgb(246,237,237)','rgb(246,255,237)','rgb(246,246,237)','rgb(255,237,255)','rgb(227,255,241)','rgb(255,246,237)','rgb(237,237,246)','rgb(232,255,255)'],
+                                borderColor: '#FFFFFF',
+                                data: orderedNumList
+                            }]
+                        };
+                    
+                        const config = {
+                        plugins: [ChartDataLabels],
+                        type: 'pie',
+                        data: data,
+                        options: {}
+                        };
+                        const myChart = new Chart(
+                            document.getElementById('myChart'),
+                            config
+                        );
+                        
+                    }
+                    else{
+                        alert("오류");
+                    }
+                }
+            })
+        })
+    }
+
+
+    const selectElement_start = document.getElementById('date-start');
+
+    selectElement_start.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if (date_end != ""){     
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    const selectElement_end = document.getElementById('date-end');
+
+    selectElement_end.addEventListener('change', (event) => {
+        
+        let date_start = document.getElementById('date-start').value
+        let date_end = document.getElementById('date-end').value
+
+        if(date_start != ""){
+            getConsumerRank(date_start,date_end);
+        }
+    });
+
+    
+</script>  
+
+<script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+</html>
