@@ -5,7 +5,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <meta name = "viewport", content="width=device-width, initial-scale=1">
     
-    
 </head>
 <body>
 
@@ -70,19 +69,6 @@
         
 <script type="text/javascript">
 
-    $(document).ready(function(){
-        $.ajax({
-            url: "http://192.168.100.73:5000/hi",
-            type: "get",
-            datatype: "json",
-            success: function(result){
-                
-                console.log(result);
-               
-            }
-        })
-    }) 
-
     localStorage.removeItem('date-start');
     localStorage.removeItem('date-end');
 
@@ -111,12 +97,11 @@
         date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px; margin-top: 70px;"
     }
 
-    function init(){
+    function changeTime(){
         setInterval(getTime, 1000);
     }
     getTime();
-    init();
-
+    changeTime();
    
     function changeStatus_to_receipt(delivery_id) {
         var result = confirm("해당 주문을 접수처리 하시겠습니까?");
@@ -181,94 +166,109 @@
         }
     }
  
-    $(document).ready(function(){
-        $.ajax({
-            url: "/user/getEarning",
-            type: "post",
-            data: {token:localStorage.getItem('token')},
-            datatype: "json",
-            success: function(result){
-                if(result.error != 'token expired'){
-                    $('#earning').append(result.earning+ " 원");
-                }
-                else{
-                    localStorage.removeItem('token');
-                    alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
-                    window.location.href = '/user';
-                }
-            }
-        })
-    })  
+    function getData() {
 
-    $(document).ready(function(){
-        $.ajax({
-            url: "/user/getDeliveryStatus",
-            type: "post",
-            data: {token:localStorage.getItem('token')},
-            datatype: "json",
-            success: function(result){
-
-                var json = result.result;
-                var arr = JSON.parse(json);
-                var wait = arr[0]
-                var receipt = arr[1]
-                var completed = arr[2]
-
-
-                for(var i = 0 ; i < wait.length; i++){
-                    var objRow = document.all("tblShow_wait").insertRow();
-                    var temp_html = "";
-                    temp_html += `<div onClick="changeStatus_to_receipt(${wait[i][0]})">`
-
-                    for( var j = 1 ; j<wait[i].length ; j++){
-                        temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1] + "<br>";
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/getEarning",
+                type: "post",
+                data: {token:localStorage.getItem('token')},
+                datatype: "json",
+                success: function(result){
+                    if(result.error != 'token expired'){
+                        document.getElementById('earning').innerHTML = "";
+                        $('#earning').append(result.earning+ " 원");
                     }
-                    temp_html += '</div>'
-                    
-                    var objCell_id = objRow.insertCell();
-                    objCell_id.innerHTML = wait[i][0];
-                    objCell_id.style = "display:none"
-
-                    var objCell_menu = objRow.insertCell();
-                    objCell_menu.innerHTML = temp_html
-                }
-                for(var i = 0 ; i < receipt.length; i++){
-                    var objRow = document.all("tblShow_receipt").insertRow();
-                    var temp_html = "";
-                    temp_html += `<div onClick="changeStatus_to_completed(${receipt[i][0]})">`
-
-                    for( var j = 1 ; j<receipt[i].length ; j++){
-                        temp_html += receipt[i][j][0] + " "+ "*"+" " + receipt[i][j][1] + "<br>";
+                    else{
+                        localStorage.removeItem('token');
+                        alert('세션이 만료되었습니다 \n다시 로그인 하세요.');
+                        window.location.href = '/user';
                     }
-                    temp_html += '</div>'
-                    
-                    var objCell_id = objRow.insertCell();
-                    objCell_id.innerHTML = receipt[i][0];
-                    objCell_id.style = "display:none"
-
-                    var objCell_menu = objRow.insertCell();
-                    objCell_menu.innerHTML = temp_html
                 }
-                for(var i = 0 ; i < completed.length; i++){
-                    var objRow = document.all("tblShow_completed").insertRow();
-                    var temp_html = "";
-                    temp_html += `<div onClick="changeStatus_delete(${completed[i][0]})">`
+            })
+        });  
+    
+        $(document).ready(function(){
+            $.ajax({
+                url: "/user/getDeliveryStatus",
+                type: "post",
+                data: {token:localStorage.getItem('token')},
+                datatype: "json",
+                success: function(result){
+    
+                    var json = result.result;
+                    var arr = JSON.parse(json);
+                    var wait = arr[0]
+                    var receipt = arr[1]
+                    var completed = arr[2]
 
-                    for( var j = 1 ; j<completed[i].length ; j++){
-                        temp_html += completed[i][j][0] + " "+ "*"+" " + completed[i][j][1] + "<br>";
+                    $("#tblShow_wait tr").remove();
+                    $("#tblShow_receipt tr").remove();
+                    $("#tblShow_completed tr").remove();
+    
+                    for(var i = 0 ; i < wait.length; i++){
+                        var objRow = document.all("tblShow_wait").insertRow();
+                        var temp_html = "";
+                        temp_html += `<div onClick="changeStatus_to_receipt(${wait[i][0]})">`
+    
+                        for( var j = 1 ; j<wait[i].length ; j++){
+                            temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1] + "<br>";
+                        }
+                        temp_html += '</div>'
+                        
+                        var objCell_id = objRow.insertCell();
+                        objCell_id.innerHTML = wait[i][0];
+                        objCell_id.style = "display:none"
+    
+                        var objCell_menu = objRow.insertCell();
+                        objCell_menu.innerHTML = temp_html
                     }
-                    temp_html += '</div>'
-                    
-                    var objCell_id = objRow.insertCell();
-                    objCell_id.innerHTML = completed[i][0];
-                    objCell_id.style = "display:none"
+                    for(var i = 0 ; i < receipt.length; i++){
+                        var objRow = document.all("tblShow_receipt").insertRow();
+                        var temp_html = "";
+                        temp_html += `<div onClick="changeStatus_to_completed(${receipt[i][0]})">`
+    
+                        for( var j = 1 ; j<receipt[i].length ; j++){
+                            temp_html += receipt[i][j][0] + " "+ "*"+" " + receipt[i][j][1] + "<br>";
+                        }
+                        temp_html += '</div>'
+                        
+                        var objCell_id = objRow.insertCell();
+                        objCell_id.innerHTML = receipt[i][0];
+                        objCell_id.style = "display:none"
+    
+                        var objCell_menu = objRow.insertCell();
+                        objCell_menu.innerHTML = temp_html
+                    }
+                    for(var i = 0 ; i < completed.length; i++){
+                        var objRow = document.all("tblShow_completed").insertRow();
+                        var temp_html = "";
+                        temp_html += `<div onClick="changeStatus_delete(${completed[i][0]})">`
+    
+                        for( var j = 1 ; j<completed[i].length ; j++){
+                            temp_html += completed[i][j][0] + " "+ "*"+" " + completed[i][j][1] + "<br>";
+                        }
+                        temp_html += '</div>'
+                        
+                        var objCell_id = objRow.insertCell();
+                        objCell_id.innerHTML = completed[i][0];
+                        objCell_id.style = "display:none"
+    
+                        var objCell_menu = objRow.insertCell();
+                        objCell_menu.innerHTML = temp_html
+                    } 
+                }
+            })
+        });
+    }
 
-                    var objCell_menu = objRow.insertCell();
-                    objCell_menu.innerHTML = temp_html
-                } 
-            }
-        })
-    })  
+    function changeData(){
+        setInterval(getData, 30000);
+    }
+
+    getData();
+    changeData();
+      
 </script>  
 
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

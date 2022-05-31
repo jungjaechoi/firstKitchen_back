@@ -4,7 +4,7 @@ import {secretKey} from "../../config/secretkey.js"
 import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
-const deliveryApp_IP = "http://192.168.100.69:4000";
+const deliveryApp_IP = "http://192.168.100.74:4000";
 
 const autoClose = async (store_id) => {
   

@@ -215,7 +215,7 @@
                 }
 
                 let keys = Object.keys(daySales)
-                console.log(keys);
+
                 for(var i = 0 ; i<dayRefund.length; i++){
                     if(daySales[dayRefund[i].date]){
                         daySales[dayRefund[i].date].push(dayRefund[i].dayRefund)
@@ -268,7 +268,7 @@
                 },
                 datatype: "json",
                 success: function(result){
-                    console.log(result);
+
                     const delivery = result.delivery;
                     const orderList = result.orderList;
                     const delivery_status = document.getElementById("status")
