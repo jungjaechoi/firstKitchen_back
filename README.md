@@ -84,6 +84,36 @@ Click을 통해 Status 변경 가능
 ### 영업 시작/마감
 <img src="/img/4.PNG" width="232" height="409">
 
+<br>
+
+### 매출달력
+
+<img src="/img/7.PNG" width="232" height="409">
+
+<br>
+
+### 매출분석
+
+<img src="/img/8.PNG" width="232" height="409">
+
+<br>
+
+### 영업분석
+
+<img src="/img/9.PNG" width="232" height="409">
+
+<br>
+
+### 상품분석
+
+<img src="/img/10.PNG" width="232" height="409">
+
+<br>
+
+### 고객분석
+
+<img src="/img/11.PNG" width="232" height="409">
+
 <br><br>
 
 ## 💡 Database
