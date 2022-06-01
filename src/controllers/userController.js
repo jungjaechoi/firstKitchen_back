@@ -166,11 +166,25 @@ export const getEarning = async(req,res) => {
 export const getDeliveryStatus = async(req,res) => {
   
   const store_id = res.locals.store_id;
+  const Op = Sequelize.Op
 
   try{
-    var delivery = await Delivery.findAll({
+
+    var delivery_length = await Delivery.findAll({
+      attributes: [[Sequelize.fn('count', Sequelize.col('id')), 'length']],
       where:{
         store_id
+      }
+    })
+
+    var delivery = await Delivery.findAll({
+      where:{
+        store_id,
+        [Op.or]: [
+          {status: 0},
+          {status: 1},
+          {status: 2}
+        ]
       }
     })
     
@@ -178,8 +192,11 @@ export const getDeliveryStatus = async(req,res) => {
     var receipt = new Array();
     var completed = new Array();
 
-
     for (var i = 0; i<delivery.length ; i++){
+      
+      if(delivery[i].dataValues.status!=0 && delivery[i].dataValues.status!=1 && delivery[i].dataValues.status!=2){
+        continue
+      }
       
       var temp_arr = new Array();
       temp_arr.push(delivery[i].dataValues.id);
@@ -231,7 +248,7 @@ export const getDeliveryStatus = async(req,res) => {
     const result_arr = new Array(wait, receipt, completed);
     
     const result = JSON.stringify(result_arr)
-    return res.json({result});
+    return res.json({result,delivery_length});
 
   }catch(err){
     console.log("Error on getDeliveryStatus" + err)

@@ -192,12 +192,15 @@
             $.ajax({
                 url: "/user/getDeliveryStatus",
                 type: "post",
-                data: {token:localStorage.getItem('token')},
+                data: {
+                    token:localStorage.getItem('token')
+                },
                 datatype: "json",
                 success: function(result){
     
                     var json = result.result;
                     var arr = JSON.parse(json);
+                    var delivery_length = result.delivery_length[0].length;
                     var wait = arr[0]
                     var receipt = arr[1]
                     var completed = arr[2]
@@ -256,7 +259,28 @@
     
                         var objCell_menu = objRow.insertCell();
                         objCell_menu.innerHTML = temp_html
-                    } 
+                    }
+                    
+                    if(localStorage.getItem('prev_delivery_length')==null){
+                        localStorage.setItem('prev_delivery_length',delivery_length);
+                    }
+                    else{
+                        if (localStorage.getItem('prev_delivery_length')!=delivery_length){
+                            wait = wait.reverse()
+                            for(let i = 0; i<delivery_length-localStorage.getItem('prev_delivery_length'); i++){
+    
+                                let temp_html = ""
+    
+                                for( var j = 1 ; j<wait[i].length ; j++){
+                                    temp_html += wait[i][j][0] + " "+ "*"+" " + wait[i][j][1]+ "\n";
+                                }
+    
+                                alert(temp_html + "주문이 들어왔습니다.");
+                            }
+                            localStorage.setItem('prev_delivery_length',delivery_length);
+                        }
+                    }
+                    
                 }
             })
         });
