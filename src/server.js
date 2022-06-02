@@ -3,11 +3,12 @@ import "dotenv/config";
 import session from "express-session";
 import db from "../models";
 import morgan from "morgan";
+import loginRouter from "./routers/loginRouter";
 import userRouter from "./routers/userRouter";
 import consumerRouter from "./routers/consumerRouter";
 import statisticRouter from "./routers/statisticRouter";
 
-var CORS = require('cors')();
+var CORS = require('cors');
 var MySQLStore = require("express-mysql-session")(session);
 
 var options = {
@@ -60,8 +61,9 @@ app.use(
   })
 );
 
-app.use(CORS);
+app.use(CORS());
 app.use("/static", express.static("assets"));
+app.use("/login", loginRouter);
 app.use("/user", userRouter);
 app.use("/consumer", consumerRouter)
 app.use("/statistic", statisticRouter)
