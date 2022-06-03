@@ -68,6 +68,7 @@ export const getLogin = (req, res) => {
 };
 
 export const getHome = (req,res) => {
+  
   return res.render("home/home.html");
 }
  

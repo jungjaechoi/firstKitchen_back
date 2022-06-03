@@ -23,6 +23,8 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
+    "redis": "^4.1.0",
+    "redis-server": "^1.2.2",
     "sequelize": "^6.17.0"
   },
   "devDependencies": {

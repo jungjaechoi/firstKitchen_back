@@ -165,22 +165,6 @@
             }) 
         }
     }
-
-    $(document).ready(function(){
-        $.ajax({
-            url: "/login/postAuthorizationMsg",
-            type: "post",
-            data: {
-                'msg': 'Test Message', 
-                'mobile': '01031660957'
-            },
-            datatype: "json",
-            success: function(result){
-                console.log('hihihiih');
-                console.log(result);
-            }
-        })
-    });  
  
     function getData() {
 

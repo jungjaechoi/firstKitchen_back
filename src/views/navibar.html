@@ -60,6 +60,7 @@
     <script type="text/javascript">
         function logout(){
           localStorage.removeItem('token');
+          localStorage.removeItem('storeName');
           window.location.href = 'http://localhost:4000/user'
         }
 

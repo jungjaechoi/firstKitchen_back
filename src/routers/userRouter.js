@@ -11,7 +11,7 @@ import {postVerifyToken} from "./middlewares/authorization.js"
 
 const userRouter = express.Router();
 
-userRouter.route("/").get(getLogin).post(postLogin);
+userRouter.route("/").get(getLogin);
 userRouter.route("/home").get(getHome);
 userRouter.get('/navibar',getNavibar);
 userRouter.get('/realtimesales',getRealtimesales);

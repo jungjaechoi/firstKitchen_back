@@ -7,6 +7,7 @@ import loginRouter from "./routers/loginRouter";
 import userRouter from "./routers/userRouter";
 import consumerRouter from "./routers/consumerRouter";
 import statisticRouter from "./routers/statisticRouter";
+import {createClient} from 'redis';
 
 var CORS = require('cors');
 var MySQLStore = require("express-mysql-session")(session);
@@ -22,6 +23,11 @@ var options = {
 var sessionStore = new MySQLStore(options);
 
 const app = express();
+
+
+const client = createClient();
+client.on('error', (err) => console.log('Redis Client Error', err));
+client.connect();
 
 const logger = morgan("dev");
 
@@ -62,6 +68,10 @@ app.use(
 );
 
 app.use(CORS());
+app.use(function(req,res,next){ 
+  req.cache = client;      
+  next();
+});
 app.use("/static", express.static("assets"));
 app.use("/login", loginRouter);
 app.use("/user", userRouter);

@@ -8,61 +8,148 @@
 <body>
 <div class="container">
     <div>
-        <form method="post" style="margin-top:250px;margin-bottom:20px; text-align:center">
-            <input name="tel" id="tel" type = "text" style = "text-align: center; width:96%; height:80px; margin-bottom: 20px; font-size: 2.0em; border: 1px solid" placeholder="010 - XXXX - XXXX" required>
-            <input type = "button" value="로그인" onclick="login()" style=" font-size: 13px; width:200px; height:80px; font-size: 1.8em; ">
-        </form>
-        <!-- <form>
-            <ul style="list-style-type:none; ">
-                <li style="text-align: center; margin-bottom: 10px;">
-                    <input name="email" type = "text" style = "width:200px; height:40px; font-size: 1.2em; " placeholder="인증번호 4자리" required>
-                    <input type = "submit" value="인증하기"   style=" font-size: 13px; width:70px; height:40px; margin-left: 30px; font-size: 0.8em; margin-bottom: 50px;">
-                </li>
-            </ul>
-        </form> 
-        <li style="text-align: center; margin-bottom: 10px; list-style-type:none;">
-            <input type = "button" value="Login" onclick="location.href = 'home'"  style=" font-size: 13px; width:100px; height:40px; font-size: 0.8em; margin-bottom:50px;">
-        </li> -->
-       
         
+        <ul style="list-style-type:none; margin-top: 300px">
+            <li style="text-align: center; margin-bottom: 10px;">
+                <input name="mobile" id="tel" type = "text" style = "text-align: center; width:76%; height:80px; margin-bottom: 20px; font-size: 2.0em; border: 1px solid" placeholder="010XXXXXXXX" required>
+                <input type = "submit" value="인증번호 발급" onClick="postMsg()" style="width:140px; height:80px; margin-left: 30px; font-size: 1.2em; margin-bottom: 50px;">
+            </li>   
+            <li style="text-align: center; margin-bottom: 10px; ">
+                <input name="authNum" id="authNum" type = "text" style = "float: left; text-align: center; width:68%; height:80px; margin-left:4%; margin-bottom: 20px; font-size: 2.0em; border: 1px solid" placeholder="인증번호 4자리" required>
+                <input type = "submit" value="인증하기"  onClick="getAuth()" style="float: left; width:100px; height:80px; margin-left: 30px; font-size: 1.2em; margin-bottom: 50px;">
+                <div id="timer" style="font-size:1.2em; padding: 25px 0px">00 : 00</div>
+            </li>
+            <li style="text-align: center; margin-bottom: 10px; list-style-type:none;">
+                <input type = "button" value="Login" onclick="login()"  style=" width:20%; height:80px; font-size: 1.2em; margin-bottom:50px;">
+            </li>
+        </ul>
     </div>
 </div> 
 
 <script type="text/javascript">
+
     function login(){
-
-        var tel = document.getElementById('tel').value;
-
-        if(!tel){
-            alert('전화번호를 입력하세요');
-        }
-        else{
+        if(localStorage.getItem('token')!=null){
             $(document).ready(function(){
                 $.ajax({
-                url: "/user",
-                type: "post",
-                data: {tel: tel},
-                datatype: "json",
-                success: function(result){
-                    console.log(result);
-                    if(result.token == ""){
-                        alert(result.err)
+                    url: `/login/login?token=${localStorage.getItem('token')}`,
+                    type: "get",
+                    datatype: "json",
+                    success: function(result){
+                        if(result == 'success'){
+                            localStorage.removeItem('randSended');
+                            window.location.href = '/user/home';
+                        } 
+                        else{
+                            alert('세션이 만료되었습니다.')
+                        }
                     }
-                    else if(result.token == 'notJoined'){
-                        alert('You need to Join')
-                    }
-                    else{
-                        localStorage.setItem('token', result.token);
-                        localStorage.setItem('storeName', result.storeName);
-                        window.location.href = '/user/home';
-                    }
-                }
                 })
-            })  
+            });
         }
-
+        else{
+            alert('인증이 필요합니다.');
+        }
     }
 
+    function getAuth(){
+
+        const tel = document.getElementById('tel').value;
+        const authNum = document.getElementById("authNum").value;
+        if(authNum.length != 0){
+            if(localStorage.getItem('randSended') == 1){
+                $(document).ready(function(){
+                    $.ajax({
+                        url: "/login/getAuthorizatoin",
+                        type: "post",
+                        data: {
+                            'mobile': tel,
+                            'authNum': authNum
+                        },
+                        datatype: "json",
+                        success: function(result){
+                            if(result.token == 'fail'){
+                                alert('인증번호가 틀립니다.')
+                            }
+                            else if(result.token=="sessionEnd"){
+                                alert('인증번호가 만료되었습니다 \n다시 발급받으세요.')
+                            }
+                            else{
+                                localStorage.setItem('token', result.token);
+                                localStorage.setItem('storeName', result.storeName);
+                                alert('인증되었습니다.')
+                            }
+                        }
+                    })
+                });
+            }
+            else{
+                alert('인증번호를 먼저 발급받으세요.');
+            }
+        }
+        else{
+            alert('인증번호를 입력하세요.');
+        }
+        
+    }
+
+    var time = 0;
+    var timerFunction = null;
+
+    function startTimer(){
+        time--;
+        var minute = Math.floor(time/60);
+        var second = time%60;
+        
+        const timer = document.getElementById('timer');
+        if (time>0){
+            timer.innerHTML = minute + " : " + second;
+        }
+        else{
+            timer.innerHTML = "시간초과";
+            clearInterval(timerFunction);
+            console.log(timerFunction);
+        }
+    }
+
+    function postMsg(){
+        const tel = document.getElementById('tel').value;
+        if(tel.length == 11 && tel.substring(0,3)=='010'){
+            $(document).ready(function(){
+                $.ajax({
+                    url: "/login/postAuthorizationMsg",
+                    type: "post",
+                    data: {
+                        'mobile': tel
+                    },
+                    datatype: "json",
+                    success: function(result){
+                        if(result=="success"){
+                            localStorage.setItem('randSended',1)
+                            time = 120;
+                            clearInterval(timerFunction);
+                            timerFunction = setInterval(startTimer, 1000);
+                            console.log(timerFunction);
+                        }
+                        else if(result == "notJoined"){
+                            alert('등록되지 않은 번호입니다.');
+                        }
+                        else{
+                            alert('서버 오류');
+                        }
+                    }
+                })
+            });  
+        }
+        else{
+            if(tel.length == 0){
+                alert('전화 번호를 입력하세요.')
+            }
+            else{
+                alert('번호형식이 틀립니다.')
+            }
+        }
+    }
 </script>
 
 </body>
