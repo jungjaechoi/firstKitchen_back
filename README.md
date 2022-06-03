@@ -56,6 +56,15 @@ setEndTime은 POS server로부터 각 store의 autoEndTime을 받아옴.
 ## 💡 Demo
 
 ### 홈 화면
+<img src="/img/12.PNG" width="409" height="188">
+
+Cafe24 API를 통한 SMS인증 구현
+
+redis를 통한 인증번호 저장, 만료
+
+<br>
+
+### 홈 화면
 <img src="/img/1.PNG" width="232" height="409">
 
 배달앱에서 주문한 내역을 Status에 따라 표시
