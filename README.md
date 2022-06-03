@@ -122,5 +122,6 @@ Click을 통해 Status 변경 가능
 
 ## ⚙ Technical Features 
 - JWT Token 사용해서 보안 강화 
-- Socket.io 사용해서 실시간 통신(예정)
+- Login 인증번호 sms 구현, cafe24 API
+- Login 인증번호 저장에 R 사용 
 - AWS lambda 를 사용한 serverless server: 자동 마감 시스템
