@@ -55,6 +55,8 @@ setEndTime은 POS server로부터 각 store의 autoEndTime을 받아옴.
 
 ## 💡 Demo
 
+<br>
+
 ### 홈 화면
 <img src="/img/12.PNG" width="409" height="188">
 
@@ -62,7 +64,7 @@ Cafe24 API를 통한 SMS인증 구현
 
 redis를 통한 인증번호 저장, 만료
 
-<br>
+<br><br>
 
 ### 홈 화면
 <img src="/img/1.PNG" width="232" height="409">
@@ -71,7 +73,7 @@ redis를 통한 인증번호 저장, 만료
 
 Click을 통해 Status 변경 가능
 
-<br>
+<br><br>
 
 
 ### 결제 내역(1)
@@ -80,7 +82,7 @@ Click을 통해 Status 변경 가능
 
 각 내역 클릭 시 아래 팝업창이 생김
 
-<br>
+<br><br>
 
 ### 결제 내역(2)
 
@@ -88,36 +90,36 @@ Click을 통해 Status 변경 가능
 
 환불처리 가능(PG 시스템과 연동 예정)
 
-<br>
+<br><br>
 
 ### 영업 시작/마감
 <img src="/img/4.PNG" width="232" height="409">
 
-<br>
+<br><br>
 
 ### 매출달력
 
 <img src="/img/7.PNG" width="232" height="409">
 
-<br>
+<br><br>
 
 ### 매출분석
 
 <img src="/img/8.PNG" width="232" height="409">
 
-<br>
+<br><br>
 
 ### 영업분석
 
 <img src="/img/9.PNG" width="232" height="409">
 
-<br>
+<br><br>
 
 ### 상품분석
 
 <img src="/img/10.PNG" width="232" height="409">
 
-<br>
+<br><br>
 
 ### 고객분석
 
