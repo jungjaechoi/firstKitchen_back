@@ -95,11 +95,8 @@
 
     $(document).ready(function(){
         $.ajax({
-            url: "/user/getAutoEndTime",
-            type: "post",
-            data: {
-                token: localStorage.getItem('token')
-            },
+            url: `/user/getAutoEndTime?token=${localStorage.getItem('token')}`,
+            type: "get",
             datatype: "json",
             success: function(result){
 

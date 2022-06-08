@@ -94,9 +94,8 @@
 
     $(document).ready(function(){
         $.ajax({
-            url: "/user/getOpenRecords",
-            type: "post",
-            data: {token: localStorage.getItem('token')},
+            url: `/user/getOpenRecords?token=${localStorage.getItem('token')}`,
+            type: "get",
             datatype: "json",
             success: function(result){
 
@@ -163,9 +162,8 @@
 
     $(document).ready(function(){
         $.ajax({
-            url: "/user/isOpen",
-            type: "post",
-            data: {token: localStorage.getItem('token')},
+            url: `/user/isOpen?token=${localStorage.getItem('token')}`,
+            type: "get",
             datatype: "json",
             success: function(result){
 

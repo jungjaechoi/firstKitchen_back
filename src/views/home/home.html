@@ -170,9 +170,8 @@
 
         $(document).ready(function(){
             $.ajax({
-                url: "/user/getEarning",
-                type: "post",
-                data: {token:localStorage.getItem('token')},
+                url: `/user/getEarning?token=${localStorage.getItem('token')}`,
+                type: "get",
                 datatype: "json",
                 success: function(result){
                     if(result.error != 'token expired'){
@@ -190,11 +189,8 @@
     
         $(document).ready(function(){
             $.ajax({
-                url: "/user/getDeliveryStatus",
-                type: "post",
-                data: {
-                    token:localStorage.getItem('token')
-                },
+                url: `/user/getDeliveryStatus?token=${localStorage.getItem('token')}`,
+                type: "get",
                 datatype: "json",
                 success: function(result){
     

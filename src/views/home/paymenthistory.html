@@ -205,11 +205,8 @@
         
         $(document).ready(function(){
             $.ajax({
-                url: "/user/getPaymentList",
-                type: "post",
-                data: {token:localStorage.getItem('token'),
-                        start: date_start,
-                        end: date_end},
+                url: `/user/getPaymentList?token=${localStorage.getItem('token')}&start=${date_start}&end=${date_end}`,
+                type: "get",
                 datatype: "json",
                 success: function(result){
 
@@ -283,12 +280,8 @@
     function getDeliveryById(id){
         $(document).ready(function(){
             $.ajax({
-                url: "/user/getDeliveryById",
-                type: "post",
-                data: {
-                    token:localStorage.getItem('token'),
-                    delivery_id:id,     
-                },
+                url: `/user/getDeliveryById?token=${localStorage.getItem('token')}&delivery_id=${id}`,
+                type: "get",
                 datatype: "json",
                 success: function(result){
                     console.log(result);

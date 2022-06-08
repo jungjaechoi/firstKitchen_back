@@ -363,7 +363,7 @@ export const getPaymentList = async(req,res) =>{
   const Op = Sequelize.Op
 
   const store_id = res.locals.store_id;
-  var {start,end} = req.body;
+  var {start,end} = req.query;
 
   try{
 
@@ -388,7 +388,7 @@ export const getPaymentList = async(req,res) =>{
 }
 
 export const getDeliveryById = async(req,res) => {
-  var {delivery_id} = req.body;
+  var {delivery_id} = req.query;
   
   try{
     
