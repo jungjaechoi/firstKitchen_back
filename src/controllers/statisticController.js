@@ -236,13 +236,16 @@ export const getItemRank = async (req,res) => {
 
     try{
         
-        const delivery = await Delivery.findAll({
+        const delivery_unit = await Delivery.findAll({
             attributes: [[Sequelize.fn('sum', (Sequelize.col('Orders.quantity'))), 'quantity']],
             include: [
                 { 
                     model: Order, 
                     as: "Orders", 
                     attributes: ["quantity"],
+                    where:{
+                        productUnit_id: {[Op.not]: null}
+                    },
                     include: [
                         {model: ProductUnit, as: "ProductUnit"}
                     ]
@@ -261,6 +264,42 @@ export const getItemRank = async (req,res) => {
             order: [
                 [Sequelize.fn('sum', Sequelize.col('Orders.quantity')), 'DESC']
               ],
+        });
+
+        const delivery_set = await Delivery.findAll({
+            attributes: [[Sequelize.fn('sum', (Sequelize.col('Orders.quantity'))), 'quantity']],
+            include: [
+                { 
+                    model: Order, 
+                    as: "Orders", 
+                    attributes: ["quantity"],
+                    where:{
+                        productSet_id: {[Op.not]: null}
+                    },
+                    include: [
+                        {model: ProductSet, as: "ProductSet"}
+                    ]
+                },
+            ],
+            group: ['name'],
+            where: {
+                store_id,
+                [Op.and]: [
+                    {createdAt: {[Op.lte]: end}},
+                    {createdAt: {[Op.gte]: start}},
+                    {status: {[Op.not]: 4}},
+                    {status: {[Op.not]: 5}},
+                  ]   
+            },
+            order: [
+                [Sequelize.fn('sum', Sequelize.col('Orders.quantity')), 'DESC']
+              ],
+        });
+
+        let delivery = delivery_unit.concat(delivery_set);
+
+        delivery.sort(function(a,b){
+            return a.quantity < b.quantity ? -1 : a.quantity > b.quantity ? 1 : 0;
         })
         
         return res.json({delivery});

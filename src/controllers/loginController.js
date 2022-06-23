@@ -28,7 +28,6 @@ export const postAuthorizationMsg = async(req,res) => {
             //     });
             
             await client.set(mobile, rand);
-            client.expire(mobile,10);
 
             console.log(mobile+', 인증번호: '+ rand);
 

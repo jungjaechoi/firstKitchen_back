@@ -3,7 +3,7 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
-<body>
+<body id="myBody">
 
 <div id='navibar'></div>
 
@@ -14,17 +14,17 @@
     })
 </script>
 
-<div>
-    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
-    <div style="text-align: center; margin-top: 20px;">
-        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
-        <p style="display: inline-block;">~</p>
-        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
-    </div>
-    <hr>
 
+<p style= "margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold; color:white">기간 선택</p>
+<div style="text-align: center; margin-top: 20px;">
+    <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+    <p style="display: inline-block;">~</p>
+    <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+</div>
+
+<div style="background-color: white; height:100%; margin-top: 30px; border-radius:40px">
     <ul style="padding:0; margin:0">
-        <li style="list-style: none;">
+        <li style="list-style: none; padding-top: 50px">
             <p style="margin-left: 15px; font-weight: bold; display: inline-block;">총 결제 금액</p>
             <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="total-paid"></div>
         </li>
@@ -70,9 +70,9 @@
         <table class="table table-hover" style = "margin-bottom:40px;">
             <thead style = "height: 0px;">
                 <tr>
-                    <th>주문 경로</th>
-                    <th>건 수</th>
-                    <th>매출</th>
+                    <th style="text-align:center">주문 경로</th>
+                    <th style="text-align:center">건 수</th>
+                    <th style="text-align:center">매출</th>
                 </tr>
             </thead>
             <tbody style = "height: 34px;" id="tblShow">
@@ -176,10 +176,13 @@
                         for(let i = 0; i<earning.length;i++){
                             let objRow = document.all("tblShow").insertRow();
                             let objCell_app =objRow.insertCell();
+                            objCell_app.style="text-align:center"
                             objCell_app.innerHTML = earning[i][0];
                             let objCell_count = objRow.insertCell();
+                            objCell_count.style="text-align:center"
                             objCell_count.innerHTML = earning[i][1] + "건";
                             let objCell_earning = objRow.insertCell();
+                            objCell_earning.style="text-align:center"
                             objCell_earning.innerHTML = earning[i][2];
                         }
 

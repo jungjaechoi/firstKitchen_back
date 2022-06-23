@@ -44,6 +44,8 @@ export const postDeliveryInfo = async(req,res) => {
     var nameArr = new Array('store_id','user_id','user_nickname','deliveryApp','receptionType','orderTime',
         'addressDetail',
         'tel','payType','orders');
+    
+    console.log(req.body.data);
 
     for (var i = 0; i<checkArr.length ; i++){
         if(checkArr[i] == null){
@@ -109,7 +111,23 @@ export const postDeliveryInfo = async(req,res) => {
                     delivery_id: delivery.id,
                     productUnit_id:orders[i].menu_id,
                     quantity: orders[i].quantity
-                })
+                });
+                
+            }
+            else if(orders[i].menu_type == 1){
+                const order = await Order.create({
+                    delivery_id: delivery.id,
+                    productSet_id:orders[i].menu_id,
+                    quantity: orders[i].quantity
+                });
+                
+            }
+            else if(orders[i].menu_type == 2){
+                const order = await Order.create({
+                    delivery_id: delivery.id,
+                    productOption_id:orders[i].menu_id,
+                    quantity: orders[i].quantity
+                });
                 
             }
         }
@@ -145,8 +163,8 @@ export const getDeliveryInfo = async(req,res) => {
 
 export const getAllStore = async(req,res) => {
     
-    const {x,y} = req.query;
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    const {x,y} = req.body.data;
+    
     console.log(x,y);
     try{
         if(x == null, y == null){
@@ -160,8 +178,8 @@ export const getAllStore = async(req,res) => {
 
             store = store[0];
 
-            var answer = new Array();       
-
+            var answer = new Array();     
+            
             for(var i = 0 ; i < store.length ; i++){
                 if (getDistanceFromLatLonInKm(y,x,store[i].latitude,store[i].longitude) <= 3){
                     answer.push(store[i])
@@ -181,7 +199,7 @@ export const getAllStore = async(req,res) => {
 }
 
 export const getStoreInfo = async(req,res) => {
-    const {store_id} = req.query;
+    const {store_id} = req.body.data;
     try{
 
         const store = await Store.findOne({
@@ -221,7 +239,7 @@ export const getStoreInfo = async(req,res) => {
 }
 
 export const getMenuInfo = async(req,res) => {
-    const {store_id, menu_id,menu_type} = req.query;
+    const {store_id, menu_id,menu_type} = req.body.data;
 
     try{
         if(menu_type == 0){
@@ -256,7 +274,7 @@ export const getMenuInfo = async(req,res) => {
 } 
 
 export const getCartMenu = async(req,res) => {
-    var incarts = req.query;
+    var incarts = req.body.data;
     try{
         for(var i = 0; i < incarts.length ; i++){
             if(incarts[i].menu_type == 0){
@@ -321,7 +339,7 @@ export const getCartMenu = async(req,res) => {
 
 export const getProceedingDelivery = async (req,res) => {
 
-    const {user_id} = req.query;
+    const {user_id} = req.body.data;
     const Op = Sequelize.Op
 
     try{

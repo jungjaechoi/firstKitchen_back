@@ -13,54 +13,64 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    
+    <link rel="stylesheet" href="/static/css/default.css">
 
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: rgba(248,188,58); border-bottom:solid 1px rgba(248,188,58)">
         <div class="container-fluid">
           <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <button type="button" class="navbar-toggle" style="border:solid 1px white" data-toggle="collapse" data-target="#myNavbar">
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
-              <span class="icon-bar"></span>                        
+              <span class="icon-bar"></span>                      
             </button>
-            <a class="navbar-brand" href="/user/home">WebSiteName</a>
+            <a href="/user/home">
+              <img class="navbar-brand" src="/static/images/home.png" alt="Home">
+            </a>
           </div>
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">주문관리<span class="caret"></span></a>
+                <a class="dropdown-toggle" style="color:white" data-toggle="dropdown" href="#">주문관리<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="/user/realtimesales">실시간 매출현황</a></li>
-                  <li><a href="/user/paymenthistory">결제 내역</a></li>
-                  <li><a href="/user/startend">영업 시작/마감</a></li>
+                  <li><a href="/user/realtimesales"style="color:white">실시간 매출현황</a></li>
+                  <li><a href="/user/paymenthistory"style="color:white">결제 내역</a></li>
+                  <li><a href="/user/startend"style="color:white">영업 시작/마감</a></li>
                 </ul>
               </li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">매장 분석<span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown"style="color:white" href="#">매장 분석<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="/statistic/salescalendar">매출 달력</a></li>
-                  <li><a href="/statistic/earninganalysis">매출 분석</a></li>
-                  <li><a href="/statistic/salesanalysis">영업 분석</a></li>
-                  <li><a href="/statistic/itemanalysis">상품 분석</a></li>
-                  <li><a href="/statistic/consumeranalysis">고객 분석</a></li>
+                  <li><a href="/statistic/salescalendar"style="color:white">매출 달력</a></li>
+                  <li><a href="/statistic/earninganalysis"style="color:white">매출 분석</a></li>
+                  <li><a href="/statistic/salesanalysis"style="color:white">영업 분석</a></li>
+                  <li><a href="/statistic/itemanalysis"style="color:white">상품 분석</a></li>
+                  <li><a href="/statistic/consumeranalysis"style="color:white">고객 분석</a></li>
                 </ul>
               </li>
-              <li><a href="#">제휴서비스</a></li>
-              <li><a href="/user/settings">설정</a></li>
+              <li><a href="#"style="color:white">제휴서비스</a></li>
+              <li><a href="/user/settings"style="color:white">설정</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="#" onClick="logout()"><span class="glyphicon glyphicon-log-in" ></span> Logout</a></li>
+              <li><a href="#" onClick="logout()" style="color:white"><span class="glyphicon glyphicon-log-in" style="color:white"></span> Logout</a></li>
             </ul>
           </div>
         </div>
     </nav>
 
     <script type="text/javascript">
+
+      if(window.location.href!="http://localhost:4000/user/paymenthistory"){
+        localStorage.removeItem('date-start');
+        localStorage.removeItem('date-end');
+      }
+      
+
         function logout(){
           localStorage.removeItem('token');
           localStorage.removeItem('storeName');
+          localStorage.removeItem('prev_delivery_length');
           window.location.href = 'http://localhost:4000/user'
         }
 

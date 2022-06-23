@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
-<body>
+<body id="myBody">
 
 <div id='navibar'></div>
 
@@ -16,20 +16,22 @@
     })
 </script>
 
-<div>
-    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold;">TOP 10 인기 상품</p>
+
+    <p style= "margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold; color:white">TOP 10 인기 상품</p>
     <div style="text-align: center; margin-top: 20px;">
         <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
         <p style="display: inline-block;">~</p>
         <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
     </div>
-    <div id="table" style="height: 340px; margin-top:10px;">
+
+<div style="background-color: white; height:100%; margin-top: 30px; border-radius:40px">
+    <div id="table" style="height: 340px; margin-top:10px; padding-top:10px">
         <table class="table table-hover" style = "margin-bottom:40px;">
             <thead style = "height: 0px;">
                 <tr>
-                    <th>순위</th>
-                    <th>메뉴명</th>
-                    <th>주문 수</th>
+                    <th style="text-align: center;">순위</th>
+                    <th style="text-align: center;">메뉴명</th>
+                    <th style="text-align: center;">주문 수</th>
                 </tr>
             </thead>
             <tbody style = "height: 34px;" id="tblShow">
@@ -69,13 +71,23 @@
 
                             let objCell_rank = objRow.insertCell();
                             objCell_rank.innerHTML = i+1;
+                            objCell_rank.style="text-align:center"
 
                             let objCell_name = objRow.insertCell();
-                            objCell_name.innerHTML = delivery[i].Orders[0].ProductUnit.name;
 
-                            labels.push(delivery[i].Orders[0].ProductUnit.name);
+                            if(delivery[i].Orders[0].ProductUnit != null){
+                                objCell_name.innerHTML = delivery[i].Orders[0].ProductUnit.name;
+                                objCell_name.style="text-align:center"
+                                labels.push(delivery[i].Orders[0].ProductUnit.name);
+                            }
+                            else{
+                                objCell_name.innerHTML = delivery[i].Orders[0].ProductSet.name;
+                                objCell_name.style="text-align:center"
+                                labels.push(delivery[i].Orders[0].ProductSet.name);
+                            }
 
                             let objCell_orderedNum = objRow.insertCell();
+                            objCell_orderedNum.style="text-align:center"
                             objCell_orderedNum.innerHTML = delivery[i].quantity + " 번";
 
                             orderedNumList.push(delivery[i].quantity);

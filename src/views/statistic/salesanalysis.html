@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
-<body>
+<body id="myBody">
 
 <div id='navibar'></div>
 
@@ -16,18 +16,18 @@
     })
 </script>
 
-<div>
-    
-    <div style="text-align: center; margin-top: 80px;">
-        <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
-        <p style="display: inline-block;">~</p>
-        <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
-    </div>
-    
-    <hr>
+<p style= "margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold; color:white">기간 선택</p>
 
-    <ul style="padding:0; margin:0 ;margin-top:30px">
-        <li style="list-style: none;">
+<div style="text-align: center; margin-top: 20px;">
+    <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
+    <p style="display: inline-block;">~</p>
+    <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
+</div>
+    
+<div style="background-color: white; height:100%; margin-top: 30px; border-radius:40px">
+
+    <ul style="padding:0; margin:0;">
+        <li style="list-style: none; padding-top: 50px">
             <p style="margin-left: 15px; font-weight: bold; display: inline-block;">주문이 가장 많이 들어온 1시간</p>
             <div style = "display: inline-block; float: right; margin-right:25px; font-size: 14px;" id="max-time"></div>
         </li>

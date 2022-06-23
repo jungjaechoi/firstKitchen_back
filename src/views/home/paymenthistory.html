@@ -2,26 +2,26 @@
 <html>
 <head>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <meta name = "viewport", content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/static/css/jquery-ui.css">
-    <script src="/static/js/jquery-ui.js"></script>
-</head>
-<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/css/default.css">
 
-<div>
+    
+</head>
+<body id="myBody">
+
+<div style="height:100%">
     <div id='navibar'></div>
 
-    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 70px; font-weight: bold;">기간 선택</p>
-    <div style="text-align: center; margin-top: 20px;">
+    <p style= "margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 80px; font-weight: bold; color:white">기간 선택</p>
+    <div style="text-align: center; margin-top: 10px;">
         <input id = "date-start" type="date" name="startDate" class = "date-start" value=""> 
-        <p style="display: inline-block;">~</p>
+        <p style="display: inline-block; color:white">  ~  </p>
         <input id = "date-end" type="date" name="endDate" class = "date-end" value="">
     </div>
     
 
     <script type="text/javascript">
-        
+
         let local_date_start = localStorage.getItem('date-start');
         let local_date_end = localStorage.getItem('date-end')
 
@@ -59,14 +59,14 @@
         })
     </script>
 
-    <p style="margin-left: 15px; margin-bottom: 0; padding-bottom: 0; margin-top: 10px; font-weight: bold;">결제 내역</p>
-    <div>
-        <table id="table" class="table table-hover" style = "margin-bottom:40px;">
+    <div style="background-color: white; height:100%; margin-top: 30px; border-radius:40px">
+        <p style="margin-left: 15px; margin-bottom: 0; padding-top: 40px; padding-bottom: 0; font-weight: bold;">결제 내역</p>
+        <table id="table" class="table table-hover" style = "margin:auto; width: 85%;">
             <thead style = "height: 0px;">
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                    <th style="margin: auto"></th>
+                    <th style="margin: auto"></th>
+                    <th style="float: right"></th>
                 </tr>
             </thead>
             <tbody style = "height: 34px;" id="tblShow">
@@ -151,6 +151,7 @@
         
 <script type="text/javascript">
 
+
     function refundOrder(){
         let result = confirm("해당주문을 환불처리 하시겠습니까?");
         if(result){
@@ -227,28 +228,29 @@
                                 let objCell_status =objRow.insertCell();
 
                                 if(payment[i].status == 0){
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>주문</a>`
+                                    objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>주문</a>`
                                 }
                                 else if(payment[i].status == 1){
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>접수</a>`
+                                    objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>접수</a>`
                                 }
                                 else if(payment[i].status == 2 || payment[i].status == 3){
                                     if(payment[i].receptionType == "DELIVERY"){
-                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>배달</a>`
+                                        objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>배달</a>`
                                     }
                                     else if(payment[i].receptionType == "PICKUP"){
-                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>포장</a>`
+                                        objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>포장</a>`
                                     }
                                     else{
-                                        objCell_status.innerHTML = `<a style='border: 1px solid;'>오류</a>`
+                                        objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>오류</a>`
                                     }
                                 }
                                 else if(payment[i].status == 4){
-                                    objCell_status.innerHTML = `<a style='border: 1px solid;'>환불</a>`
+                                    objCell_status.innerHTML = `<a style='border: 1px solid; padding: 3px; margin:auto'>환불</a>`
                                 }
 
                                 let objCell_earning = objRow.insertCell();
                                 objCell_earning.innerHTML = payment[i].totalPaidPrice;
+                                objCell_earning.style = "text-align:center"
 
                                 let objCell_date = objRow.insertCell();
                                 let date = payment[i].createdAt.split('T')
@@ -256,6 +258,7 @@
                                 date[1] = date[1][0].split(":");
                                 date[1] = date[1][0] + " : " + date[1][1]
                                 objCell_date.innerHTML = date[0] + '&nbsp;&nbsp;&nbsp;&nbsp;' +  date[1];
+                                objCell_date.style="text-align:center"
 
                             }
                         }

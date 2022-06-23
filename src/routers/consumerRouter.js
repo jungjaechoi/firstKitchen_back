@@ -8,11 +8,11 @@ const consumerRouter = express.Router();
 
 consumerRouter.post('/postDeliveryInfo', postDeliveryInfo)
 consumerRouter.get('/getDeliveryInfo', getDeliveryInfo)
-consumerRouter.get('/getAllStore', getAllStore)
-consumerRouter.get('/getStoreInfo', getStoreInfo)
-consumerRouter.get('/getMenuInfo',getMenuInfo);
-consumerRouter.get('/getCartMenu',getCartMenu);
-consumerRouter.get('/getProceedingDelivery',getProceedingDelivery);
+consumerRouter.post('/getAllStore', getAllStore)
+consumerRouter.post('/getStoreInfo', getStoreInfo)
+consumerRouter.post('/getMenuInfo',getMenuInfo);
+consumerRouter.post('/getCartMenu',getCartMenu);
+consumerRouter.post('/getProceedingDelivery',getProceedingDelivery);
 consumerRouter.get('/getFinishedDelivery',getFinishedDelivery);
 consumerRouter.get('/getLikeStore',getLikeStore);
 

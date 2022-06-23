@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'Wemakeprice-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10-21@1.0/Wemakeprice-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html{
+    height: 100%;
+}
+
+
+#myBody{
+    font-family: 'Wemakeprice-Bold';
+    background-color: rgba(248,188,58);
+    height: 100%;
+}
+
+
+input{
+    font-family: 'Uiyeun';
+}
+
+textarea{
+    font-family: 'Uiyeun';
+}

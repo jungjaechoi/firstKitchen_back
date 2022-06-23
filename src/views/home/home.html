@@ -6,7 +6,7 @@
     <meta name = "viewport", content="width=device-width, initial-scale=1">
     
 </head>
-<body>
+<body id="myBody">
 
 <div id='navibar'></div>
 
@@ -17,10 +17,10 @@
     })
 </script>
 
-<div>
-    <p class = "container row"  id = "date"></p>
+<div style="background-color: white; height:100%; margin-top: 30px; border-radius:40px">
+    <p class = "container row" style="float: none; padding-top: 30px; margin-top: 80px;  margin-left:auto; margin-right:auto; width: 260px;" id = "date"></p>
     <hr>
-    <p style="margin-left: 15px; font-weight: bold;">실시간 매출 현황</p>
+    <p style="margin-left: 15px; font-weight: bold; margin-top: 40px">실시간 매출 현황</p>
     <div style = "position: absolute; margin-left:15px; font-size: 14px;" id="earning"></div>
     <ul class = "row" style=" list-style:none; margin-top: 50px; padding: 0; margin-top: 40px; margin-left:0; margin-right:0; width:100%; float:right;">
         <li >
@@ -28,7 +28,7 @@
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
-                          <th>대기</th>
+                          <th style="text-align:center">대기</th>
                       </tr>
                   </thead>
                   <tbody style = "height: 34px;" id="tblShow_wait">
@@ -41,7 +41,7 @@
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
-                          <th>접수</th>
+                          <th style="text-align:center">접수</th>
                       </tr>
                   </thead>
                   <tbody style = "height: 34px;" id="tblShow_receipt">
@@ -54,7 +54,7 @@
                 <table class="table table-hover" style = " margin-top:10px; margin-bottom:40px;">
                   <thead>
                       <tr>
-                          <th>완료</th>
+                          <th style="text-align:center">완료</th>
                       </tr>
                   </thead>
                   <tbody style = "height: 34px;" id="tblShow_completed">
@@ -68,9 +68,6 @@
 </div>
         
 <script type="text/javascript">
-
-    localStorage.removeItem('date-start');
-    localStorage.removeItem('date-end');
 
     const date = document.getElementById('date')
 
@@ -94,7 +91,6 @@
         }
 
         date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
-        date.style = "float: none; margin:0 auto; border: solid 1px; width: 260px; margin-top: 70px;"
     }
 
     function changeTime(){
@@ -165,6 +161,7 @@
             }) 
         }
     }
+    
  
     function getData() {
 
@@ -195,7 +192,8 @@
                 success: function(result){
     
                     var json = result.result;
-                    var arr = JSON.parse(json);
+                    var arr = JSON.parse(json); 
+                    console.log(arr);
                     var delivery_length = result.delivery_length[0].length;
                     var wait = arr[0]
                     var receipt = arr[1]
