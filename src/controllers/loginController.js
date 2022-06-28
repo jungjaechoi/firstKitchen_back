@@ -5,6 +5,7 @@ import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
 
+// sms로 인증번호 보냄
 export const postAuthorizationMsg = async(req,res) => {
 
     const {mobile} = req.body;
@@ -50,6 +51,7 @@ export const postAuthorizationMsg = async(req,res) => {
     
 }
 
+// 인증번호 비교 후 맞으면 jwt 토큰 발급
 export const getAuthorizatoin = async(req,res)=> {
 
     const {mobile,authNum} = req.body;
@@ -97,6 +99,7 @@ export const getAuthorizatoin = async(req,res)=> {
     }
 }
 
+// 토큰 인증 후 통과되면 login 처리
 export const login = async(req,res) => {
     return res.send("success");
 }

@@ -2,7 +2,7 @@ import express from "express";
 import { verify } from "jsonwebtoken";
 import { getDeliveryInfo } from "../controllers/consumerController";
 import {
-  getLogin, postLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
+  getLogin, getHome, getNavibar,getEarning, getDeliveryStatus,changeStatus
   ,getEarningForDeliveryApp,getRealtimesales, getPaymenthistory,
   getPaymentList,getDeliveryById, postRefund, postDelete, getStartend, isOpen, open, close, getOpenRecords, getSetting,
   setAutoEndTime,getAutoEndTime,autoEndStore, getAllAutoEndTime

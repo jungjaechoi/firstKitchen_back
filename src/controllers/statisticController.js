@@ -25,6 +25,7 @@ export const getSalesAnalysis = async(req,res) => {
     return res.render("statistic/salesanalysis.html");
 }
 
+// 해당 날짜별 총 매출액, 총 환불액 조회
 export const getTotalEarningByDay = async(req,res) => {
 
     const store_id = res.locals.store_id
@@ -44,9 +45,9 @@ export const getTotalEarningByDay = async(req,res) => {
         console.log("Error on getTotalEarningByDay" + err)
         res.send("error");
     }
-
 }
 
+// 해당 날짜 배달 주문 List 조회
 export const getDayDeliveredList = async (req,res) => {
 
     const store_id = res.locals.store_id;
@@ -121,6 +122,7 @@ export const getDayDeliveredList = async (req,res) => {
 
 }
 
+// 해당 기간 영업정보 조회
 export const getEarningAnalysisData = async (req,res) => {
 
     const store_id = res.locals.store_id;
@@ -150,6 +152,7 @@ export const getEarningAnalysisData = async (req,res) => {
     }
 }
 
+// 해당 기간 이용자 랭킹 조회
 export const getConsumerRank = async (req,res) => {
     const store_id = res.locals.store_id;
     let {start,end} = req.query;
@@ -184,6 +187,7 @@ export const getConsumerRank = async (req,res) => {
     }
 }
 
+// 총 누적고객, 이번달 신규고객, 이번달 재방문율 조회
 export const getConsumerData = async (req,res) => {
 
     const store_id = res.locals.store_id;
@@ -227,6 +231,7 @@ export const getConsumerData = async (req,res) => {
     }
 }
 
+// 기간내 상품 랭킹 조회
 export const getItemRank = async (req,res) => {
     const store_id = res.locals.store_id;
     let {start,end} = req.query;
@@ -310,6 +315,7 @@ export const getItemRank = async (req,res) => {
     }
 }
 
+// 시간별 결제금액, 시간별 주문 건수 조회
 export const getSalesAnalysisData = async(req,res) => {
 
     const store_id = res.locals.store_id;

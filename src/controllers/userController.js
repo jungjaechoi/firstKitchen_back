@@ -6,6 +6,8 @@ import db from "../../models";
 const Sequelize = require('sequelize');
 const deliveryApp_IP = "http://192.168.100.74:4000";
 
+
+// 가게 자동마감에 쓰이는 함수
 const autoClose = async (store_id) => {
   
   try{
@@ -92,46 +94,7 @@ export const getSetting = (req,res) => {
   return res.render("setting.html");
 }
 
-export const postLogin = async(req,res) => {
-
-  const {tel} = req.body;
-  
-  try{
-
-    const exists =await Agent.findOne({
-      where: {tel}
-    });
-
-    if(exists!=null){
-    
-      const store = await Store.findOne({
-        where: {
-          agent_id: exists.dataValues.id
-        }
-      });
-      const token = String(jwt.sign({
-            store_id : store.dataValues.id,
-            agent_id : exists.dataValues.id
-        }, secretKey,{
-            expiresIn : '1h'
-        }));
-  
-      const storeName = store.dataValues.storeName;
-  
-      return res.json({token, storeName});
-    }
-    else{
-      return res.json({token:"notJoined"});
-    } 
-  }catch(err){
-      const token = ""
-      console.log('error on postLogin' + err)
-      return res.json({token,err})
-    }
-  
-}
-
-
+// 매출 정보 조회, store_id 사용
 export const getEarning = async(req,res) => {
   
   const store_id = res.locals.store_id
@@ -163,7 +126,7 @@ export const getEarning = async(req,res) => {
   }
 }
 
-
+// 주문 상태 조회(대기, 접수, 완료)
 export const getDeliveryStatus = async(req,res) => {
   
   const store_id = res.locals.store_id;
@@ -257,6 +220,7 @@ export const getDeliveryStatus = async(req,res) => {
   }
 }
 
+// 주문 상태 변경(대기(0)->접수(1), 접수(1)->완료(2), 완료(2)->완료,안보임(3))
 export const changeStatus = async(req,res) => {
   
   const {delivery_id} = req.body;
@@ -312,6 +276,7 @@ export const changeStatus = async(req,res) => {
 
 }
 
+//배달앱 별 매출 정보 조회
 export const getEarningForDeliveryApp = async(req,res) => {
   
   const store_id = res.locals.store_id;
@@ -358,6 +323,7 @@ export const getEarningForDeliveryApp = async(req,res) => {
   }
 }
 
+// 기간 내 주문 목록 조회
 export const getPaymentList = async(req,res) =>{
   
   const Op = Sequelize.Op
@@ -387,6 +353,7 @@ export const getPaymentList = async(req,res) =>{
 
 }
 
+// delivery_id로 주문 상세정보 조회
 export const getDeliveryById = async(req,res) => {
   var {delivery_id} = req.query;
   
@@ -443,6 +410,7 @@ export const getDeliveryById = async(req,res) => {
 
 }
 
+// 환불 처리 (status: 4) -> PG 시스템 연동 필요
 export const postRefund = async (req,res) => {
   var {delivery_id} = req.body;
 
@@ -474,6 +442,7 @@ export const postRefund = async (req,res) => {
 
 }
 
+// 삭제 처리 (status: 4->5)
 export const postDelete = async(req,res) => {
   var {delivery_id} = req.body;
   try{
@@ -492,6 +461,7 @@ export const postDelete = async(req,res) => {
   }
 }
 
+// 가게 영업 시작(openRecord table에 기록추가, Store table isOpen -> 1)
 export const open = async (req,res) =>{
 
   const store_id = res.locals.store_id
@@ -547,6 +517,7 @@ export const open = async (req,res) =>{
   }
 }
 
+// 가게 영업 종료 (openRecord table에 기록추가, Store table isOpen -> 0)
 export const close = async (req,res) => {
   const store_id = res.locals.store_id
   try{
@@ -605,8 +576,7 @@ export const close = async (req,res) => {
   }
 }
 
-
-
+// 현재 영업상태인지, 최근에 몇시에 열었고 몇시에 닫았는지 조회
 export const isOpen = async(req,res) => {
   const store_id = res.locals.store_id
   
@@ -634,6 +604,7 @@ export const isOpen = async(req,res) => {
   }
 }
 
+// 영업 기록 조회
 export const getOpenRecords = async (req,res) => {
 
   const store_id = res.locals.store_id
@@ -658,6 +629,7 @@ export const getOpenRecords = async (req,res) => {
 
 }
 
+// 자동 마감시간 설정 
 export const setAutoEndTime = async (req,res) => {
 
   const {hour,minute} = req.body;
@@ -687,6 +659,7 @@ export const setAutoEndTime = async (req,res) => {
   }
 }
 
+// 설정페이지에서 해당가게 자동마감시간 정보 조회
 export const getAutoEndTime = async (req,res) => {
 
   const store_id = res.locals.store_id
@@ -711,6 +684,7 @@ export const getAutoEndTime = async (req,res) => {
   }
 }
 
+// AWS 서버에서 호출하는 API로 현재 시간으로 자동 마감 시간이 설정된 가게들을 마감시킴
 export const autoEndStore = async (req,res) => {
   
   try{
@@ -750,6 +724,7 @@ export const autoEndStore = async (req,res) => {
 
 } 
 
+// AWS 서버로 가게 별 자동 마감 시간 정보를 넘김
 export const getAllAutoEndTime = async (req,res) => {
 
   try{

@@ -3,20 +3,7 @@ import axios from "axios";
 import db from "../../models";
 const Sequelize = require('sequelize');
 
-
-const REST_API_KEY = "b513516c12938a946355be879e3dd35c";
-const fullAddress = "서울특별시 안암동3가";
-
-function kakao(){
-    axios.get(`https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(fullAddress)}`, {
-            headers: { Authorization: `KakaoAK ${REST_API_KEY}` },
-        }).then(res => {
-            console.log(res.data.documents[0].address.x,res.data.documents[0].address.y);
-        }).catch(function (error){
-            console.log(error);
-        })
-}
-
+// 위도 경도로 거리 계산 함수
 function getDistanceFromLatLonInKm(lat1,lng1,lat2,lng2) { 
     function deg2rad(deg) { 
         return deg * (Math.PI/180) 
@@ -31,6 +18,8 @@ function getDistanceFromLatLonInKm(lat1,lng1,lat2,lng2) {
     return d; 
 }
 
+// 배달주문 AP
+// 주문에 따라 Delivery, Order table에 data 추가
 export const postDeliveryInfo = async(req,res) => {
 
     const {store_id,user_id,user_nickname,deliveryApp,receptionType,orderTime,
@@ -143,6 +132,7 @@ export const postDeliveryInfo = async(req,res) => {
     }
 }
 
+//delivery id로 배달 정보 조회
 export const getDeliveryInfo = async(req,res) => {
 
     const {id} = req.query;
@@ -161,6 +151,7 @@ export const getDeliveryInfo = async(req,res) => {
     }
 }
 
+// cliet 주변 3km 가게 정보
 export const getAllStore = async(req,res) => {
     
     const {x,y} = req.body.data;
@@ -198,6 +189,7 @@ export const getAllStore = async(req,res) => {
     }
 }
 
+// store id로 가게 정보 조회
 export const getStoreInfo = async(req,res) => {
     const {store_id} = req.body.data;
     try{
@@ -238,6 +230,7 @@ export const getStoreInfo = async(req,res) => {
     }
 }
 
+//store_id, menu_id, menu_type으로 메뉴 정보 조회
 export const getMenuInfo = async(req,res) => {
     const {store_id, menu_id,menu_type} = req.body.data;
 
@@ -273,6 +266,8 @@ export const getMenuInfo = async(req,res) => {
     }
 } 
 
+// cart에 담은 메뉴 조회
+// incarts 배열에 menu_type, menu_id, store_id 있음
 export const getCartMenu = async(req,res) => {
     var incarts = req.body.data;
     try{
@@ -337,6 +332,8 @@ export const getCartMenu = async(req,res) => {
     }
 }
 
+// 진행중인 배달 정보 조회
+// user_id 사용, delivery table에 주문한 user_id가 저장됨.
 export const getProceedingDelivery = async (req,res) => {
 
     const {user_id} = req.body.data;
@@ -427,6 +424,9 @@ export const getProceedingDelivery = async (req,res) => {
     }
 }
 
+
+// 완료된 주문 정보 조회
+// user_id 사용, delivery table에 주문한 user_id가 저장됨.
 export const getFinishedDelivery = async (req,res) => {
 
     console.log(req.query);
@@ -522,6 +522,8 @@ export const getFinishedDelivery = async (req,res) => {
     }
 }
 
+// 좋아요 누른 가게 정보 조회
+// 좋아요 정보는 배달앱 server에 있음
 export const getLikeStore = async (req,res) => {
 
     const {storeIdList} = req.query;
