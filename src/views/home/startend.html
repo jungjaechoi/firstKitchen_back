@@ -18,7 +18,7 @@
 </script>
 
 <div style="background-color: white; overflow:auto; height:100%; margin-top: 110px; border-radius:40px">
-    <p class = "container row" style="float: none; padding-top: 30px; margin-top: 20px;  margin-left:auto; margin-right:auto; width: 260px;" id = "date"></p>
+    <p class = "container row" style="float: none; padding-top: 30px; margin-left:auto; margin-right:auto; width: 300px;" id = "date"></p>
     <hr>
     <ul style="margin-left:0px; padding: 0px; list-style: none;">
         <li>
@@ -172,6 +172,7 @@
 
                         const openTime = document.getElementById('open-time');
                         let temp = openRecord[0].start_time.split("&nbsp;&nbsp;&nbsp;");
+                        temp[0] = temp[0].replace(/\//g, '.');
                         temp = temp[0] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + temp[1]
                         openTime.innerHTML = temp;
 
@@ -185,11 +186,13 @@
                         if(result.openRecord != 0){
                             const openTime = document.getElementById('open-time');
                             let temp = openRecord[0].start_time.split("&nbsp;&nbsp;&nbsp;");
+                            temp[0] = temp[0].replace(/\//g, '.');
                             temp = temp[0] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + temp[1]
                             openTime.innerHTML = temp;
 
                             const closeTime = document.getElementById('close-time');
                             let temp2 = openRecord[0].end_time.split("&nbsp;&nbsp;&nbsp;");
+                            temp2[0] = temp2[0].replace(/\//g, '.');
                             temp2 = temp2[0] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + temp2[1]
                             closeTime.innerHTML = temp2;
                         }
@@ -262,7 +265,7 @@
         let minutes = today.getMinutes();  // 분
         let seconds = today.getSeconds();  // 초
 
-        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' . ' + month + ' . ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
     }
 
     function init(){

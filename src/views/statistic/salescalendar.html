@@ -18,7 +18,7 @@
     })
 </script>
 <div style="background-color: white; overflow:auto; height:100%; margin-top: 110px; border-radius:40px">
-    <div id='calendar' class = "container" style = "padding-top:40px; margin-top: 80px; width: 100% "></div>
+    <div id='calendar' class = "container" style = "padding-top:40px; margin-top: 20px; width: 100% "></div>
         
     <div  style="height: 340px; margin-top:50px;">
         <p class="date"style="margin-left:30px;  margin-bottom:0; float:left">날짜를 선택하세요</p>
@@ -136,6 +136,7 @@
                             $("#tblShow tr").remove();
 
                             for(var i = 0 ; i < answer.length ; i++){
+                                
                                 let objRow = document.all("tblShow").insertRow();
 
                                 let objCell_id = objRow.insertCell();
@@ -161,7 +162,7 @@
                                         objCell_status.innerHTML = `<p style='border: 1px solid;  width:32px; margin-top:5px'>오류</p>`
                                     }
                                 }
-                                else if(answer[i][0].status == 4){
+                                else if(answer[i][0].status == 4 || answer[i][0].status == 5){
                                     objCell_status.innerHTML = `<p style='border: 1px solid;  width:32px; margin-top:5px'>환불</p>`
                                 }
 

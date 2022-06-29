@@ -17,12 +17,15 @@
     })
 </script>
 
-<div style="background-color: white; overflow:auto; height:100%; margin-top: 110px; border-radius:40px">
-    <p class = "container row" style="float: none; padding-top: 30px; margin-top: 20px;  margin-left:auto; margin-right:auto; width: 260px;" id = "date"></p>
-    <hr>
-    <p style="margin-left: 15px; font-weight: bold; margin-top: 40px">실시간 매출 현황</p>
-    <div style = "margin-left:15px; font-size: 14px;" id="earning"></div>
-    <ul class = "row" style=" list-style:none; margin-top: 50px; padding: 0; margin-top: 40px; margin-left:0; margin-right:0; height: 100%; width:100%; float:right;">
+<p style="text-align:right; margin-right: 10%; margin-top: 70px; color:white">매출 현황</p>
+<div style = "text-align:right; margin-right: 10%; font-size: 27px; " id="earning"></div>
+
+
+<div style="background-color: white; overflow:auto; height:100%; margin-top:30px; border-radius:40px">
+    <p class = "container row" style="float: none; padding-top: 30px;  margin-left:auto; margin-right:auto; width: 300px;" id = "date"></p>
+    <hr style="margin-bottom:0px;">
+    
+    <ul class = "row" style=" list-style:none; padding: 0; margin-left:0; margin-right:0; height: 100%; width:100%; float:right;">
         <li >
             <div id="table_wait" class = "col-xs-4 col-sm-4 col-md-4" style="padding: 1px;">
                 <table class="table table-hover" style = " margin-top:10px; ">
@@ -90,7 +93,7 @@
             seconds = "0" + String(seconds)
         }
 
-        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' / ' + month + ' / ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
+        date.innerHTML = ('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + year + ' . ' + month + ' . ' + dates  + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +   hours + " : " + minutes + " : " + seconds);
     }
 
     function changeTime(){
@@ -173,7 +176,8 @@
                 success: function(result){
                     if(result.error != 'token expired'){
                         document.getElementById('earning').innerHTML = "";
-                        $('#earning').append(result.earning+ " 원");
+                        var earning = result.earning.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        $('#earning').append(earning+ " 원");
                     }
                     else{
                         localStorage.removeItem('token');
