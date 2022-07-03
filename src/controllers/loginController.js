@@ -21,24 +21,24 @@ export const postAuthorizationMsg = async(req,res) => {
         if(exists!=null){
             const rand = Math.ceil(Math.random()*1000000)
 
-            // const result = await axios
-            //     .post("http://163.152.3.50:21000/sendSMS", 
-            //     {
-            //         msg: `[FirstKitchen] 인증번호 [${rand}]를 입력해 주세요.`,
-            //         mobile: mobile
-            //     });
+            const result = await axios
+                .post("http://163.152.3.50:21000/sendSMS", 
+                {
+                    msg: `[FirstKitchen] 인증번호 [${rand}]를 입력해 주세요.`,
+                    mobile: mobile
+                });
             
             await client.set(mobile, rand);
 
             console.log(mobile+', 인증번호: '+ rand);
 
-            // if(result.status = 200){
-            //     return res.send("success");
-            // }
-            // else{
-            //     return res.send('error on 24cafe');
-            // }
-            return res.send("success");
+            if(result.status = 200){
+                return res.send("success");
+            }
+            else{
+                return res.send('error on 24cafe');
+            }
+            
         }
         else{
             return res.send("notJoined");

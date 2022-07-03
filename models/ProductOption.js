@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       price: {
         type: DataTypes.INTEGER(10),
         comment: "메뉴가격",
+        
         allowNULL:false
       },
       memo: {
