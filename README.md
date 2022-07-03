@@ -57,8 +57,8 @@ setEndTime은 POS server로부터 각 store의 autoEndTime을 받아옴.
 
 <br>
 
-### 홈 화면
-<img src="/img/12.PNG" width="409" height="188">
+### 로그인 화면
+<img src="/img/12.PNG" width="232" height="409">
 
 Cafe24 API를 통한 SMS인증 구현
 
